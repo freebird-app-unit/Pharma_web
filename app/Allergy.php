@@ -10,7 +10,3 @@ class Allergy extends Model
 	
 	protected $fillable = ['allergy_name', 'user_id', 'family_member_id'];
 }
-
-
-
-
