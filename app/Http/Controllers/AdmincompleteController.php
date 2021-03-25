@@ -55,7 +55,7 @@ class AdmincompleteController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_order_history::select('new_order_history.id','pharmacy_id','deliver_datetime','deliveryboy_id','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as address','new_delivery_charges.delivery_type as delivery_type', 'prescription.name as prescription_name', 'prescription.image as prescription_image','is_external_delivery')
+		$order_detail = new_order_history::select('new_order_history.id','new_order_history.neighbour_info','pharmacy_id','deliver_datetime','deliveryboy_id','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as address','new_delivery_charges.delivery_type as delivery_type', 'prescription.name as prescription_name', 'prescription.image as prescription_image','is_external_delivery')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_order_history.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
@@ -103,6 +103,7 @@ class AdmincompleteController extends Controller
 				$html.='<tr>
 					<td><span>'.$order->order_number.'</span></td>
 					<td>'.$order->customer_name.'</td>
+					<td>'.$order->neighbour_info.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order->address.'</td>
 					<td>'.$pharmacy_name.'</td>
