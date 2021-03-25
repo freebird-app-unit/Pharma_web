@@ -112,7 +112,7 @@ class SellersController extends Controller
 					<td>'.$pharmacy_name.'</td>
 					<td>'.$total_pending_order.'</td>';
 						
-					$html.='<td><a class="btn btn-info waves-effect waves-light" href="'.url('/seller/edit/'.$user->id).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a><a class="btn btn-success waves-effect waves-light" href="'.url('/seller/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a>';
+					$html.='<td><a class="btn btn-success waves-effect waves-light" href="'.url('/seller/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a><a class="btn btn-info waves-effect waves-light" href="'.url('/seller/edit/'.$user->id).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a>';
 					if($user->is_active == 1){
                         $html.='<a href="'.url('/seller/'.$user->id.'/inactive/').'" onClick="return confirm(\'Are you sure you want to inactive this?\');" rel="tooltip" title="InActive" class="btn btn-default btn-xs"><i class="fa fa-circle text-success"></i></a>';  
                     }else{ 

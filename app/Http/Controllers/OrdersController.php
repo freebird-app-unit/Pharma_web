@@ -257,6 +257,7 @@ class OrdersController extends Controller
     {
 		$user_id = Auth::user()->user_id;
 		$order = new_orders::find($request->reject_id);
+		$order_current_status = $order->order_status;
 		$order->process_user_id = $user_id;
 		$order->order_status = 'reject';
 		$order->rejectby_user = 'pharmacy';
@@ -264,6 +265,7 @@ class OrdersController extends Controller
 		$order->reject_datetime = date('Y-m-d H:i:s');
 		$order->reject_cancel_reason = $request->reject_reason;
 
+		if($order_current_status == 'complete' || $order_current_status == 'cancel'){
 		$new_order_history = new new_order_history();
 		$new_order_history->order_id = $request->reject_id;
 		$new_order_history->customer_id = $order->customer_id;
@@ -313,7 +315,8 @@ class OrdersController extends Controller
 		// $new_order_history->is_logistic_amount_collect = $order->is_logistic_amount_collect;
 		$new_order_history->created_at = $order->created_at;
 		$new_order_history->save();
-		$order->delete();
+		}
+		$order->save();
 
 		if(isset($_REQUEST['home'])){
 			return redirect(route('home'))->with('success_message', trans('Order Successfully rejected'));

@@ -205,11 +205,11 @@
                                 <li class="hidden-xs">
                                     <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="icon-size-fullscreen"></i></a>
                                 </li>
-								<li class="dropdown hidden-xs">
+								<!--<li class="dropdown hidden-xs">
                                     <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
                                         <i class="icon-bell"></i> <span class="badge badge-xs badge-danger">3</span>
                                     </a>
-								</li>
+								</li>-->
 								<li class="hidden-xs">
                                     <a href="javascript:;" class="right-bar-toggle waves-effect waves-light">{{ Auth::user()->name }}</a>
                                 </li>
@@ -245,7 +245,7 @@
 							
 							<?php if(Auth::user()->user_type=='pharmacy' || Auth::user()->user_type=='seller'){ ?>
 								<li>
-									<a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><i class="ti-home"></i> <span>{{ __('Dashboard') }}</span></a>
+									<a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
 								</li>
 								<li>
 									<a href="{{ route('acceptedorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_acceptedorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
@@ -267,7 +267,7 @@
 	                                </ul>
 	                            </li>
 	                            <li>
-									<a href="{{ route('myorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_myorder')?'active':''; ?>"><i class="ti-receipt"></i> <span>{{ __('My Team') }}</span></a>
+									<a href="{{ route('myorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_myorder')?'active':''; ?>"><img src="{{ asset('public/images/my_team.png') }}"/><span>{{ __('My Team') }}</span></a>
 								</li>
 								<li>
 									<a href="{{ route('pharma_order_report.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharma_order_report')?'active':''; ?>"><img src="{{ asset('public/images/order_report.png') }}"/><span>{{ __('Orders Report') }}</span></a>
@@ -276,7 +276,7 @@
 
                 			<?php if(Auth::user()->user_type=='logistic'){ ?>
                    			<li>
-                                <a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><i class="ti-home"></i> <span>{{ __('Dashboard') }}</span></a>
+                                <a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
                             </li>
 							<li>
 								<a href="{{ route('logisticupcoming.index') }}" class="waves-effect <?php echo ($page_condition=='page_logisticupcoming')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
@@ -294,7 +294,7 @@
                                 <a href="{{ route('logistic.incomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_incomplete_logistic')?'active':''; ?>"><img src="{{ asset('public/images/incomplete_order.png') }}"/><span>{{ __('Incomplete Orders') }}</span></a>
                             </li>
                  			<li>
-                                <a href="{{ route('logistic.canceled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled_logistic')?'active':''; ?>"><i class="ion-navicon-round"></i> <span>{{ __('Canceled Orders') }}</span></a>
+                                <a href="{{ route('logistic.canceled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled_logistic')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Canceled Orders') }}</span></a>
                             </li>
                				<li>
                                 <a href="{{ route('logistic.deliveryboy.index') }}" class="waves-effect <?php echo ($page_condition=='page_deliveryboy_logistic')?'active':''; ?>"><img src="{{ asset('public/images/delivery_boy.png') }}"/><span>{{ __('Delivery boy') }}</span></a>
@@ -312,7 +312,7 @@
 
 							<?php if(Auth::user()->user_type=='pharmacy'){ ?>
 							<li>
-                                <a href="{{ route('allorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_allorder')?'active':''; ?>"><i class="ti-briefcase"></i> <span>{{ __('All Orders') }}</span></a>
+                                <a href="{{ route('allorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_allorder')?'active':''; ?>"><img src="{{ asset('public/images/all_order.png') }}"/><span>{{ __('All Orders') }}</span></a>
                             </li>
 
              <!--  <li>
@@ -331,7 +331,7 @@
 							
 							<?php if(Auth::user()->user_type=='admin'){ ?>
 							<li>
-                                <a href="{{ route('createorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_createorder')?'active':''; ?>"><i class="glyphicon glyphicon-user"></i> <span>{{ __('Create Orders') }}</span></a>
+                                <a href="{{ route('createorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_createorder')?'active':''; ?>"><img src="{{ asset('public/images/crete_order.png') }}"/><span>{{ __('Create Orders') }}</span></a>
                             </li>
 							<li>
 								<a href="{{ route('adminupcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_adminacceptedorders' || $page_condition=='page_adminupcomingorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/></i> <span>{{ __('Live Orders') }}</span></a>
