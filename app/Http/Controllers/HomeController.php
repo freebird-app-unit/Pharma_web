@@ -110,29 +110,29 @@ class HomeController extends Controller
 			//orders
 			
 			//pharmacy
-			$total_res = DB::table('users')
-			->where('user_type','pharmacy');
+			$total_res = DB::table('new_pharmacies');
+			//->where('user_type','pharmacy');
 			$total= $total_res->count();
 			$data['total_pharmacy'] = $total;
 			//pharmacy
 			
 			//seller
-			$total_res = DB::table('users')
+			$total_res = DB::table('new_pharma_logistic_employee')
 			->where('user_type','seller');
 			$total= $total_res->count();
 			$data['total_seller'] = $total;
 			//seller
 			
 			//delivery boy
-			$total_res = DB::table('users')
+			$total_res = DB::table('new_pharma_logistic_employee')
 			->where('user_type','delivery_boy');
 			$total= $total_res->count();
 			$data['total_deliveryboy'] = $total;
 			//delivery boy
 
 			//customer
-			$total_res = DB::table('users')
-			->where('user_type','customer');
+			$total_res = DB::table('new_users');
+			//->where('user_type','customer');
 			$total= $total_res->count();
 			$data['total_customer'] = $total;
 			//customer

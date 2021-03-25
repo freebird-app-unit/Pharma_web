@@ -93,10 +93,15 @@ class SellersController extends Controller
 				}else{
 					$image_url = url('/').'/uploads/placeholder.png';
 				}
-				$order_detail = new_order_history::select('new_order_history.id')
+				/* $order_detail = new_order_history::select('new_order_history.id')
 					->where('new_order_history.logistic_user_id',$user->id)
 					->where('new_order_history.order_status','complete');
-					$total_complete_order = $order_detail->count();
+					$total_complete_order = $order_detail->count(); */
+					
+				$total_res = DB::table('new_orders')->select('new_orders.*')
+				->where('order_status','incomplete')->where('pharmacy_id', $user->id);
+				$total_pending_order= $total_res->count();
+			
 				$pharmacy_name = get_name("new_pharmacies","name",$user->pharma_logistic_id);	
 				$html.='<tr>
 					<td><img src="'.$image_url.'" width="50"/></td>
@@ -105,7 +110,7 @@ class SellersController extends Controller
 					<td>'.$user->mobile_number.'</td>
 					<td>'.$user->address.'</td>
 					<td>'.$pharmacy_name.'</td>
-					<td>'.$total_complete_order.'</td>';
+					<td>'.$total_pending_order.'</td>';
 						
 					$html.='<td><a class="btn btn-info waves-effect waves-light" href="'.url('/seller/edit/'.$user->id).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a><a class="btn btn-success waves-effect waves-light" href="'.url('/seller/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a>';
 					if($user->is_active == 1){

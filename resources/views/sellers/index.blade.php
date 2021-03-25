@@ -53,7 +53,7 @@
 								<th width="15%" data-priority="4">Mobile number</th>
 								<th width="15%" data-priority="5">Address</th>
 								<th width="10%" data-priority="6">Pharmacy Name</th>
-								<th width="10%" data-priority="6">No. of orders<br> compeleted</th>
+								<th width="10%" data-priority="6">No. of orders<br> Pending</th>
 							</tr>
 						</thead>
 						<tbody>
