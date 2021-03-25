@@ -90,6 +90,17 @@ if($user->user_type=='admin'){
 		</div>
 	</div>
 </div>
+<div class="row">
+	<div class="col-lg-3 col-sm-6">
+		<a href="{{ url('/adminupcomingorders') }}" class="btn btn-primary btn-lg btn-block">Live Order</a>
+	</div>
+	<div class="col-lg-3 col-sm-6">
+		<a href="{{ url('/adminrejected') }}" class="btn btn-primary btn-lg btn-block">Incomplete Order</a>
+	</div>
+	<div class="col-lg-3 col-sm-6">
+		<a href="{{ url('/admincomplete') }}" class="btn btn-primary btn-lg btn-block">Completed Order</a>
+	</div>
+</div>
 <?php 
 }
 if($user->user_type=='logistic'){

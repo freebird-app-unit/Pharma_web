@@ -46,6 +46,7 @@
 		.table>tbody>tr>td{
 		    word-break: break-all;
 		}
+		#sidebar-menu ul li a img{margin-right:5px;}
 	</style>
 </head>
 <body class="fixed-left">
