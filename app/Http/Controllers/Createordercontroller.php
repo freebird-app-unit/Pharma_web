@@ -43,7 +43,7 @@ class Createordercontroller extends Controller
 		$data['page_title'] = 'Create order';
 		$data['page_condition'] = 'page_createorder';
 		$data['users'] = new_users::where(['is_active'=>'1','is_verify'=>'1'])->get();
-		$data['pharmacies'] = new_pharmacies::where(['is_active'=>'1'])->get();
+		$data['pharmacies'] = new_pharmacies::where(['is_active'=>'1','is_available'=>'1','is_approve'=>'1'])->get();
 		$data['logistics'] = new_logistics::where(['id'=>'29'])->first();
 		$data['delivery_charges'] = new_delivery_charges::where(['is_user'=>'1'])->get();
 		$data['site_title'] = 'Create order | ' . $this->data['site_title'];
