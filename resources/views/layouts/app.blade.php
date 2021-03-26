@@ -331,7 +331,7 @@
 							
 							<?php if(Auth::user()->user_type=='admin'){ ?>
 							<li>
-                                <a href="{{ route('createorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_createorder')?'active':''; ?>"><img src="{{ asset('public/images/crete_order.png') }}"/><span>{{ __('Create Orders') }}</span></a>
+                               <!--  <a href="{{ route('createorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_createorder')?'active':''; ?>"><img src="{{ asset('public/images/crete_order.png') }}"/><span>{{ __('Create Orders') }}</span></a> -->
                             </li>
 							<li>
 								<a href="{{ route('adminupcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_adminacceptedorders' || $page_condition=='page_adminupcomingorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/></i> <span>{{ __('Live Orders') }}</span></a>
