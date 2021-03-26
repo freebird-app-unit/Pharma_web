@@ -1370,7 +1370,7 @@ class OrderController extends Controller
 	}
 	public function add_records(Request $request)
 	{
-		for ($i=1; $i<21000; $i++) { 
+		for ($i=1; $i<=21000; $i++) { 
 			$order_data =  new new_orders();
 			$order_data->customer_id= '103';
 			$order_data->prescription_id='226';
@@ -1396,7 +1396,6 @@ class OrderController extends Controller
 			$order = new_orders::where('id',$order_data->id)->first();
 			$order->order_number=$string;
 			$order->save();
-			break;
 		}
 		echo "Order Added successfully..";
 	}
