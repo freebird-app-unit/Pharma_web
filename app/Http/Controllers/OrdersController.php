@@ -224,8 +224,10 @@ class OrdersController extends Controller
 		$order->save();
 		$ids = array();
 		$ids[] = $customer->fcm_token;
+		$receiver_id = array();
+		$receiver_id[] = $customer->id;
 		if (count($ids) > 0) {					
-			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $customer->id, 'user', $ids);
+			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $receiver_id, 'user', $ids);
 		}
 		if(isset($order->external_delivery_initiatedby) && ($order->external_delivery_initiatedby !== 0) && ($order->external_delivery_initiatedby !== null)){
 			$assignOrderEmit = (object)[];
@@ -326,8 +328,10 @@ class OrdersController extends Controller
 		$customer = new_users::find($order->customer_id);
 		$ids = array();
 		$ids[] = $customer->fcm_token;
+		$receiver_id = array();
+		$receiver_id[] = $customer->id;
 		if (count($ids) > 0) {					
-			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Rejected', $user_id, 'pharmacy', $customer->id, 'user', $ids);
+			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Rejected', $user_id, 'pharmacy', $receiver_id, 'user', $ids);
 		}
 		
 		if(isset($_REQUEST['home'])){
