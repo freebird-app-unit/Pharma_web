@@ -1370,7 +1370,34 @@ class OrderController extends Controller
 	}
 	public function add_records(Request $request)
 	{
-		dd(1);
+		for ($i=1; $i<21000 ; $i++) { 
+			$order_data =  new new_orders();
+			$order_data->customer_id= '103';
+			$order_data->prescription_id='226';
+			$order_data->address_id='117';
+			$order_data->pharmacy_id='32';
+			$order_data->is_external_delivery=0;
+			$order_data->logistic_user_id=0;
+			$order_data->delivery_charges_id=1;
+			$order_data->external_delivery_initiatedby='customer';
+			$order_data->create_datetime=date('Y-m-d H:i:s');
+			$order_data->audio_info=date('Y-m-d H:i:s');
+			$order_data->created_at = date('Y-m-d H:i:s');
+			$order_data->updated_at = date('Y-m-d H:i:s');
+			$order_data->order_status = 'new';
+			$order_data->process_user_type ='';
+			$order_data->process_user_id = 0;
+			$order_data->deliveryboy_id = 0;
+			$order_data->leave_neighbour='true';
+			$order_data->order_type='as_per_prescription';
+			$order_data->is_intersection = 0;
+			$order_data->save();
+			$string = 'PHAR'.$order_data->id; 
+			$order = new_orders::where('id',$order_data->id)->first();
+			$order->order_number=$string;
+			$order->save();
+		}
+		echo "Order Added successfully..";
 	}
 	// public function sendNotification($reg_ids, $message, $title) {
 		
