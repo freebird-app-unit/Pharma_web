@@ -1368,6 +1368,10 @@ class OrderController extends Controller
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		return response($cipher, 200);
 	}
+	public function add_records(Request $request)
+	{
+		dd(1);
+	}
 	// public function sendNotification($reg_ids, $message, $title) {
 		
 		// $serverKey = 'AAAAKIqNu8Q:APA91bEJSvjmr9TiUjAtQRc1PosKmb3nqRqQULAFUXHnujLmTw4zLmiSLD27gFffQeqxSR7U75JXUO-V65WIcMKorV7OjZ2boepBanPFwPFnxBEyCp7Uv0OwMVjnhMHp1ib_GtFiEwI8';
