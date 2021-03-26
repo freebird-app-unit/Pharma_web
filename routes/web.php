@@ -410,3 +410,10 @@ Route::get('/createorder/create', array('as' => 'createorder.create', 'uses' => 
 Route::post('/createorder/create', array('as' => 'createorder.create', 'uses' => 'Createordercontroller@store'));
 Route::get('get-prescription-list','Createordercontroller@getprescriptionList');
 Route::get('get-address-list','Createordercontroller@getaddressList');
+
+// packages
+Route::get('/packages', 'PackagesController@index');
+Route::post('package_add', 'PackagesController@save');
+Route::get('package_list', 'PackagesController@list');
+Route::post('package/delete/{id}', 'PackagesController@delete');
+Route::post('package/load_form/{id}', 'PackagesController@loadForm');

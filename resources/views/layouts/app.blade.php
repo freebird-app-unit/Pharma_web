@@ -94,7 +94,7 @@
 							<span class="clearfix"></span>
 						</div>
 						<form role="search" class="navbar-left app-search pull-left hidden-xs" onsubmit="return search_all_order();">
-							<input type="text" placeholder="Search..." class="form-control" id="all_order_search" style="color:#c3c3c3;" value="<?php echo (isset($_REQUEST['search_text']))?$_REQUEST['search_text']:''; ?>">
+							<input type="text" placeholder="Universal Search..." class="form-control" id="all_order_search" style="color:#c3c3c3;" value="<?php echo (isset($_REQUEST['search_text']))?$_REQUEST['search_text']:''; ?>">
 							<a href="javascript:;" onclick="search_all_order()"><i class="fa fa-search"></i></a>
 						</form>
 						<ul class="nav navbar-nav navbar-right pull-right">
@@ -537,6 +537,7 @@
 	@endif
 	<script>var base_url = "<?php echo url('/'); ?>";</script>
 	<script>var action = '<?php echo $page_condition; ?>'</script>
+	<script>var search_text_global = "<?php echo (isset($_REQUEST['search_text']))?$_REQUEST['search_text']:''; ?>"</script>
     <!-- jQuery  -->
 	@if($page_condition!='page_forms_create')
 	<script src="{{ asset('public/admin/js/jquery.min.js') }}"></script>
@@ -1128,6 +1129,7 @@
 		function search_all_order(){
 			var search_text = $('#all_order_search').val();
 			window.location.href = base_url+"/searchorders?search_text="+search_text;
+			return false;
 		}
 	</script>
 </body>

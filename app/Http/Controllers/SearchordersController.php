@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
+use App\new_order_history;
 use App\new_users;
 use App\new_pharmacies;
 use App\new_delivery_charges;
@@ -32,8 +33,56 @@ class SearchordersController extends Controller
     public function index()
     {
 		$user_id = Auth::user()->user_id;
+		$user_type = Auth::user()->user_type;
 		$data = array();
 		$data['search_text'] = (isset($_REQUEST['search_text']))?$_REQUEST['search_text']:'';
+		
+		$order = new_orders::select('new_orders.*')->where('new_orders.order_number',$data['search_text'])->first();
+		$new_order_history = new_order_history::select('new_order_history.*')->where('new_order_history.order_number',$data['search_text'])->first();
+		if($user_type=='admin'){
+			if(isset($order->order_status) && ($order->order_status == 'new' || $order->order_status == 'payment_pending')){
+				return redirect('/adminupcomingorders?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'accept'){
+				return redirect('/adminacceptedorders?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'assign'){
+				return redirect('/adminpickup?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'pickup'){
+				return redirect('/adminoutfordelivery?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'reject'){
+				return redirect('/adminrejected?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'incomplete'){
+				return redirect('/adminreturn?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'cancel'){
+				return redirect('/admincancelled?search_text='.$data['search_text']);
+			}else if(isset($new_order_history->order_status) && $new_order_history->order_status == 'complete'){
+				return redirect('/admincomplete?search_text='.$data['search_text']);
+			}
+		}else if($user_type=='pharmacy'){
+			if(isset($order->order_status) && $order->order_status == 'new' && $order->pharmacy_id == $user_id){
+				return redirect('/upcomingorders?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'accept' && $order->pharmacy_id == $user_id){
+				return redirect('/acceptedorders?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'pickup' && $order->pharmacy_id == $user_id){
+				return redirect('/pickup?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'assign' && $order->pharmacy_id == $user_id){
+				return redirect('/outfordelivery?search_text='.$data['search_text']);
+			}else if(isset($new_order_history->order_status) && $new_order_history->order_status == 'complete' && $new_order_history->pharmacy_id == $user_id){
+				return redirect('/complete?search_text='.$data['search_text']);
+			}
+		}else if($user_type=='seller'){
+			$parentuser_id = Auth::user()->parentuser_id;
+			if(isset($order->order_status) && $order->order_status == 'new' && $order->pharmacy_id == $parentuser_id){
+				return redirect('/upcomingorders?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'accept' && $order->pharmacy_id == $parentuser_id){
+				return redirect('/acceptedorders?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'pickup' && $order->pharmacy_id == $parentuser_id){
+				return redirect('/pickup?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'assign' && $order->pharmacy_id == $parentuser_id){
+				return redirect('/outfordelivery?search_text='.$data['search_text']);
+			}else if(isset($new_order_history->order_status) && $new_order_history->order_status == 'complete' && $new_order_history->pharmacy_id == $parentuser_id){
+				return redirect('/complete?search_text='.$data['search_text']);
+			}
+		}
 		$data['page_title'] = 'Search Orders';
 		$data['page_condition'] = 'page_searchorders';
 		$data['site_title'] = 'Search Orders | ' . $this->data['site_title'];

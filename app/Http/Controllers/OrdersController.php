@@ -27,6 +27,7 @@ use App\Events\AssignOrderLogistic;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_delivery_charges;
+use Helper;
 
 
 class OrdersController extends Controller
@@ -221,7 +222,11 @@ class OrdersController extends Controller
 		}
 
 		$order->save();
-
+		$ids = array();
+		$ids[] = $customer->fcm_token;
+		if (count($ids) > 0) {					
+			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $customer->id, 'user', $ids);
+		}
 		if(isset($order->external_delivery_initiatedby) && ($order->external_delivery_initiatedby !== 0) && ($order->external_delivery_initiatedby !== null)){
 			$assignOrderEmit = (object)[];
 			$assignOrderEmit->pharmacy_id = $order->pharmacy_id;
@@ -317,7 +322,14 @@ class OrdersController extends Controller
 		$new_order_history->save();
 		}
 		$order->save();
-
+		
+		$customer = new_users::find($order->customer_id);
+		$ids = array();
+		$ids[] = $customer->fcm_token;
+		if (count($ids) > 0) {					
+			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Rejected', $user_id, 'pharmacy', $customer->id, 'user', $ids);
+		}
+		
 		if(isset($_REQUEST['home'])){
 			return redirect(route('home'))->with('success_message', trans('Order Successfully rejected'));
 		}else{

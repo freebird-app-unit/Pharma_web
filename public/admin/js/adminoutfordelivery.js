@@ -1,3 +1,7 @@
+if(search_text_global!=''){
+	$('#search_text').val(search_text_global);
+}
+
 if(action=='page_adminoutfordelivery'){
 	getoutfordeliverylist(1);
 }
