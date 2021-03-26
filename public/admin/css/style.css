@@ -76,3 +76,13 @@ div[data-type=slider] .ui-sortable li label:nth-child(3), div[data-type=slider] 
 .nav-tabs .nav-link.active, .nav.nav-tabs > li > a:hover, .nav.tabs-vertical > li > a:hover{ color:#505458 !important; }
 .nav-tabs .nav-link.active{ position:relative;}
 .nav-tabs .nav-link.active:before{content:''; position:absolute; bottom:5px; height:2px; width:100%; background-color:#24a0b8; }
+
+.package_box{width:90%;margin:0 auto;border:1px solid #58b2eb;}
+.package_name{text-align: center;background: #58b2eb;margin: 0;color: #fff;padding: 10px 0px;}
+.package_price{text-align:center;margin:70px 0px;font-weight: bold;}
+.package_delivery .col-sm-6{text-align:center;padding:10px 0px;}
+.package_box .action-icon.edit{position: absolute;right: 0;}
+.package_box .deletePackage{position: absolute;right: 0;top:20px;}
+#packages_data .col-sm-4{margin-bottom:20px;}
+.package_box .payment_btn{padding: 10px 0px;text-align: center;background: #58b2eb;}
+.package_box .payment_btn .payment_btn_link{color: #fff;font-size: 18px;}

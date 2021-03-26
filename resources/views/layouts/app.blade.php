@@ -437,6 +437,12 @@
                                     <li><a href="ui-typography.html">Typography</a></li>
                                 </ul>
                             </li>-->
+							
+							<?php if(Auth::user()->user_type=='pharmacy' || Auth::user()->user_type=='admin'){ ?>
+							<li>
+								<a href="{{ url('/packages') }}" class="waves-effect <?php echo ($page_condition=='page_packages')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Packages') }}</span></a>
+							</li>
+							<?php } ?>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
