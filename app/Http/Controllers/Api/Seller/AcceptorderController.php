@@ -276,9 +276,9 @@ class AcceptorderController extends Controller
                $accept_list =  new_orders::select('process_user_id','order_status','customer_id','accept_datetime','order_number','id','prescription_id','customer_id','delivery_charges_id','order_note','total_days','reminder_days','order_amount','order_type','external_delivery_initiatedby','create_datetime')->where('process_user_id', $user_id)->where(['order_status'=>'accept'])->orderBy('accept_datetime', 'DESC')->get();
         }
 
-        /*$token =  $request->bearerToken();
+        $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){*/
+        if(count($user)>0){
                 if(!empty($accept_list)){
                          foreach($accept_list as $value) {
                                     $prescription_image = '';
@@ -375,10 +375,10 @@ class AcceptorderController extends Controller
                 }else {
                         $response['status'] = 404;
                 }
-        /*}else{
+        }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-        }*/
+        }
 
         $response['data'] = $accept;
         
