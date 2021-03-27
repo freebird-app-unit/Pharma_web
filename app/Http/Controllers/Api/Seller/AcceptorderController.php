@@ -120,9 +120,9 @@ class AcceptorderController extends Controller
         }else{
                $order_list =  new_orders::select('id','pharmacy_id','order_status','customer_id','order_number','checking_by','delivery_charges_id','order_note','order_type','total_days','prescription_id','external_delivery_initiatedby','create_datetime')->where('pharmacy_id', $pharmacy_id)->where('order_status','new')->orderBy('id', 'DESC')->get();
         }
-        $token =  $request->bearerToken();
+        /*$token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
+        if(count($user)>0){*/
             if(!empty($order_list)){
                 foreach($order_list as $value) { 
                     $prescription_image = '';
@@ -228,10 +228,10 @@ class AcceptorderController extends Controller
                 $response['status'] = 200;
                 $response['message'] = 'Order List';
                 }
-             }else{
+             /*}else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-            }
+            }*/
 
         $response['data'] = $order;
         return decode_string($response, 200);
