@@ -112,13 +112,13 @@ class AcceptorderController extends Controller
              $name = new_users::where('name', 'like', '%' .$search_text . '%')->where('user_type','customer')->get();
              if(count($name)>0){
               foreach ($name as $n) {
-                   $order_list_name = new_orders::where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new','customer_id'=> $n->id])->orderBy('id', 'DESC')->get();
+                   $order_list_name = new_orders::select('id','pharmacy_id','order_status','customer_id','order_number','checking_by','delivery_charges_id','order_note','order_type','total_days','prescription_id','external_delivery_initiatedby','create_datetime')->where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new','customer_id'=> $n->id])->orderBy('id', 'DESC')->get();
                }
            }else{
-                $order_list = new_orders::where('order_number', 'like', '%' .$search_text . '%')->where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new'])->orderBy('id', 'DESC')->get();
+                $order_list = new_orders::select('id','pharmacy_id','order_status','customer_id','order_number','checking_by','delivery_charges_id','order_note','order_type','total_days','prescription_id','external_delivery_initiatedby','create_datetime')->where('order_number', 'like', '%' .$search_text . '%')->where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new'])->orderBy('id', 'DESC')->get();
            }
         }else{
-               $order_list =  new_orders::where('pharmacy_id', $pharmacy_id)->where('order_status','new')->orderBy('id', 'DESC')->get();
+               $order_list =  new_orders::select('id','pharmacy_id','order_status','customer_id','order_number','checking_by','delivery_charges_id','order_note','order_type','total_days','prescription_id','external_delivery_initiatedby','create_datetime')->where('pharmacy_id', $pharmacy_id)->where('order_status','new')->orderBy('id', 'DESC')->get();
         }
         $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
@@ -126,8 +126,7 @@ class AcceptorderController extends Controller
             if(!empty($order_list)){
                 foreach($order_list as $value) { 
                     $prescription_image = '';
-                        $image_list = Prescription::where('id',$value->prescription_id)->get();
-                        foreach ($image_list as $p_img) {
+                        $p_img = Prescription::where('id',$value->prescription_id)->first();
                         if (!empty($p_img->image)) {
 
                             $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -138,35 +137,38 @@ class AcceptorderController extends Controller
                                 $prescription_image = '';
                             }
                         }
+                    $user_data = new_users::where('id',$value->customer_id)->first();
+                    if(!empty($user_data)){
+                        $name =$user_data->name;
+                    }else{
+                        $name = '';
                     }
-                    $user_list = new_users::where('id',$value->customer_id)->get();
-                            $name = '';
-                            foreach ($user_list as $u_img) {
-                            $name =$u_img->name;
-                        }
-                    $checking = new_pharma_logistic_employee::where('id',$value->checking_by)->get();
-                    $checking_by = '';
-                    foreach ($checking as $c) {
-                            $checking_by =$c->name;
-                        }
 
-                    $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
-                    $delivery_type = '';
-                    foreach ($delivery_type_data as $dt) {
-                            $delivery_type =$dt->delivery_type;
-                        }
+                    $checking = new_pharma_logistic_employee::where('id',$value->checking_by)->first();
+                    if(!empty($checking)){
+                        $checking_by =$checking->name;
+                    }else{
+                        $checking_by = '';
+                    }
+
+                    $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->first();
+                    if(!empty($delivery_type_data)){
+                        $delivery_type =$delivery_type_data->delivery_type;
+                    }else{
+                        $delivery_type = 'free';
+                    }
+                   
                      $order[] = [
                                  'order_id' => $value->id,
                                  'order_number' => $value->order_number,
-                                 'order_note' => $value->order_note,
                                  'order_type' => $value->order_type,
                                  'total_days' => $value->total_days,
                                  'customer_name' => $name,
                                  'prescription_image' => $prescription_image,
                                  'order_note' => ($value->order_note)?$value->order_note:'',
                                  'checking_by' => $checking_by,
-                                 'checking_by_user_id' => ($value->checking_by)?$value->checking_by:'',
-                                 'delivery_type' => ($delivery_type)?$delivery_type:'free',
+                                 'checking_by_user_id' => $value->checking_by,
+                                 'delivery_type' => $delivery_type,
                                  'external_delivery_initiatedby' => ($value->external_delivery_initiatedby)?$value->external_delivery_initiatedby:'',
                                  'order_time'=>($value->create_datetime)?$value->create_datetime:''
                     ];
@@ -176,8 +178,7 @@ class AcceptorderController extends Controller
             }elseif (!empty($order_list_name)) {
                 foreach($order_list_name as $value) { 
                      $prescription_image = '';
-                                    $image_list = Prescription::where('id',$value->prescription_id)->get();
-                                    foreach ($image_list as $p_img) {
+                                    $p_img = Prescription::where('id',$value->prescription_id)->first();
                                     if (!empty($p_img->image)) {
 
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -188,34 +189,38 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
-                                }
-                    $user_list = new_users::where('id',$value->customer_id)->get();
-                            $name = '';
-                            foreach ($user_list as $u_img) {
-                            $name =$u_img->name;
-                        }
-                         $checking = new_pharma_logistic_employee::where('id',$value->checking_by)->get();
-                         $checking_by = '';
-                        foreach ($checking as $c) {
-                            $checking_by =$c->name;
-                        }
-                        $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
-                        $delivery_type = '';
-                        foreach ($delivery_type_data as $dt) {
-                            $delivery_type =$dt->delivery_type;
-                        }
+                    $user_data = new_users::where('id',$value->customer_id)->first();
+                    if(!empty($user_data)){
+                        $name =$user_data->name;
+                    }else{
+                        $name = '';
+                    }
+
+                    $checking = new_pharma_logistic_employee::where('id',$value->checking_by)->first();
+                    if(!empty($checking)){
+                        $checking_by =$checking->name;
+                    }else{
+                        $checking_by = '';
+                    }
+
+                    $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->first();
+                    if(!empty($delivery_type_data)){
+                        $delivery_type =$delivery_type_data->delivery_type;
+                    }else{
+                        $delivery_type = 'free';
+                    }
+
                     $order[] = [
                                  'order_id' => $value->id,
                                  'order_number' => $value->order_number,
-                                 'order_note' => $value->order_note,
                                  'order_type' => $value->order_type,
                                  'total_days' => $value->total_days,
                                  'customer_name' => $name,
                                  'prescription_image' => $prescription_image,
                                  'order_note' => ($value->order_note)?$value->order_note:'',
                                  'checking_by' => $checking_by,
-                                 'checking_by_user_id' => ($value->checking_by)?$value->checking_by:'',
-                                 'delivery_type' => ($delivery_type)?$delivery_type:'free',
+                                 'checking_by_user_id' => $value->checking_by,
+                                 'delivery_type' => $delivery_type,
                                  'external_delivery_initiatedby' => ($value->external_delivery_initiatedby)?$value->external_delivery_initiatedby:'',
                                  'order_time'=>($value->create_datetime)?$value->create_datetime:''
                     ];
