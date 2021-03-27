@@ -72,8 +72,8 @@ class AcceptorderController extends Controller
         ]);
         
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        if(!empty($user)){
                 $check_data = new_orders::find($order_id);
                 $check_data->checking_by = $user_id;
                 $check_data->save();
@@ -120,9 +120,9 @@ class AcceptorderController extends Controller
         }else{
                $order_list =  new_orders::select('id','pharmacy_id','order_status','customer_id','order_number','checking_by','delivery_charges_id','order_note','order_type','total_days','prescription_id','external_delivery_initiatedby','create_datetime')->where('pharmacy_id', $pharmacy_id)->where('order_status','new')->orderBy('id', 'DESC')->get();
         }
-        /*$token =  $request->bearerToken();
+        $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){*/
+        if(count($user)>0){
             if(!empty($order_list)){
                 foreach($order_list as $value) { 
                     $prescription_image = '';
@@ -228,10 +228,10 @@ class AcceptorderController extends Controller
                 $response['status'] = 200;
                 $response['message'] = 'Order List';
                 }
-             /*}else{
+             }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-            }*/
+            }
 
         $response['data'] = $order;
         return decode_string($response, 200);
@@ -267,23 +267,22 @@ class AcceptorderController extends Controller
              if(count($name)>0){
               foreach ($name as $n) {
 
-                   $accept_list_name = new_orders::where(['process_user_id' => $user_id, 'order_status' => 'accept','customer_id'=> $n->id])->orderBy('accept_datetime', 'DESC')->get();
+                   $accept_list_name = new_orders::select('process_user_id','order_status','customer_id','accept_datetime','order_number','id','prescription_id','customer_id','delivery_charges_id','order_note','total_days','reminder_days','order_amount','order_type','external_delivery_initiatedby','create_datetime')->where(['process_user_id' => $user_id, 'order_status' => 'accept','customer_id'=> $n->id])->orderBy('accept_datetime', 'DESC')->get();
                }
            }else{
-                $accept_list = new_orders::where('order_number', 'like', '%' .$search_text . '%')->where(['process_user_id' => $user_id, 'order_status' => 'accept'])->orderBy('accept_datetime', 'DESC')->get();
+                $accept_list = new_orders::select('process_user_id','order_status','customer_id','accept_datetime','order_number','id','prescription_id','customer_id','delivery_charges_id','order_note','total_days','reminder_days','order_amount','order_type','external_delivery_initiatedby','create_datetime')->where('order_number', 'like', '%' .$search_text . '%')->where(['process_user_id' => $user_id, 'order_status' => 'accept'])->orderBy('accept_datetime', 'DESC')->get();
            }
         }else{
-               $accept_list =  new_orders::where('process_user_id', $user_id)->where(['order_status'=>'accept'])->orderBy('accept_datetime', 'DESC')->get();
+               $accept_list =  new_orders::select('process_user_id','order_status','customer_id','accept_datetime','order_number','id','prescription_id','customer_id','delivery_charges_id','order_note','total_days','reminder_days','order_amount','order_type','external_delivery_initiatedby','create_datetime')->where('process_user_id', $user_id)->where(['order_status'=>'accept'])->orderBy('accept_datetime', 'DESC')->get();
         }
 
-        $token =  $request->bearerToken();
+        /*$token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
+        if(count($user)>0){*/
                 if(!empty($accept_list)){
                          foreach($accept_list as $value) {
                                     $prescription_image = '';
-                                    $image_list = Prescription::where('id',$value->prescription_id)->get();
-                                    foreach ($image_list as $p_img) {
+                                    $p_img = Prescription::where('id',$value->prescription_id)->first();
                                     if (!empty($p_img->image)) {
 
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -294,17 +293,20 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
+                                $user_data = new_users::where('id',$value->customer_id)->first();
+                                if(!empty($user_data)){
+                                    $name =$user_data->name;
+                                }else{
+                                    $name = '';
                                 }
-                                $user_list = new_users::where('id',$value->customer_id)->get();
-                                $name = '';
-                                foreach ($user_list as $u_img) {
-                                    $name =$u_img->name;
+
+                                $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type =$delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
                                 }
-                                $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
-                                $delivery_type = '';
-                                foreach ($delivery_type_data as $dt) {
-                                        $delivery_type =$dt->delivery_type;
-                                    }
+
                                     $accept[] = [
                                     'order_id' => $value->id,
                                     'order_number' => $value->order_number,
@@ -313,8 +315,8 @@ class AcceptorderController extends Controller
                                     'accepted_date' => $value->accept_datetime,
                                     'delivery_type' => $delivery_type,
                                     'order_note' => $value->order_note,
-                                    'total_days' => $value->total_days,
-                                    'reminder_days' => $value->reminder_days,
+                                    'total_days' => ($value->total_days)?$value->total_days:'',
+                                    'reminder_days' => ($value->reminder_days)?$value->reminder_days:'',
                                     'order_amount' => ($value->order_amount)?$value->order_amount:'',
                                     'order_type' => $value->order_type,
                                     'delivery_type' => $delivery_type,
@@ -327,8 +329,7 @@ class AcceptorderController extends Controller
                 } else if(!empty($accept_list_name)){
                         foreach($accept_list_name as $value) {
                                     $prescription_image = '';
-                                    $image_list = Prescription::where('id',$value->prescription_id)->get();
-                                    foreach ($image_list as $p_img) {
+                                    $p_img = Prescription::where('id',$value->prescription_id)->get();
                                     if (!empty($p_img->image)) {
 
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -339,17 +340,19 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
+                                $user_data = new_users::where('id',$value->customer_id)->first();
+                                if(!empty($user_data)){
+                                    $name =$user_data->name;
+                                }else{
+                                    $name = '';
                                 }
-                                $user_list = new_users::where('id',$value->customer_id)->get();
-                                $name = '';
-                                foreach ($user_list as $u_img) {
-                                    $name =$u_img->name;
+
+                                $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type =$delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
                                 }
-                                 $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
-                                $delivery_type = '';
-                                foreach ($delivery_type_data as $dt) {
-                                        $delivery_type =$dt->delivery_type;
-                                    }
                                     $accept[] = [
                                     'order_id' => $value->id,
                                     'order_number' => $value->order_number,
@@ -360,8 +363,8 @@ class AcceptorderController extends Controller
                                     'order_amount' => ($value->order_amount)?$value->order_amount:'',
                                     'order_note' => $value->order_note,
                                     'order_type' => $value->order_type,
-                                    'total_days' => $value->total_days,
-                                    'reminder_days' => $value->reminder_days,
+                                    'total_days' => ($value->total_days)?$value->total_days:'',
+                                    'reminder_days' => ($value->reminder_days)?$value->reminder_days:'',
                                     'delivery_type' => $delivery_type,
                                     'external_delivery_initiatedby' => ($value->external_delivery_initiatedby)?$value->external_delivery_initiatedby:'',
                                     'order_time'=>($value->create_datetime)?$value->create_datetime:''
@@ -372,10 +375,10 @@ class AcceptorderController extends Controller
                 }else {
                         $response['status'] = 404;
                 }
-        }else{
+        /*}else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-        }
+        }*/
 
         $response['data'] = $accept;
         
