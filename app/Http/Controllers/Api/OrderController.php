@@ -1415,9 +1415,9 @@ class OrderController extends Controller
 			$order_data->audio_info=date('Y-m-d H:i:s');
 			$order_data->created_at = date('Y-m-d H:i:s');
 			$order_data->updated_at = date('Y-m-d H:i:s');
-			$order_data->order_status = 'accept';
-			$order_data->process_user_type ='seller';
-			$order_data->process_user_id = '37';
+			$order_data->order_status = 'new';
+			$order_data->process_user_type ='';
+			$order_data->process_user_id = 0;
 			$order_data->deliveryboy_id = 0;
 			$order_data->leave_neighbour='true';
 			$order_data->order_type='as_per_prescription';
