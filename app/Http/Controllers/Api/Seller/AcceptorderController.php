@@ -95,9 +95,9 @@ class AcceptorderController extends Controller
     public function order_list(Request $request)
     {
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+		$data = $request->input('data');
+		$encode_string = encode_string($data);
+		$content = json_decode($encode_string);
 
         $order = [];
         $response['status'] = 200;
@@ -112,13 +112,13 @@ class AcceptorderController extends Controller
              $name = new_users::where('name', 'like', '%' .$search_text . '%')->where('user_type','customer')->get();
              if(count($name)>0){
               foreach ($name as $n) {
-                   $order_list_name = new_orders::select('id','order_number','order_note','order_type','total_days','customer_id','delivery_charges_id','checking_by','create_datetime','order_status','pharmacy_id','prescription_id','external_delivery_initiatedby')->where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new','customer_id'=> $n->id])->orderBy('id', 'DESC')->get();
+                   $order_list_name = new_orders::where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new','customer_id'=> $n->id])->orderBy('id', 'DESC')->get();
                }
            }else{
-                $order_list = new_orders::select('id','order_number','order_note','order_type','total_days','customer_id','delivery_charges_id','checking_by','create_datetime','order_status','pharmacy_id','prescription_id','external_delivery_initiatedby')->where('order_number', 'like', '%' .$search_text . '%')->where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new'])->orderBy('id', 'DESC')->get();
+                $order_list = new_orders::where('order_number', 'like', '%' .$search_text . '%')->where(['pharmacy_id' => $pharmacy_id, 'order_status' => 'new'])->orderBy('id', 'DESC')->get();
            }
         }else{
-               $order_list =  new_orders::select('id','order_number','order_note','order_type','total_days','customer_id','delivery_charges_id','checking_by','create_datetime','order_status','pharmacy_id','prescription_id','external_delivery_initiatedby')->where('pharmacy_id', $pharmacy_id)->where('order_status','new')->orderBy('id', 'DESC')->get();
+               $order_list =  new_orders::where('pharmacy_id', $pharmacy_id)->where('order_status','new')->orderBy('id', 'DESC')->get();
         }
         $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
@@ -158,6 +158,7 @@ class AcceptorderController extends Controller
                      $order[] = [
                                  'order_id' => $value->id,
                                  'order_number' => $value->order_number,
+                                 'order_note' => $value->order_note,
                                  'order_type' => $value->order_type,
                                  'total_days' => $value->total_days,
                                  'customer_name' => $name,
@@ -206,6 +207,7 @@ class AcceptorderController extends Controller
                     $order[] = [
                                  'order_id' => $value->id,
                                  'order_number' => $value->order_number,
+                                 'order_note' => $value->order_note,
                                  'order_type' => $value->order_type,
                                  'total_days' => $value->total_days,
                                  'customer_name' => $name,
