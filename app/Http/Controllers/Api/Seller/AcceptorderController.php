@@ -95,9 +95,9 @@ class AcceptorderController extends Controller
     public function order_list(Request $request)
     {
         $response = array();
-		$data = $request->input('data');
-		$encode_string = encode_string($data);
-		$content = json_decode($encode_string);
+    		$data = $request->input('data');
+    		$encode_string = encode_string($data);
+    		$content = json_decode($encode_string);
 
         $order = [];
         $response['status'] = 200;
@@ -239,9 +239,9 @@ class AcceptorderController extends Controller
     public function accept_order_list(Request $request)
     {
         $response = array();
-		$data = $request->input('data');
-		$encode_string = encode_string($data);
-		$content = json_decode($encode_string);
+    		$data = $request->input('data');
+    		$encode_string = encode_string($data);
+    		$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -388,9 +388,9 @@ class AcceptorderController extends Controller
     public function deliveryboy_list(Request $request)
     {
         $response = array();
-		$data = $request->input('data');
-		$encode_string = encode_string($data);
-		$content = json_decode($encode_string);
+    		$data = $request->input('data');
+    		$encode_string = encode_string($data);
+    		$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -413,15 +413,14 @@ class AcceptorderController extends Controller
 
         if (!empty($user_id) && !empty($search_text)) {
             $child =  new_pharma_logistic_employee::where('id', $user_id)->first();
-           $deliveryboy_list = new_pharma_logistic_employee::where('name', 'like', '%' .$search_text . '%')->where(['pharma_logistic_id'=>$child->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1'])->get();
+            $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','id','name','profile_image','mobile_number','is_available')->where('name', 'like', '%' .$search_text . '%')->where(['pharma_logistic_id'=>$child->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1'])->get();
         }else{
             $child =  new_pharma_logistic_employee::where('id', $user_id)->first();
-            $deliveryboy_list = new_pharma_logistic_employee::where(['pharma_logistic_id'=>$child->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1'])->get();
+            $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','id','name','profile_image','mobile_number','is_available')->where(['pharma_logistic_id'=>$child->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1'])->get();
         }
-
-        $token =  $request->bearerToken();
+        /*$token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
+        if(count($user)>0){*/
                 if(!empty($deliveryboy_list)){
                     foreach($deliveryboy_list as $value) {
                         $deliveryboy_image = '';
@@ -431,7 +430,7 @@ class AcceptorderController extends Controller
                                 $deliveryboy_image = url('/').'/uploads/'.$value->profile_image;
                             }
                         }
-                        $count = new_orders::where(['process_user_id'=>$user_id,'deliveryboy_id'=>$value->id,'order_status'=>'assign'])->get();
+                        $count = new_orders::select('process_user_id','order_status','deliveryboy_id')->where(['process_user_id'=>$user_id,'deliveryboy_id'=>$value->id,'order_status'=>'assign'])->get();
                                     $delivery_boy[] = [
                                     'deliveryboy_id' => $value->id,
                                     'deliveryboy_name' => $value->name,
@@ -446,10 +445,10 @@ class AcceptorderController extends Controller
                 }else {
                         $response['status'] = 404;
                 }
-         }else{
+         /*}else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-         }
+         }*/
         $response['data'] = $delivery_boy;
         return decode_string($response, 200);
     }
