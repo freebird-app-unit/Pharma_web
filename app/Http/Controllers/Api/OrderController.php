@@ -795,7 +795,7 @@ class OrderController extends Controller
 		
 		$data = $request->input('data');
 		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$content = json_decode($plainText);
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$is_completed = isset($content->is_completed) ? $content->is_completed : '';
@@ -936,7 +936,7 @@ class OrderController extends Controller
         $response = json_encode($response);
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
 	
 	}
 
