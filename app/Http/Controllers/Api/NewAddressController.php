@@ -341,6 +341,7 @@ class NewAddressController extends Controller
         $content = json_decode($plainText);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
+        $page = isset($content->page) ? $content->page : '';
         
         $params = [
             'user_id' => $user_id
@@ -351,78 +352,52 @@ class NewAddressController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->send_error($validator->errors()->first());  
-             //return $validator->messages();
+            return $this->send_error($validator->errors()->first());
         }
+
+        $address_arr = [];
         $token =  $request->bearerToken();
         $user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
-        $address = new_address::where(['user_id'=> $user_id,'is_delete' => '1'])->get();
-        if(count($address)>0){
-            foreach ($address as  $value) {
-                /*$con_data = array();
-                if($value->country_id!=''){
-                    $c_data = country::where('id',$value->country_id)->get(); 
-                    if($c_data){
-                        $ii=0;
-                        foreach($c_data as $coun){
-                            $con_data[$ii]['id'] = $coun->id;
-                            $con_data[$ii]['name'] =  $coun->name;
-                            $ii++;
-                        }
-                    }
-                }
+        $address = new_address::select('id','locality','address','user_id','name','mobileno','blockno','streetname','city','pincode','latitude','longitude')->where(['user_id'=> $user_id,'is_delete' => '1']);
+            $total = $address->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $address->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
 
-                $sta_data = array();
-                if($value->state_id!=''){
-                    $s_data = state::where('id',$value->state_id)->get(); 
-                    if($s_data){
-                        $ii=0;
-                        foreach($s_data as $stat){
-                            $sta_data[$ii]['id'] = $stat->id;
-                            $sta_data[$ii]['name'] =  $stat->name;
-                            $ii++;
-                        }
-                    }
-                }
-
-                $cit_data = array();
-                if($value->city_id!=''){
-                    $ci_data = city::where('id',$value->city_id)->get(); 
-                    if($ci_data){
-                        $ii=0;
-                        foreach($ci_data as $ci){
-                            $cit_data[$ii]['id'] = $ci->id;
-                            $cit_data[$ii]['name'] =  $ci->name;
-                            $ii++;
-                        }
-                    }
-                }*/
+        if(count($data_array)>0){
+            foreach ($data_array as  $value) {
                  $address_arr[] = [
-                            'id' => $value->id,
-                            'locality' => $value->locality,
-                            'address' => $value->address,
-                            'user_id' => $value->user_id,
-                            'name' => $value->name,
-                            'mobileno' =>  $value->mobileno,
-                            'blockno' =>  $value->blockno,
-                            'streetname' => $value->streetname,
-                            /*'country' =>  $con_data,
-                            'state' =>  $sta_data,*/
-                            'city' =>  $value->city,
-                            'pincode' =>  $value->pincode,
-                            'latitude' => $value->latitude,
-                            'longitude' => $value->longitude
+                            'id' => $value['id'],
+                            'locality' => $value['locality'],
+                            'address' => $value['address'],
+                            'user_id' => $value['user_id'],
+                            'name' => $value['name'],
+                            'mobileno' =>  $value['mobileno'],
+                            'blockno' =>  $value['blockno'],
+                            'streetname' => $value['streetname'],
+                            'city' =>  $value['city'],
+                            'pincode' =>  $value['pincode'],
+                            'latitude' => $value['latitude'],
+                            'longitude' => $value['longitude']
                         ];
             }
             $response['status'] = 200;
-            $response['data'] = $address_arr;
             $response['message'] = 'Address Detail';
             }else{
            		$response['status'] = 404;
            		$response['message'] = 'Address not found';
-                $response['data'] = [];
             }
+            $response['data']->content = $address_arr;
             }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';

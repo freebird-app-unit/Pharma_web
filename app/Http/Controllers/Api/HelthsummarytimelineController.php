@@ -33,6 +33,7 @@ class HelthsummarytimelineController extends Controller
 		$data = $request->input('data');
 		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
 		$content = json_decode($plainText);
+		$page = isset($content->page) ? $content->page : '';
 
 		$user_id    = isset($content->user_id) ? $content->user_id : ''; 
 		$family_member_id    = isset($content->family_member_id) ? $content->family_member_id : ''; 
@@ -61,63 +62,107 @@ class HelthsummarytimelineController extends Controller
 		
 		if (!empty($start_date) && !empty($end_date) && !empty($disease_id)) { 
 									
-			/*$disease_list = Helthsummary::with(['diseases'])->whereRaw("(created_at>= ? AND created_at <= ?)", 
-													[$start_date." 00:00:00", $end_date." 23:59:59"])->where('disease_id', $disease_id)->where(['family_member_id' => $family_member_id, 'user_id' => $user_id])->get();*/
+			$disease_list = Helthsummary::select('helth_summary_timeline.id','helth_summary_timeline.user_id','helth_summary_timeline.disease_id', 'helth_summary_timeline.hospital_name', 'helth_summary_timeline.case_number', 'helth_summary_timeline.doctor_name', 'helth_summary_timeline.symptoms', 'helth_summary_timeline.doctor_remark', 'helth_summary_timeline.next_appointment','helth_summary_timeline.disease_date','helth_summary_timeline.report_list','d1.name','helth_summary_timeline.created_at')->whereBetween('helth_summary_timeline.created_at', [$start_date.' 00:00:00',$end_date.' 23:59:59'])->where(['helth_summary_timeline.user_id' => $family_member_id,'helth_summary_timeline.disease_id' => $disease_id])->leftJoin('disease as d1', 'd1.id', '=', 'helth_summary_timeline.disease_id');
 
-			$disease_list = Helthsummary::with(['diseases'])->whereBetween('created_at', [$start_date.' 00:00:00',$end_date.' 23:59:59'])->where('disease_id', $disease_id)->where(['user_id' => $family_member_id])->get();
+			$total = $disease_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $disease_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
 
 		} else if (!empty($start_date) && !empty($end_date)) { 
-											
-			$disease_list = Helthsummary::with(['diseases'])->whereBetween('created_at', [$start_date.' 00:00:00',$end_date.' 23:59:59'])->where(['user_id' => $family_member_id])->get();
+
+		$disease_list = Helthsummary::select('helth_summary_timeline.id','helth_summary_timeline.user_id','helth_summary_timeline.disease_id', 'helth_summary_timeline.hospital_name', 'helth_summary_timeline.case_number', 'helth_summary_timeline.doctor_name', 'helth_summary_timeline.symptoms', 'helth_summary_timeline.doctor_remark', 'helth_summary_timeline.next_appointment','helth_summary_timeline.disease_date','helth_summary_timeline.report_list','d1.name','helth_summary_timeline.created_at')->whereBetween('helth_summary_timeline.created_at', [$start_date.' 00:00:00',$end_date.' 23:59:59'])->where(['helth_summary_timeline.user_id' => $family_member_id])->leftJoin('disease as d1', 'd1.id', '=', 'helth_summary_timeline.disease_id');	
+
+			$total = $disease_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $disease_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
 
 		} else if (!empty($disease_id)) {
-			$disease_list = Helthsummary::with(['diseases'])->where('disease_id', $disease_id)->where(['user_id' => $family_member_id])->get();
+
+			$disease_list = Helthsummary::select('helth_summary_timeline.id','helth_summary_timeline.user_id','helth_summary_timeline.disease_id', 'helth_summary_timeline.hospital_name', 'helth_summary_timeline.case_number', 'helth_summary_timeline.doctor_name', 'helth_summary_timeline.symptoms', 'helth_summary_timeline.doctor_remark', 'helth_summary_timeline.next_appointment','helth_summary_timeline.disease_date','helth_summary_timeline.report_list','d1.name')->where(['helth_summary_timeline.user_id' => $family_member_id,'helth_summary_timeline.disease_id' => $disease_id])->leftJoin('disease as d1', 'd1.id', '=', 'helth_summary_timeline.disease_id');	
+
+			$total = $disease_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $disease_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
 		} else if ($search_text != '') {
-			 
-			/*$disease_list = Helthsummary::with(['diseases'  => function($q) use($search_text){
-												return $q->where('name', 'like', '%' .$search_text . '%');
-											}])->where('hospital_name', 'like', '%' .$search_text . '%')->orWhere('case_number', 'like', '%' .$search_text . '%')->orWhere('doctor_name', 'like', '%' .$search_text . '%')->where(['family_member_id' => $family_member_id, 'user_id' => $user_id])->get(); */
-			$ids = Disease::where('name', 'like', '%' .$search_text . '%')->get();
-			if(count($ids)>0){
-				$disease_listt = Helthsummary::where(['user_id' => $family_member_id,'disease_id'=>$ids[0]->id])->get();
-			}	
+		
+			 $disease_list = Helthsummary::select('helth_summary_timeline.id','helth_summary_timeline.user_id','helth_summary_timeline.disease_id', 'helth_summary_timeline.hospital_name', 'helth_summary_timeline.case_number', 'helth_summary_timeline.doctor_name', 'helth_summary_timeline.symptoms', 'helth_summary_timeline.doctor_remark', 'helth_summary_timeline.next_appointment','helth_summary_timeline.disease_date','helth_summary_timeline.report_list','d1.name')->where('helth_summary_timeline.user_id' ,$family_member_id)->leftJoin('disease as d1', 'd1.id', '=', 'helth_summary_timeline.disease_id')->where('d1.name', 'like', $search_text.'%')->orderBy('helth_summary_timeline.id', 'DESC');	
+
+			$total = $disease_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $disease_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
 		} else {
-			$disease_list = Helthsummary::with('diseases')->where(['user_id' => $family_member_id])->orderBy('disease_date', 'DESC')->get();
+			$disease_list = Helthsummary::select('helth_summary_timeline.id','helth_summary_timeline.user_id','helth_summary_timeline.disease_id', 'helth_summary_timeline.hospital_name', 'helth_summary_timeline.case_number', 'helth_summary_timeline.doctor_name', 'helth_summary_timeline.symptoms', 'helth_summary_timeline.doctor_remark', 'helth_summary_timeline.next_appointment','helth_summary_timeline.disease_date','helth_summary_timeline.report_list','d1.name')->leftJoin('disease as d1', 'd1.id', '=', 'helth_summary_timeline.disease_id')->where(['helth_summary_timeline.user_id' => $family_member_id])->orderBy('helth_summary_timeline.disease_date', 'DESC');
+
+			$total = $disease_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $disease_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
 		}
 		
-		if (!empty($disease_list)) {        
-			foreach($disease_list as $value) {
+		if (count($data_array)>0) {        
+			foreach($data_array as $value) {
 				$diseases[] = [
-					'id' => $value->id,
-					'treatement_name' => isset($value->diseases->name) ? $value->diseases->name : '',
-					'hospital_name' => $value->hospital_name,
-					'case_number' => $value->case_number,
-					'doctor_name' => $value->doctor_name,
-					'symptoms' => $value->symptoms,
-					'doctor_remark' => $value->doctor_remark,
-					'next_appointment' => $value->next_appointment,
-					'report_list' => $value->report_list,
-					'date' => ($value->disease_date!='')?$value->disease_date: '',
-					'day' => ($value->disease_date!='') ? date('d', strtotime($value->disease_date)) : '',
-					'month' => ($value->disease_date!='') ? date('M', strtotime($value->disease_date)) : ''
-				];
-			}
-			$response['status'] = 200;
-		} elseif(!empty($disease_listt)){
-			foreach($disease_listt as $value) {
-				$diseases[] = [
-					'id' => $value->id,
-					'treatement_name' => $ids[0]->name,
-					'hospital_name' => $value->hospital_name,
-					'case_number' => $value->case_number,
-					'doctor_name' => $value->doctor_name,
-					'symptoms' => $value->symptoms,
-					'doctor_remark' => $value->doctor_remark,
-					'next_appointment' => $value->next_appointment,
-					'report_list' => $value->report_list,
-					'date' => ($value->disease_date!='')?$value->disease_date: '',
-					'day' => ($value->disease_date!='') ? date('d', strtotime($value->disease_date)) : '',
-					'month' => ($value->disease_date!='') ? date('M', strtotime($value->disease_date)) : ''
+					'id' => $value['id'],
+					'treatement_name' => $value['name'],
+					'hospital_name' => $value['hospital_name'],
+					'case_number' => $value['case_number'],
+					'doctor_name' => $value['doctor_name'],
+					'symptoms' => $value['symptoms'],
+					'doctor_remark' => $value['doctor_remark'],
+					'next_appointment' => ($value['next_appointment'])?$value['next_appointment']:'',
+					'report_list' => ($value['report_list'])?$value['report_list']:'',
+					'date' => ($value['disease_date']!='')?$value['disease_date']: '',
+					'day' => ($value['disease_date']!='') ? date('d', strtotime($value['disease_date'])) : '',
+					'month' => ($value['disease_date']!='') ? date('M', strtotime($value['disease_date'])) : ''
 				];
 			}
 			$response['status'] = 200;
@@ -126,12 +171,12 @@ class HelthsummarytimelineController extends Controller
 		}
 		
 		$response['message'] = 'Health Summary Timeline';
-		$response['data'] = $diseases;
+		$response['data']->content = $diseases;
 		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
 	   	}
-         $response = json_encode($response);
+        $response = json_encode($response);
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
         return response($cipher, 200);
