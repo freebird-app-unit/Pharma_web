@@ -364,7 +364,7 @@ if(!function_exists('encode_string')) {
 			
 			$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
 			
-	        return $data;
+	        return $plainText;
 	    }
 }
 if(!function_exists('decode_string')) {
@@ -380,7 +380,7 @@ if(!function_exists('decode_string')) {
 			$response = json_encode($response);
 			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 			
-	        return response($response, 200);
+	        return response($cipher, 200);
 	    }
 }
 if(!function_exists('validation_error')) {
