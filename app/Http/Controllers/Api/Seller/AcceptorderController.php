@@ -241,6 +241,7 @@ class AcceptorderController extends Controller
 
           $accept_list = new_orders::select('new_orders.process_user_id','new_orders.order_status','new_orders.customer_id','new_orders.accept_datetime','new_orders.order_number','new_orders.id','new_orders.prescription_id','new_orders.delivery_charges_id','new_orders.order_note','new_orders.total_days','new_orders.reminder_days','new_orders.order_amount','new_orders.order_type','new_orders.external_delivery_initiatedby','new_orders.create_datetime','u1.name')->where(['new_orders.process_user_id' => $user_id, 'new_orders.order_status' => 'accept'])->leftJoin('new_users as u1', 'u1.id', '=', 'new_orders.customer_id')->where('u1.name', 'like', $search_text.'%')->orWhere('new_orders.order_number', 'like', $search_text.'%')->orderBy('new_orders.accept_datetime', 'DESC');
 
+
             $total = $accept_list->count();
             $page = $page;
             if($total > ($page*10)){
@@ -273,9 +274,9 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
         }
 
-        $token =  $request->bearerToken();
+        /*$token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
+        if(count($user)>0){*/
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
                                     $prescription_image = '';
@@ -327,10 +328,10 @@ class AcceptorderController extends Controller
                         $response['status'] = 404;
                         $response['message'] = 'Accepted Order List';
                 }
-        }else{
+        /*}else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-        }
+        }*/
 
         $response['data']->content = $accept;
         
@@ -340,9 +341,9 @@ class AcceptorderController extends Controller
     public function deliveryboy_list(Request $request)
     {
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -365,7 +366,9 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         if (!empty($user_id) && !empty($search_text)) {
-            $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where('name', 'like', '%' .$search_text . '%')->where(['pharma_logistic_id'=>$user_id,'user_type'=>'delivery_boy','is_active'=>'1']);
+             $seller = new_pharma_logistic_employee::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
+
+            $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where('name', 'like', '%' .$search_text . '%')->where(['pharma_logistic_id'=>$seller->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1']);
 
             $total = $deliveryboy_list->count();
             $page = $page;
@@ -382,8 +385,10 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
             
         }else{
-            $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['pharma_logistic_id'=>$user_id,'user_type'=>'delivery_boy','is_active'=>'1']);
-
+            $seller = new_pharma_logistic_employee::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
+            
+            $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['pharma_logistic_id'=>$seller->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1']);
+            
             $total = $deliveryboy_list->count();
             $page = $page;
             if($total > ($page*10)){
@@ -406,9 +411,9 @@ class AcceptorderController extends Controller
                     foreach($data_array as $value) {
                         $deliveryboy_image = '';
                         if($value['profile_image']!=''){
-                            $destinationPath = base_path() . '/uploads/'.$value->profile_image;
+                            $destinationPath = base_path() . '/uploads/'.$value['profile_image'];
                             if(file_exists($destinationPath)){
-                                $deliveryboy_image = url('/').'/uploads/'.$value->profile_image;
+                                $deliveryboy_image = url('/').'/uploads/'.$value['profile_image'];
                             }
                         }
 
