@@ -46,6 +46,7 @@ class DeliveryOrderController extends Controller
 
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
+        $page = isset($content->page) ? $content->page : '';
 
         $params = [
 			'user_id' => $user_id
@@ -60,11 +61,13 @@ class DeliveryOrderController extends Controller
         }
 
         $response['status'] = 200;
-		$response['message'] = '';
-        $response['data'] = array();
+        $response['message'] = '';
+        $response['data']['currentPageIndex'] = '';
+        $response['data']['totalPage']='';
+        $response['data']['content'] = array();
 
         $token =  $request->bearerToken();
-       $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->get();
         
 		if(count($user)>0){
             $order_list = new_orders::select('new_orders.*', 'u2.name AS pickup_name', 'u2.address AS pickup_address', 'u2.mobile_number AS pickup_mobile_number','u2.lat AS pickup_lat','u2.lon AS pickup_lon', 'u1.name AS delivery_name', 'u1add.address AS delivery_address', 'u1.mobile_number AS delivery_mobile_number', 'u1add.locality AS delivery_locality', 'u1add.locality AS delivery_landmark','u1add.latitude AS latitude','u1add.longitude AS longitude', 'ordAssign.order_status AS ordAssign_status')
@@ -79,23 +82,37 @@ class DeliveryOrderController extends Controller
             if($search_text !== ''){
                 $order_list = $order_list->where('new_orders.id', 'like', $searchtxt.'%');
             }
-            $order_list = $order_list->orderBy('new_orders.pickup_datetime', 'DESC')->get();
+            $order_list = $order_list->orderBy('new_orders.pickup_datetime', 'DESC');
+
+            $total = $order_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']['currentPageIndex'] = $page;
+            $response['data']['totalPage'] = ceil($total/$per_page);
+            $orders = $order_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
 
 
-            if(count($order_list)){
-                foreach($order_list as $order) { 
+            if(count($data_array)){
+                foreach($data_array as $order) { 
                     $object = (object)[];
 
-                    $object->id = $order->id;
-                    $object->order_id = isset($order->order_number)?($order->order_number):'';
-                    $object->price = isset($order->order_amount)?($order->order_amount):0;
+                    $object->id = $order['id'];
+                    $object->order_id = isset($order['order_number'])?($order['order_number']):'';
+                    $object->price = isset($order['order_amount'])?($order['order_amount']):0;
                     $object->remain_time = '3600000';
                    
-                    $delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
+                    $delivery_type = new_delivery_charges::where('id', $order['delivery_charges_id'])->value('delivery_type');
                     $object->delivery_type = isset($delivery_type)?$delivery_type:'';
                     
                     $object->invoice = array();
-                    $invoice_data = invoice::where('order_id', $order->id)->get();
+                    $invoice_data = invoice::where('order_id', $order['id'])->get();
 
                     if(count($invoice_data)>0){
                         $invoice_images=[];
@@ -113,26 +130,26 @@ class DeliveryOrderController extends Controller
                     }
 
                     $pickup_info = (object)[];
-                    $pickup_info->name = isset($order->pickup_name)?($order->pickup_name):'';
-                    $pickup_info->address = isset($order->pickup_address)?($order->pickup_address):'';
-                    $pickup_info->mobile_number = isset($order->pickup_mobile_number)?($order->pickup_mobile_number):'';
-                    $pickup_info->locality = isset($order->pickup_locality)?$order->pickup_locality:'';
-                    $pickup_info->landmark = isset($order->pickup_landmark)?$order->pickup_landmark:'';
-                    $pickup_info->lat = isset($order->pickup_lat)?$order->pickup_lat:'';
-                    $pickup_info->lon = isset($order->pickup_lon)?$order->pickup_lon:'';
+                    $pickup_info->name = isset($order['pickup_name'])?($order['pickup_name']):'';
+                    $pickup_info->address = isset($order['pickup_address'])?($order['pickup_address']):'';
+                    $pickup_info->mobile_number = isset($order['pickup_mobile_number'])?($order['pickup_mobile_number']):'';
+                    $pickup_info->locality = isset($order['pickup_locality'])?$order['pickup_locality']:'';
+                    $pickup_info->landmark = isset($order['pickup_landmark'])?$order['pickup_landmark']:'';
+                    $pickup_info->lat = isset($order['pickup_lat'])?$order['pickup_lat']:'';
+                    $pickup_info->lon = isset($order['pickup_lon'])?$order['pickup_lon']:'';
                     $object->pickup_location = $pickup_info;
 
                     $delivery_info = (object)[];
-                    $delivery_info->name = isset($order->delivery_name)?($order->delivery_name):'';
-                    $delivery_info->address = isset($order->delivery_address)?($order->delivery_address):'';
-                    $delivery_info->mobile_number = isset($order->delivery_mobile_number)?($order->delivery_mobile_number):'';
-                    $delivery_info->locality = isset($order->delivery_locality)?$order->delivery_locality:'';
-                    $delivery_info->landmark = isset($order->delivery_landmark)?$order->delivery_landmark:'';
-                    $delivery_info->latitude = isset($order->latitude)?(string)$order->latitude:'';
-                    $delivery_info->longitude = isset($order->longitude)?(string)$order->longitude:'';
+                    $delivery_info->name = isset($order['delivery_name'])?($order['delivery_name']):'';
+                    $delivery_info->address = isset($order['delivery_address'])?($order['delivery_address']):'';
+                    $delivery_info->mobile_number = isset($order['delivery_mobile_number'])?($order['delivery_mobile_number']):'';
+                    $delivery_info->locality = isset($order['delivery_locality'])?$order['delivery_locality']:'';
+                    $delivery_info->landmark = isset($order['delivery_landmark'])?$order['delivery_landmark']:'';
+                    $delivery_info->latitude = isset($order['latitude'])?(string)$order['latitude']:'';
+                    $delivery_info->longitude = isset($order['longitude'])?(string)$order['longitude']:'';
                     $object->delivery_location = $delivery_info;
-                    $object->leave_with_neighbour = isset($order->leaved_with_neighbor)?$order->leaved_with_neighbor:'false';
-                    array_push($response['data'], $object);
+                    $object->leave_with_neighbour = isset($order['leaved_with_neighbor'])?$order['leaved_with_neighbor']:'false';
+                    array_push($response['data']['content'], $object);
                 }
             }
         } else {

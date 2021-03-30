@@ -60,10 +60,10 @@ class PickupOrderController extends Controller
         $response['data']['totalPage']='';
         $response['data']['content'] = array();
 
-        /*$token =  $request->bearerToken();
+        $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->get();
         
-		if(count($user)>0){*/
+		if(count($user)>0){
             $order_list = new_orders::select('new_orders.*', 'u2.name AS pickup_name', 'u2.address AS pickup_address', 'u2.mobile_number AS pickup_mobile_number','u2.lat AS pickup_lat','u2.lon AS pickup_lon','u1.name AS delivery_name', 'u1add.address AS delivery_address', 'u1.mobile_number AS delivery_mobile_number', 'u1add.locality AS delivery_locality', 'u1add.locality AS delivery_landmark', 'ordAssign.order_status AS ordAssign_status','u1add.latitude AS latitude','u1add.longitude AS longitude')
             ->where(['new_orders.deliveryboy_id' => $user_id, 'new_orders.order_status' => 'assign', 'ordAssign.order_status' => 'accept'])
             ->leftJoin('new_users as u1', 'u1.id', '=', 'new_orders.customer_id')
@@ -144,10 +144,10 @@ class PickupOrderController extends Controller
                     array_push($response['data']['content'], $object);
                 }
             }
-        /*} else {
+        } else {
             $response['status'] = 401;
 	        $response['message'] = 'Unauthenticated';
-        }*/
+        }
         return decode_string($response, 200);
     }
 
