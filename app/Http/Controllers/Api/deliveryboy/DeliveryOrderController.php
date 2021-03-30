@@ -688,7 +688,7 @@ class DeliveryOrderController extends Controller
 		$encode_string = encode_string($data);
 		$content = json_decode($encode_string);
         $user_id = isset($content->user_id) ? $content->user_id : '';
-
+        $page = isset($content->page) ? $content->page : '';
         $params = [
             'user_id' => $user_id,
         ];
@@ -700,7 +700,7 @@ class DeliveryOrderController extends Controller
         if ($validator->fails()) {
             return validation_error($validator->errors()->first());  
         }
-
+        $notification = [];
         $response['status'] = 200;
         $response['message'] = '';
         $response['data'] = (object)array();
@@ -710,26 +710,41 @@ class DeliveryOrderController extends Controller
 
         if(!empty($user)){
 
-        $notification_data = notification_deliveryboy::where('user_id',$user_id)->orderBy('id','DESC')->get();
-        if(count($notification_data)>0){
-                 foreach($notification_data as $value) {
+        $notification_data = notification_deliveryboy::select('id','user_id','title','subtitle','order_id','created_at')->where('user_id',$user_id)->orderBy('id','DESC');
+
+        $total = $notification_data->count();
+        $page = $page;
+        if($total > ($page*10)){
+          $is_record_available = 1;
+        }else{
+          $is_record_available = 0;
+        }
+        $per_page = 10;
+        $response['data']->currentPageIndex = $page;
+        $response['data']->totalPage = ceil($total/$per_page);
+        $orders = $notification_data->paginate($per_page,'','',$page);
+        $data_array = $orders->toArray();
+        $data_array = $data_array['data'];
+
+        if(count($data_array)>0){
+                 foreach($data_array as $value) {
                             $notification[] = [
-                                'id' => $value->id,
-                                'user_id' => $value->user_id,
-                                'title' => $value->title,
-                                'subtitle'=> $value->subtitle,
-                                'order_id'=> (string)$value->order_id,
-                                'created_at'=> date('h:i A', strtotime($value->created_at)),
-                                'date'=> (date_format(new DateTime($value->created_at),"Y-m-d"))
+                                'id' => $value['id'],
+                                'user_id' => $value['user_id'],
+                                'title' => $value['title'],
+                                'subtitle'=> $value['subtitle'],
+                                'order_id'=> (string)$value['order_id'],
+                                'created_at'=> date('h:i A', strtotime($value['created_at'])),
+                                'date'=> (date_format(new DateTime($value['created_at']),"Y-m-d"))
                             ];
                     }
                 $response['status'] = 200;
                 $response['message'] = 'Notification For Deliveryboy';
-                $response['data'] = $notification;
             }else{
                 $response['status'] = 404;
-                $response['data'] = [];
+                $response['message'] = 'Notification For Deliveryboy';
             }
+            $response['data']->content = $notification;
         } else {
             $response['status'] = 401;
             $response['message'] = 'Unauthenticated';
