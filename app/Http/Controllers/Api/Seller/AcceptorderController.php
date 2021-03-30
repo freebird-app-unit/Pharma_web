@@ -384,7 +384,14 @@ class AcceptorderController extends Controller
             $data_array = $orders->toArray();
             $data_array = $data_array['data'];
             
-        }else{
+        } elseif ($page == -1) { 
+            
+            $seller = new_pharma_logistic_employee::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
+            
+            $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['pharma_logistic_id'=>$seller->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1'])->get();
+
+        } else{
+            
             $seller = new_pharma_logistic_employee::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
             
             $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['pharma_logistic_id'=>$seller->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1']);
@@ -429,14 +436,39 @@ class AcceptorderController extends Controller
                             }
                         $response['status'] = 200;
                         $response['message'] = 'DeliveryBoy List';
+                        $response['data']->content = $delivery_boy;
+                } elseif (!empty($deliveryboy_list)) {
+                        foreach($deliveryboy_list as $value) {
+                        $deliveryboy_image = '';
+                        if($value->profile_image!=''){
+                            $destinationPath = base_path() . '/uploads/'.$value->profile_image;
+                            if(file_exists($destinationPath)){
+                                $deliveryboy_image = url('/').'/uploads/'.$value->profile_image;
+                            }
+                        }
+
+                        $count = new_orders::select('process_user_id','deliveryboy_id','order_status')->where(['process_user_id'=>$user_id,'deliveryboy_id'=>$value->id,'order_status'=>'assign'])->get();
+                                    $delivery_boy[] = [
+                                    'deliveryboy_id' => $value->id,
+                                    'deliveryboy_name' => $value->name,
+                                    'deliveryboy_image' => $deliveryboy_image,
+                                    'mobile_number'=> $value->mobile_number,
+                                    'is_online'=> (string)$value->is_available,
+                                    'total_order'=> (count($count))?count($count):'0'
+                                ];
+                            }
+                        $response['status'] = 200;
+                        $response['message'] = 'DeliveryBoy List';
+                        $response['data'] = $delivery_boy;
                 }else {
                         $response['status'] = 404;
+                        $response['data']->content = $delivery_boy;
                 }
          }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
          }
-        $response['data']->content = $delivery_boy;
+        
         return decode_string($response, 200);
     }
 
