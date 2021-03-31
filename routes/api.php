@@ -64,6 +64,7 @@ Route::group(['namespace' => 'Api'], function () {
 
 	
 	Route::post('/healthsummaryallergies', 'AllergyController@healthsummaryallergies');
+	Route::post('/new_healthsummaryallergies', 'New_allergycontroller@healthsummaryallergies');
 	Route::post('/createallergy', 'AllergyController@createallergy');
 	Route::post('/helthsummarytimeline', 'HelthsummarytimelineController@helthsummarytimeline');
 	Route::post('/helthsummarytimelinedetail', 'HelthsummarytimelineController@helthsummarytimelinedetail');

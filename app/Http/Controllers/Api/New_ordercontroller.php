@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
