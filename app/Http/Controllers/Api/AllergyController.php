@@ -30,6 +30,7 @@ class AllergyController extends Controller
 		
 		$user_id          = isset($content->user_id) ? $content->user_id : '';
 		$family_member_id = isset($content->family_member_id) ? $content->family_member_id : '';
+		$page = isset($content->page) ? $content->page : '';
 		
 		$params = [
 			'user_id' => $user_id,
@@ -47,18 +48,32 @@ class AllergyController extends Controller
 		
 		// $family_mamber = FamilyMember::with('allergy')->where('user_id', $user_id)->get();
 		
-		$allergy_list = Allergy::where(['user_id' => $family_member_id])->orderBy('allergy_date', 'DESC')->get();
+		$allergy_list = Allergy::select('user_id','allergy_date','id','allergy_name')->where(['user_id' => $family_member_id])->orderBy('allergy_date', 'DESC');
+
+		$total = $allergy_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $allergy_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
 		
 		$allergys = [];
-		if (!empty($allergy_list)) {
-			foreach($allergy_list as $value) {
+		if (!empty($data_array)) {
+			foreach($data_array as $value) {
 				
 				$allergys[] = [
-					'id' => $value->id,
-					'date' => $value->allergy_date,
-					'day' => date('d', strtotime($value->allergy_date)),
-					'month' => date('M', strtotime($value->allergy_date)),
-					'allergy_name' => $value->allergy_name
+					'id' => $value['id'],
+					'date' => $value['allergy_date'],
+					'day' => date('d', strtotime($value['allergy_date'])),
+					'month' => date('M', strtotime($value['allergy_date'])),
+					'allergy_name' => $value['allergy_name']
 				];
 			}
 			$response['status'] = 200;
@@ -67,7 +82,7 @@ class AllergyController extends Controller
 		}
 		
 		$response['message'] = 'Health Summary Allergies';
-		$response['data'] = $allergys;
+		$response['data']->content = $allergys;
 		
         $response = json_encode($response);
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey); 

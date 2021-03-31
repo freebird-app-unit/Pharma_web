@@ -23,7 +23,9 @@ use Illuminate\Validation\Rule;
 use App\new_countries;
 use App\new_states;
 use App\new_cities;
-
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class PharmacyController extends Controller
@@ -36,16 +38,6 @@ class PharmacyController extends Controller
 	public function pharmacylist(Request $request)
 	{
 		$response = array();
-		$response['status'] = 200;
-		$response['message'] = '';
-		$response['data'] = (object)array();
-		
-		// $user_id = $request->user_id;
-		// $searchtext = $request->searchtext;
-		// $sortings = $request->sortings;
-		// $filter_discount = $request->filter_discount;
-		// $filter_ratings = $request->filter_ratings;
-		// $filter_distance = $request->filter_distance;
 		$encryption = new \MrShan0\CryptoLib\CryptoLib();
 		$secretyKey = env('ENC_KEY');
 		$data = $request->input('data');
@@ -60,6 +52,7 @@ class PharmacyController extends Controller
 		$filter_distance = isset($content->filter_distance) ? trim($content->filter_distance) : ''; 
 		$current_latitude = isset($content->current_latitude) ? trim($content->current_latitude) : '';
 		$current_longitude = isset($content->current_longitude) ? trim($content->current_longitude) : '';
+		$page = isset($content->page) ? trim($content->page) : '';
 
 		$params = [
         	'user_id'  	=> $user_id,
@@ -70,7 +63,8 @@ class PharmacyController extends Controller
             'filter_distance'   => $filter_distance,
             'current_latitude'   => $current_latitude,
 			'current_longitude'   => $current_longitude,
-			'address_id' => $address_id
+			'address_id' => $address_id,
+			'page' => $page
         ];
 
         $validator = Validator::make($params, [
@@ -85,7 +79,13 @@ class PharmacyController extends Controller
 			'current_longitude'   => 'required',
 			'address_id' => 'required'
         ]);
-		
+
+		$response['status'] = 200;
+		$response['message'] = '';
+        $response['data']['currentPageIndex'] = '';
+        $response['data']['totalPage']='';
+        $response['data']['content'] = array();
+
 		$userdata = new_users::find($user_id);
 		$address_data = new_address::where('id',$address_id)->get();
 
@@ -186,7 +186,7 @@ class PharmacyController extends Controller
 			$pharmacy_arr = array();
 			$response['status'] = 200;
 			$response['message'] = 'Pharmacy';
-			$response['data'] = $pharmacy_arr;
+			$response['data']['content'] = $pharmacy_arr;
 			$response = json_encode($response);
 			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 			return response($cipher, 200);
@@ -209,6 +209,8 @@ class PharmacyController extends Controller
 		$sortings = isset($search_array['sortings']) ? $search_array['sortings'] : '';
 		$current_latitude = isset($search_array['current_latitude']) ? $search_array['current_latitude'] : '';
 		$current_longitude = isset($search_array['current_longitude']) ? $search_array['current_longitude'] : '';
+		$page = isset($search_array['page']) ? $search_array['page'] : '';
+		
 		$pharmacies = $this->pharamcyList($city);
 		if(isset($pharmacies) && count($pharmacies)){
 			$pharmacyIds = array();
@@ -226,7 +228,7 @@ class PharmacyController extends Controller
 		if($isLogistics !== 'true'){
 			$response['status'] = 200;
 			$response['message'] = 'Pharmacy';
-			$response['data'] = $pharmacy_arr;
+			$response['data']['content'] = $pharmacy_arr;
 			$response = json_encode($response);
 			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 			return response($cipher, 200);
@@ -279,14 +281,29 @@ class PharmacyController extends Controller
 			$pharmacyPaid = $pharmacyPaid->get();
 		}
 		/*if(count($pharmacyFree)>0 && isset($pharmacyPaid)){*/
-		if(count($pharmacyFree)>0 || isset($pharmacyPaid)){
+		if(!empty($pharmacyFree) || isset($pharmacyPaid)){
 			$pharmacyPaid = array_merge($pharmacyFree->toArray(), $pharmacyPaid->toArray());
 		} else {
 			$pharmacyPaid = $pharmacyFree->toArray();
 		}
 
 		$pharmacy = $pharmacyPaid;
-		
+		$total = count($pharmacy);
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['status'] = 200;
+			$response['message'] = 'Pharmacy';
+            $response['data']['currentPageIndex'] = $page;
+            $response['data']['totalPage'] = ceil($total/$per_page);
+            $orders = $this->paginate($pharmacy,$per_page,$page,[]);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+
 		//$this->_pre($pharmacy);
 		usort($pharmacy, "sort_pharmacy_array_distance");
 		usort($pharmacy, "sort_pharmacy_array_is_paid");
@@ -296,9 +313,10 @@ class PharmacyController extends Controller
 		$paid_open = [];
 		$paid_close = [];
 		
-		if(count($pharmacy)>0){
+
+		if(count($data_array)>0){
 			$cnt = 0;
-			foreach($pharmacy as $val){
+			foreach($data_array as $val){
 				$val = (object)$val;
 				// $orders = Orders::where('pharmacy_id',$val->id)->get();
 				//$rating = get_pharmacy_rating($val->id);
@@ -434,12 +452,11 @@ class PharmacyController extends Controller
 						'next_pharmacy_working_day' => $next_pharmacy_working_day
 					];
 				}
-				
 				$cnt++;
 			}
-			$response['status'] = 200;
 		} else {
 			$response['status'] = 404;
+			$response['message'] = 'Pharmacy';
 		}
 		if($sortings == 'most_popular'){
 			usort($pharmacy_arr, "sort_pharmacy_array_most_popular");
@@ -447,15 +464,19 @@ class PharmacyController extends Controller
 		if($sortings == 'ratings'){
 			usort($pharmacy_arr, "sort_pharmacy_array_ratings");
 		}
-		
 		$final_arr = array_merge($free_open, $free_close, $paid_open, $paid_close);
+		$response['data']['content'] = $final_arr;
 		
-		$response['message'] = 'Pharmacy';
-		$response['data'] = $final_arr;
 		$response = json_encode($response);
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
         return response($cipher, 200);
 	}
+	public function paginate($items, $perPage = null, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
 	public function CityGeofenceCheck($content)
 	{
 		$coordinates = array();
