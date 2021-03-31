@@ -165,7 +165,7 @@ class pickupController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','order_note','new_users.name as customer_name','new_users.mobile_number as customer_number', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
+		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','order_note','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')
 		->where('new_orders.order_status','pickup');
@@ -204,10 +204,12 @@ class pickupController extends Controller
 				$assign_to = get_name('new_pharma_logistic_employee','name',$order->deliveryboy_id);
 				$time = get_order_time($order->id,$order->deliveryboy_id);
 				$html.='<tr>
+					<td>'.$order->customerid.'</td>
+					<td>'.$order->customer_name.'</td>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->order_note.'</td>
-					<td>'.$order->customer_name.'</td>
-					<td>'.$order->customer_number.'</td>
+					
+					
 					<td class="text-warning">'.$assign_to.'</td>';
 				$html.='</tr>';
 			}

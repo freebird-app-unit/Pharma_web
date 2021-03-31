@@ -223,7 +223,7 @@ class IncompleteController extends Controller
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
 		//get list
-		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','rejectreason','is_paid','new_users.name as customer_name','new_users.mobile_number as customer_number', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
+		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','rejectreason','is_paid','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')
 		->where('order_status','incomplete');
@@ -262,9 +262,9 @@ class IncompleteController extends Controller
 				$assign_to = get_name('new_pharma_logistic_employee','name',$order->deliveryboy_id);
 				$reason = get_incomplete_reason($order->incompletereason_id);
 				$html.='<tr>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
+					<td>'.$order->customerid.'</td>
 					<td>'.$order->customer_name.'</td>
-					<td>'.$order->customer_number.'</td>
+					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td class="text-danger">'.$order->rejectreason.'</td>';
 					if($order->is_paid == 0){
 						$html.='<td><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#assign_modal">Re Delivery</a>';

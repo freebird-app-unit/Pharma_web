@@ -224,7 +224,7 @@ class UpcomingordersController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_orders::select('new_orders.id','accept_datetime','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name','new_orders.process_user_id','new_orders.process_user_type')
+		$order_detail = new_orders::select('new_orders.id','accept_datetime','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name','new_orders.process_user_id','new_orders.process_user_type')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
@@ -273,9 +273,9 @@ class UpcomingordersController extends Controller
 					$seller_name = $order->process_employee_name;;
 				}
 				$html.='<tr>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
+					<td>'.$order->customerid.'</td>
 					<td>'.$order->customer_name.'</td>
-					<td>'.$order->customer_number.'</td>
+					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->myaddress.'</td>
 					<td>'.$process_user_name.'</td>
 					<td>'.$seller_name.'</td>

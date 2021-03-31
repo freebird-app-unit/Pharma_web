@@ -47,12 +47,12 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead> 
 							<tr>
-								<th width="10%" data-priority="1">Order Number</th>
+								<th width="10%" data-priority="1">Customer number</th>
 								<!-- <th width="10%" data-priority="2">Order type</th> -->
 								<!-- <th width="10%" data-priority="3">Prescription Name</th> -->
 								<!-- <th width="10%" data-priority="4">Order note</th> -->
 								<th width="20%" data-priority="5">Customer name</th>
-								<th width="20%" data-priority="6">Customer number</th>
+								<th width="20%" data-priority="6">Order Number</th>
 								<th width="10%" data-priority="7">Assign to</th>
 								<th width="20%" data-priority="8">Time</th>
 							</tr>

@@ -54,7 +54,7 @@ class OutfordeliveryController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_orders::select('new_orders.id','assign_datetime','order_number','deliveryboy_id','new_users.name as customer_name','new_users.mobile_number as customer_number', 'prescription.name as prescription_name', 'prescription.image as prescription_image', 'delivery_user.name as assign_to', 'logistic.name as logistic_name')
+		$order_detail = new_orders::select('new_orders.id','assign_datetime','order_number','deliveryboy_id','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image', 'delivery_user.name as assign_to', 'logistic.name as logistic_name')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('new_logistics AS logistic', 'logistic.id', '=', 'new_orders.logistic_user_id')
 		->leftJoin('new_pharma_logistic_employee AS delivery_user', 'delivery_user.id', '=', 'new_orders.deliveryboy_id')
@@ -96,9 +96,9 @@ class OutfordeliveryController extends Controller
 				$time = get_order_time($order->id, $order->deliveryboy_id);
 				$assign_to = ($order->assign_to !== null)?($order->assign_to):($order->logistic_name);
 				$html.='<tr>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
+					<td>'.$order->customerid.'</td>
 					<td>'.$order->customer_name.'</td>
-					<td>'.$order->customer_number.'</td>
+					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td class="text-warning">'.$assign_to.'</td>
 					<td><span class="label label-warning">'.$created_at.'</span></td>';
 				$html.='</tr>';
