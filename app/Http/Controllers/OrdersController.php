@@ -150,10 +150,12 @@ class OrdersController extends Controller
 				if($seller_details){
 					$seller_name = $seller_details->name;
 				}
+				$accept_date = ($order->created_at!='')?date('d-M-Y h:i a', strtotime($order->created_at)):'';
 				$html.='</td><td>'.$order->customer_name.'</td>
+				<td>'.$order->customer_number.'</td>
 				<td>'.$order->address.'</td>
-				<td>'.$seller_name.'</td>
-				<td>'.$deliveryboy_name.'</td>'; 
+				<td>'.$accept_date.'</td>
+				'; 
 					
 				/* $html.='<td>';
 				if($homepage!=''){
@@ -206,7 +208,7 @@ class OrdersController extends Controller
 		$order->process_user_id = $user_id;
 		$order->accept_datetime = date('Y-m-d H:i:s');
 
-		if((isset($order->external_delivery_initiatedby)) && ($order->external_delivery_initiatedby !== 0) && ($order->logistic_user_id !== null)){
+		if((isset($order->external_delivery_initiatedby)) && ($order->external_delivery_initiatedby !== 0) && ($order->logistic_user_id !== null) && ($order->logistic_user_id !== 0)){
 			$orderAssign = new Orderassign();
 			$orderAssign->order_id = $id;
 			$orderAssign->logistic_id = $order->logistic_user_id;

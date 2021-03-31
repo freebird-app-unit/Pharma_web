@@ -248,7 +248,7 @@
 									<a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
 								</li>
 								<li>
-									<a href="{{ route('acceptedorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_acceptedorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
+									<a href="{{ route('upcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_acceptedorders' || $page_condition=='page_upcomingorder' || $page_condition=='page_pickup' || $page_condition=='page_outfordelivery')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
 								</li>
 								<li>
 									<a href="{{ route('complete.index') }}" class="waves-effect <?php echo ($page_condition=='page_complete')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>

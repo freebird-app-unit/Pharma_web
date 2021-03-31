@@ -55,8 +55,9 @@
 								<th width="20%" data-priority="6">Customer number</th>
 								<th width="20%" data-priority="6">Address</th>
 								<th width="20%" data-priority="7">Accept By</th>
-								<th width="10%" data-priority="8">Order date</th>
-								<th width="20%" data-priority="9">Action</th>
+								<th width="20%" data-priority="8">Seller</th>
+								<th width="10%" data-priority="9">Order date</th>
+								<th width="20%" data-priority="10">Action</th>
 							</tr>
 						</thead>
 						<tbody>

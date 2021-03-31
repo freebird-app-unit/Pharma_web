@@ -51,7 +51,7 @@ class AllorderController extends Controller
 		$filter_start_date=(isset($_POST['filter_start_date']) && $_POST['filter_start_date']!='')?date('Y-m-d',strtotime(str_replace('/','-',$_POST['filter_start_date']))):'';
 		$filter_end_date=(isset($_POST['filter_end_date']) && $_POST['filter_end_date']!='')?date('Y-m-d',strtotime(str_replace('/','-',$_POST['filter_end_date']))):'';
 		//get list
-		$user_detail = new_pharma_logistic_employee::select('*')->where('parent_type','pharmacy')->where('pharma_logistic_id',$user_id);
+		$user_detail = new_pharma_logistic_employee::select('*')->where('parent_type','logistic')->where('pharma_logistic_id',$user_id);
 		if($searchtxt!=''){
 			$user_detail= $user_detail->where(function ($query) use($searchtxt) {
                 $query->where('name', 'like', '%'.$searchtxt.'%')
