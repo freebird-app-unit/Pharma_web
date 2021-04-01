@@ -433,3 +433,7 @@ Route::get('/deposit', 'DepositController@index');
 Route::get('deposit_list', 'DepositController@list');
 Route::post('deposit_add', 'DepositController@save');
 Route::post('deposit/load_form/{id}', 'DepositController@loadForm');
+
+// Current Deposit
+Route::get('/currentdeposit', 'CurrentdepositController@index');
+Route::get('currentdeposit_list', 'CurrentdepositController@list');
