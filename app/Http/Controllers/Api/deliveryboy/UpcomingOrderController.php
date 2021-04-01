@@ -73,7 +73,7 @@ class UpcomingOrderController extends Controller
             ->leftJoin('new_pharmacies as u2', 'u2.id', '=', 'new_orders.pharmacy_id');
 
             if($search_text !== ''){
-                $order_list = $order_list->where('new_orders.id', 'like', $searchtxt.'%');
+                $order_list = $order_list->where('new_orders.id', 'like', $search_text.'%');
             } else {
                 $order_list = $order_list->orderBy('pickup_datetime', 'DESC');
             }
