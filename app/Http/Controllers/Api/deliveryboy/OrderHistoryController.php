@@ -41,6 +41,8 @@ class OrderHistoryController extends Controller
         $page = isset($content->page) ? $content->page : '';
         $is_completed = isset($content->is_completed) ? $content->is_completed : '';
         $pharmacy_id = isset($content->pharmacy_id) ? $content->pharmacy_id : '';
+        $search_text = isset($content->search_text) ? $content->search_text : '';
+        
         $params = [
 			'order_status' => $order_status
 		];
@@ -73,11 +75,11 @@ class OrderHistoryController extends Controller
                     if(isset($content->search_text)){
                         $searchtxt = $content->search_text;
                         $order_list = $order_list->where(function($query) use($searchtxt){
-                            $query->where('new_order_history.id', 'like', '%'.$searchtxt.'%');
-                            $query->orWhere('u2.address', 'like', '%'.$searchtxt.'%');
-                            $query->orWhere('u1add.address', 'like', '%'.$searchtxt.'%');
-                            $query->orWhere('u2.name', 'like', '%'.$searchtxt.'%');
-                            $query->orWhere('u1.name', 'like', '%'.$searchtxt.'%');
+                            $query->where('new_order_history.id', 'like', '%'.$search_text.'%');
+                            $query->orWhere('u2.address', 'like', '%'.$search_text.'%');
+                            $query->orWhere('u1add.address', 'like', '%'.$search_text.'%');
+                            $query->orWhere('u2.name', 'like', '%'.$search_text.'%');
+                            $query->orWhere('u1.name', 'like', '%'.$search_text.'%');
                         });
                     }
 
