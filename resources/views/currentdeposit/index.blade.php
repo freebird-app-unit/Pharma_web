@@ -25,19 +25,20 @@
                     </div>
                 </div>
 				<div class="row">
-					<div class="form-group">
-						<label>Logistic: *</label>
-						<select name="logistic" id="logistic" class="form-control">
-							<option value="">Select Logistic</option>
-							<?php 
-							if(isset($logistic_list) && count($logistic_list)>0){
-								foreach($logistic_list as $logistic){
-									echo '<option value="'.$logistic->id.'">'.$logistic->name.'</option>';
+					<div class="col-sm-4">
+						<div class="form-group">
+							<select name="logistic" id="logistic" class="form-control">
+								<option value="">Select Logistic</option>
+								<?php 
+								if(isset($logistic_list) && count($logistic_list)>0){
+									foreach($logistic_list as $logistic){
+										echo '<option value="'.$logistic->id.'">'.$logistic->name.'</option>';
+									}
 								}
-							}
-							?>
-						</select>
-					</div>	
+								?>
+							</select>
+						</div>	
+					</div>
 				</div>
                 <!-- table start -->
                 <table id="simpleDatatable" class="table table-stripped simpleDatatable">
