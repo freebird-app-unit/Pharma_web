@@ -446,6 +446,13 @@
 								<a href="{{ url('/packages') }}" class="waves-effect <?php echo ($page_condition=='page_packages')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Packages') }}</span></a>
 							</li>
 							<?php } ?>
+							
+							<?php if(Auth::user()->user_type=='admin'){ ?>
+							<li>
+								<a href="{{ url('/deposit') }}" class="waves-effect <?php echo ($page_condition=='page_deposittransaction')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Deposit') }}</span></a>
+							</li>
+							<?php } ?>
+							
                         </ul>
                         <div class="clearfix"></div>
                     </div>
