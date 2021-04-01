@@ -423,3 +423,6 @@ Route::post('package_add', 'PackagesController@save');
 Route::get('package_list', 'PackagesController@list');
 Route::post('package/delete/{id}', 'PackagesController@delete');
 Route::post('package/load_form/{id}', 'PackagesController@loadForm');
+Route::get('/packages/payment/{package_id}', 'PackagesController@payment');
+Route::get('/packages/success', 'PackagesController@success');
+Route::get('/packages/fail', 'PackagesController@fail');

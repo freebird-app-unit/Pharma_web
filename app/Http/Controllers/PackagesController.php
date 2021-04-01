@@ -7,11 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\RedirectResponse;
 use App\Packages;
+use App\User;
+use App\new_pharmacies;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
 use Validator;
+use Paykun\Checkout\Payment;
  
 class PackagesController extends Controller
 {
@@ -53,7 +56,7 @@ class PackagesController extends Controller
 							$html.='<h2 class="package_name">'.$package->name.'</h2>';
 							$html.='<h1 class="package_price"><span>&#8377;</span>'.$package->price.'</h1>';
 							$html.='<div class="package_delivery"><div class="row"><div class="col-sm-6">Delivery</div><div class="col-sm-6">'.$package->total_delivery.'</div></div></div>';
-							$html.='<div class="payment_btn"><a href="" class="payment_btn_link">Pay</a></div>';
+							$html.='<div class="payment_btn"><a href="'.url('packages/payment/'.$package->id).'" class="payment_btn_link">Pay</a></div>';
 						$html.='</div>';
 					$html.='</div>';
 				}
@@ -133,5 +136,45 @@ class PackagesController extends Controller
 			$Packages->save();
 		}
 		return redirect(route('user.index'))->with('success_message', trans('Deleted Successfully'));
+	}
+	
+	public function payment($package_id){
+		$package = Packages::find($package_id);
+		$user_id = Auth::user()->id;
+		$user = User::find($user_id);
+		$pharmacy = new_pharmacies::find($user->user_id); 
+		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
+ 
+		// Initializing Order
+		$obj->initOrder('215421659887', $package->name, $package->price, url('packages/success'),  url('packages/fail'));
+		 
+		// Add Customer
+		$obj->addCustomer($user->name, $user->email, $user->mobile_number);
+		 
+		// Add Shipping address
+		$obj->addShippingAddress($pharmacy->country, $pharmacy->state, $pharmacy->city, $pharmacy->pincode, $pharmacy->address);
+		 
+		// Add Billing Address
+		$obj->addBillingAddress($pharmacy->country, $pharmacy->state, $pharmacy->city, $pharmacy->pincode, $pharmacy->address);
+		 
+		echo $obj->submit();
+	}
+	
+	public function success(){
+		$payment_id = $_REQUEST['payment-id'];
+		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
+		$transactionData = $obj->getTransactionInfo($payment_id);
+		echo '<pre>';
+		print_r($transactionData);exit;
+		return redirect('/packages')->with('success_msg', 'Your Payment successfully completed');
+	}
+	
+	public function fail(){
+		$payment_id = $_REQUEST['payment-id'];
+		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
+		$transactionData = $obj->getTransactionInfo($payment_id);
+		echo '<pre>';
+		print_r($transactionData);exit;
+		return redirect('/packages')->with('fail_msg', 'Payment failed');
 	}
 }

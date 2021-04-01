@@ -25,6 +25,21 @@
                         <a href="javascript:void(0)" onclick="loadForm();"  class="btn btn-primary float-right mt-2">Add</a><br/>
 					<?php } ?>
                     </div>
+					<div class="col-sm-12">
+					@if (\Session::has('fail_msg'))
+						<div class="alert alert-danger">
+							{!! \Session::get('fail_msg') !!}
+						</div>
+					@endif
+					</div>
+					<div class="col-sm-12">
+					@if (\Session::has('success_msg'))
+						<div class="alert alert-danger">
+							{!! \Session::get('success_msg') !!}
+						</div>
+					@endif
+					</div>
+
                 </div>
                 <div class="row" id="packages_data">
 					
