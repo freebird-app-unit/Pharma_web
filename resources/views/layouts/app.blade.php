@@ -451,6 +451,9 @@
 							<li>
 								<a href="{{ url('/deposit') }}" class="waves-effect <?php echo ($page_condition=='page_deposittransaction')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Deposit Transaction') }}</span></a>
 							</li>
+							<li>
+								<a href="{{ url('/currentdeposit') }}" class="waves-effect <?php echo ($page_condition=='page_currentdeposit')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Current Deposits') }}</span></a>
+							</li>
 							<?php } ?>
 							
                         </ul>
