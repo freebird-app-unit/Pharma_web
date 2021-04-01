@@ -20,9 +20,6 @@
                     <div class="col-sm-6">
                          <h4 class="page-title">{{ $page_title }}</h4>
                     </div>
-                    <div class="col-sm-6" align="right" style="margin-bottom: 10px;">
-                        <a href="javascript:void(0)" onclick="loadForm();"  class="btn btn-primary float-right mt-2">Add</a><br/>
-                    </div>
                 </div>
 				<div class="row">
 					<div class="col-sm-4">
