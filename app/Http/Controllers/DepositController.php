@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\RedirectResponse;
 use App\Deposit;
-use App\new_pharma_logistic_employee;
+use App\new_logistics;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
@@ -37,8 +37,8 @@ class DepositController extends Controller
     {
 		//$data = Deposit::get();
 		$data = DB::table('deposit_transaction')
-            ->join('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'deposit_transaction.logistic_id')
-            ->select('deposit_transaction.*', 'new_pharma_logistic_employee.name as delivery_boy_name')
+            ->join('new_logistics', 'new_logistics.id', '=', 'deposit_transaction.logistic_id')
+            ->select('deposit_transaction.*', 'new_logistics.name as logistic_name')
             ->get();
 	      
         return Datatables::of($data)
@@ -58,7 +58,7 @@ class DepositController extends Controller
 		}
 		 
         $data = Deposit::find($id);
-		$delivery_boy_list = new_pharma_logistic_employee::where('user_type','delivery_boy')->get();
+		$delivery_boy_list = new_logistics::where('is_available',1)->where('is_approve',1)->where('is_active',1)->get();
 		
         $html = view('deposit.create')->with(["data" => $data,"delivery_boy_list" => $delivery_boy_list])->render();
 
@@ -114,10 +114,10 @@ class DepositController extends Controller
 		$msg = 'Record saved successfully';
         Deposit::updateOrCreate(['id' => $request->deposit_id], $updateData );
 		
-		$delivery_boy = new_pharma_logistic_employee::find($params['logistic_id']);
-		$delivery_boy->total_deposit = ($delivery_boy->total_deposit + $params['amount']);
-		$delivery_boy->current_deposit = ($delivery_boy->current_deposit + $params['amount']);
-		$delivery_boy->save();
+		$logistic = new_logistics::find($params['logistic_id']);
+		$logistic->total_deposit = ($logistic->total_deposit + $params['amount']);
+		$logistic->current_deposit = ($logistic->current_deposit + $params['amount']);
+		$logistic->save();
         return response()->json([
             'status_code' => 200,
             'message'     => $msg,

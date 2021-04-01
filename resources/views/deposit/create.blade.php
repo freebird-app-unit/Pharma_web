@@ -8,9 +8,9 @@
         <input type="hidden" name="user_id" id="user_id" value="{{ isset($data->user_id) ? $data->user_id : 0 }}">
 		
 		<div class="form-group">
-            <label>Delivery boy: *</label>
+            <label>Logistic: *</label>
 			<select name="logistic_id" id="logistic_id" class="form-control">
-				<option value="">Select Delivery boy</option>
+				<option value="">Select Logistic</option>
 				<?php 
 				if(isset($delivery_boy_list) && count($delivery_boy_list)>0){
 					foreach($delivery_boy_list as $delivery_boy){
