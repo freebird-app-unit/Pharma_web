@@ -19,7 +19,13 @@
 				{{ Session::get('success_message') }}
 	        </div>
 		@endif
-			<form class="form-horizontal" method="POST" action="{{ route('createorder.create') }}" id="user_detail-form" enctype="multipart/form-data">
+		@if(Session::has('unsuccess_message'))
+			<div class="alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{{ Session::get('unsuccess_message') }}
+	        </div>
+		@endif
+			<form class="form-horizontal" method="POST" action="{{ route('acceptorder.create') }}" id="user_detail-form" enctype="multipart/form-data">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<div class="form-group">
 					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="pharmacy_id">Pharmacy<span class="required">*</span></label>
@@ -65,6 +71,47 @@
 							
 						</select>
 						@if ($errors->has('seller_id')) <div class="errors_msg">{{ $errors->first('seller_id') }}</div>@endif
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="accept_reject">Choose Accpet Or Reject<span class="required">*</span></label>
+					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('accept_reject')) bad @endif">
+						<select class="form-control" name="accept_reject" id="accept_reject">
+							<option>select</option>
+							<option value="accept">Accept</option>
+							<option value="reject">Reject</option>
+						</select>
+						@if ($errors->has('accept_reject')) <div class="errors_msg">{{ $errors->first('accept_reject') }}</div>@endif
+					</div>
+				</div>
+
+				<div class="form-group" id="order_amount" style="display: none">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="order_amount">Order Amount<span class="required">*</span></label>
+					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('order_amount')) bad @endif">
+						<input type="text" placeholder="" class="form-control" name="order_amount" id="order_amount">
+						@if ($errors->has('order_amount')) <div class="errors_msg">{{ $errors->first('order_amount') }}</div>@endif
+					</div>
+				</div>
+
+				<div class="form-group" id="invoice" style="display: none">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12">Invoice</label> 
+					<div class="col-md-4 col-sm-4 col-xs-6  @if($errors->has('invoice')) bad @endif">
+						<input type="file" class="form-control" id="invoice" name="invoice"  data-input="false">
+						@if ($errors->has('invoice')) <div class="errors_msg">{{ $errors->first('invoice') }}</div>@endif
+					</div>
+				</div>
+
+				<div class="form-group" id="reject_reason" style="display: none">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="reject_reason">Reject Reason<span class="required">*</span></label>
+					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('reject_reason')) bad @endif">
+						<input type="text" placeholder="" class="form-control" name="reject_reason" id="reject_reason">
+						@if ($errors->has('reject_reason')) <div class="errors_msg">{{ $errors->first('reject_reason') }}</div>@endif
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-8 col-sm-8 col-xs-12 col-md-offset-3">
+						<input class="btn btn-sm btn-primary submit save_btn" name="save_exit" type="button" value="Save">
 					</div>
 				</div>
 			</form>
@@ -245,39 +292,16 @@ $('#order_number').change(function(){
   }   
   });
 
-	$('#freepaid').change(function(){
-	            if ($(this).val() == "paid") {
-					$("#logistic_id").show();
-					$("#delivery_charges_id").show();
-	                $('#ordertype').change(function(){
-			            if ($(this).val() == "full_order") {
-			            	$("#order_note").hide();
-			                $("#total_days").show();
-			            } else if($(this).val() == "selected_item"){
-			            	$("#total_days").hide();
-			            	$("#order_note").show();
-			            }else {
-			                $("#total_days").hide();
-			                $("#order_note").hide();
-			            }
-	        		});
+	$('#accept_reject').change(function(){
+	            if ($(this).val() == "accept") {
+					$("#order_amount").show();
+					$("#invoice").show();
+					$("#reject_reason").hide();
 	            } else {
-	                $("#logistic_id").hide();
-	                $("#delivery_charges_id").hide();
-	                $('#ordertype').change(function(){
-			            if ($(this).val() == "full_order") {
-			            	$("#order_note").hide();
-			                $("#total_days").show();
-			            } else if($(this).val() == "selected_item"){
-			            	$("#total_days").hide();
-			            	$("#order_note").show();
-			            }else {
-			                $("#total_days").hide();
-			                $("#order_note").hide();
-			            }
-	        		});
+	               	$("#order_amount").hide();
+	               	$("#invoice").hide();
+				   	$("#reject_reason").show();
 	            }
-
 	    });
   
  </script>
