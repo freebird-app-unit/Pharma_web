@@ -51,10 +51,10 @@
 								<th width="10%" data-priority="1">Name</th>
 								<th width="10%" data-priority="1">Owner</th>
 								<th width="10%" data-priority="2">Email</th>
-								<th width="20%" data-priority="3">Mobile number</th>
+								<th width="10%" data-priority="3">Mobile number</th>
 								<th width="20%" data-priority="4">Address</th>
-								<!-- <th width="10%" data-priority="5">Created at</th>
-								<th width="10%" data-priority="6">Updated at</th> -->
+								<th width="5%" data-priority="5">Total Deposit</th>
+								<th width="5%" data-priority="6">Current Deposit</th>
 								<th width="30%" data-priority="7">Action</th>
 							</tr>
 						</thead>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Incompletereason;
 use App\Rejectreason;
+use App\new_logistics;
 use Illuminate\Http\Request;
 use DB;
 use Auth;
@@ -183,6 +184,10 @@ class HomeController extends Controller
 			$total= $total_res->count();
 			$data['total_upcoming'] = $total;
 			//upcoming
+			$new_logistic = new_logistics::find($user->user_id);
+			$data['total_deposit'] = $new_logistic->total_deposit;
+			$data['current_deposit'] = $new_logistic->current_deposit;
+			
 		}
 		if($user->user_type=='pharmacy'){
 			$data['reject_reason'] = Rejectreason::where('type', 'pharmacy')->get();
