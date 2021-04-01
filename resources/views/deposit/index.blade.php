@@ -29,7 +29,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Delivery boy</th>
+                            <th>Logistic</th>
 							<th>Amount</th>
 							<th>Transaction date</th>
 							<th>Transaction type</th>
@@ -55,7 +55,7 @@
 		   },
 		   columns: [
 				{data : 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-				{data : 'delivery_boy_name', name: 'delivery_boy_name'},
+				{data : 'logistic_name', name: 'logistic_name'},
 				{data : 'amount', name: 'amount'},
 				{data : 'transaction_datetime', name: 'transaction_datetime'},
 				{data : 'transaction_type', name: 'transaction_type'},
