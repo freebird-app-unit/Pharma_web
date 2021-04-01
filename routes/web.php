@@ -426,3 +426,9 @@ Route::post('package/load_form/{id}', 'PackagesController@loadForm');
 Route::get('/packages/payment/{package_id}', 'PackagesController@payment');
 Route::get('/packages/success', 'PackagesController@success');
 Route::get('/packages/fail', 'PackagesController@fail');
+
+// Deposit
+Route::get('/deposit', 'DepositController@index');
+Route::get('deposit_list', 'DepositController@list');
+Route::post('deposit_add', 'DepositController@save');
+Route::post('deposit/load_form/{id}', 'DepositController@loadForm');

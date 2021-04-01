@@ -113,7 +113,11 @@ class DepositController extends Controller
         } */
 		$msg = 'Record saved successfully';
         Deposit::updateOrCreate(['id' => $request->deposit_id], $updateData );
-
+		
+		$delivery_boy = new_pharma_logistic_employee::find($params['logistic_id']);
+		$delivery_boy->total_deposit = ($delivery_boy->total_deposit + $params['amount']);
+		$delivery_boy->current_deposit = ($delivery_boy->current_deposit + $params['amount']);
+		$delivery_boy->save();
         return response()->json([
             'status_code' => 200,
             'message'     => $msg,
@@ -131,27 +135,5 @@ class DepositController extends Controller
 			$Packages->save();
 		}
 		return redirect(route('user.index'))->with('success_message', trans('Deleted Successfully'));
-	}
-	
-	public function payment($package_id){
-		$package = Packages::find($package_id);
-		$user_id = Auth::user()->id;
-		$user = User::find($user_id);
-		$pharmacy = new_pharmacies::find($user->user_id); 
-		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
- 
-		// Initializing Order
-		$obj->initOrder('<orderId>', 'Package Purchase', "<amount>", '<successUrl.example.com>',  '<failUrl.example.com>');
-		 
-		// Add Customer
-		$obj->addCustomer($user->name, $user->email, $user->mobile_number);
-		 
-		// Add Shipping address
-		$obj->addShippingAddress($pharmacy->country, $pharmacy->state, $pharmacy->city, '<postalCode>', '<fullAddress>');
-		 
-		// Add Billing Address
-		$obj->addBillingAddress('<country>', '<state>', '<city>', '<postalCode>', '<fullAddress>');
-		 
-		echo $obj->submit();
 	}
 }
