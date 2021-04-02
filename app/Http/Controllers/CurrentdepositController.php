@@ -30,6 +30,15 @@ class CurrentdepositController extends Controller
 		
 		$logistic_user = new_logistics::find(Auth::user()->user_id);
 		$data['logistic_user'] = $logistic_user;
+		
+		if(Auth::user()->user_type=='logistic'){
+			$data['total_deposit'] = $logistic_user->total_deposit;
+			$data['current_deposit'] = $logistic_user->current_deposit;
+		}else{
+			$data['total_deposit'] = 0;
+			$data['current_deposit'] = 0;
+		}
+		
 		$data['page_title'] = 'Current Deposite';
 		$data['page_condition'] = 'page_currentdeposit';
 		$data['site_title'] = 'Current Deposite | ' . $this->data['site_title'];
@@ -48,7 +57,7 @@ class CurrentdepositController extends Controller
 			->join('new_pharmacies', 'new_pharmacies.id', '=', 'new_orders.pharmacy_id')
             ->select('new_orders.order_number','new_orders.order_status','new_orders.order_type','new_orders.order_amount', 'new_users.name as customer_name', 'new_users.mobile_number as customer_number', 'new_logistics.name as logistic_name', 'address_new.address as myaddress', 'new_delivery_charges.delivery_type as delivery_type', 'new_pharmacies.name as pharmacy_name','new_orders.created_at as created_at')
 			->where('new_orders.is_external_delivery','1')
-			->where('new_orders.is_deposit_clear','0')
+			->where('new_orders.is_deposit_clear','1')
             ->latest();
 	    $request = $_REQUEST;
         return Datatables::of($data)
@@ -65,5 +74,9 @@ class CurrentdepositController extends Controller
             }) */
             ->rawColumns(['action'])
             ->make(true);
+	}
+	public function getlogisticdepositeamount($id){
+		$logistic_user = new_logistics::find($id);
+		echo $logistic_user->total_deposit.'##'.$logistic_user->current_deposit;exit;
 	}
 }

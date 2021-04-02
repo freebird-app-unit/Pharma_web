@@ -1101,6 +1101,9 @@
 	@if($page_condition=='page_searchorders')
 		<script src="{{ asset('public/admin/js/searchorders.js') }}"></script>
 	@endif
+	@if($page_condition=='page_delivery_charges')
+		<script src="{{ asset('public/admin/js/delivery_charges.js') }}"></script>
+	@endif
 	
 	<script src="{{asset('public/admin/plugins/jquery-validator/jquery.validate.js')}}"></script> 
 	<script src="{{asset('public/admin/plugins/lightbox/simple-lightbox.js')}}"></script> 

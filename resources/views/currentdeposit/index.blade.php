@@ -21,6 +21,20 @@
                          <h4 class="page-title">{{ $page_title }}</h4>
                     </div>
                 </div>
+				<div class="row">
+					<div class="col-lg-3 col-sm-6">
+						<div class="widget-panel widget-style-2 bg-white">
+							<?php echo '&#8377;'; ?><h2 class="m-0 text-dark counter font-600 logistic_total_deposit"><?php echo $total_deposit; ?></h2>
+							<div class="text-muted m-t-5">Total Deposit</div>
+						</div>
+					</div>
+					<div class="col-lg-3 col-sm-6">
+						<div class="widget-panel widget-style-2 bg-white">
+							<?php echo '&#8377;'; ?><h2 class="m-0 text-dark counter font-600 logistic_current_deposit"><?php echo $current_deposit; ?></h2>
+							<div class="text-muted m-t-5">Current Deposit</div>
+						</div>
+					</div>
+				</div>
 				<?php if(Auth::user()->user_type=='admin'){ ?>
 				<div class="row">
 					<div class="col-sm-4">
@@ -91,6 +105,17 @@
 		
 		$('#logistic').change(function(){
 			table.draw();
+			var logistic_id = $('#logistic').val();
+			$.ajax({
+				type: "get",
+				url: base_url+'/getlogisticdepositeamount/'+logistic_id,
+				data: '',
+				success: function (responce) {	
+					var obj = responce.split('##');
+					$('.logistic_total_deposit').html(obj[0]);
+					$('.logistic_current_deposit').html(obj[1]);
+				}
+			});
 		});
 	});
 		function loadForm(allergy_id) {

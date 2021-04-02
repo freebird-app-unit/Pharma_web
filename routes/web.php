@@ -412,8 +412,7 @@ Route::get('get-prescription-list','Createordercontroller@getprescriptionList');
 Route::get('get-address-list','Createordercontroller@getaddressList');
 
 //accept and reject order script
-Route::get('/acceptorder/create', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@create'));
-Route::post('/acceptorder/create', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@store'));
+Route::get('/acceptorder/accept', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@create'));
 Route::get('get-order-list','Script_Acceptordercontroller@getorderList');
 Route::get('get-customer-list','Script_Acceptordercontroller@getcustomerList');
 Route::get('get-seller-list','Script_Acceptordercontroller@getsellerList');
@@ -437,3 +436,9 @@ Route::post('deposit/load_form/{id}', 'DepositController@loadForm');
 // Current Deposit
 Route::get('/currentdeposit', 'CurrentdepositController@index');
 Route::get('currentdeposit_list', 'CurrentdepositController@list');
+Route::get('getlogisticdepositeamount/{id}', 'CurrentdepositController@getlogisticdepositeamount');
+
+// Delivery Charges
+Route::get('/deliverycharges', array('as' => 'deliverycharges.index', 'uses' => 'DeliveryChargesController@index'));
+Route::post('/getdeliverychargesorderlist', array('as' => 'deliverycharges.getdeliverychargesorderlist', 'uses' => 'DeliveryChargesController@getdeliverychargesorderlist'));
+Route::post('/deliverycharges_payment_create', array('as' => 'deliverycharges.deliverycharges_payment_create', 'uses' => 'DeliveryChargesController@deliverycharges_payment_create'));
