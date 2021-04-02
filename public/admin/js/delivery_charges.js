@@ -32,7 +32,24 @@ function getreportorderlist(pageno){
 			});
 		}
 	});
+	
+	
+	
 }
+
+$('#logistic_id').change(function(){
+			var logistic_id = $('#logistic_id').val();
+			$.ajax({
+				type: "get",
+				url: base_url+'/getlogisticpendingamount/'+logistic_id,
+				data: '',
+				success: function (responce) {	
+					var obj = responce.split('##');
+					$('#total_pending_order').html(obj[0]);
+					$('#total_pending_amount').html(obj[1]);
+				}
+			});
+		});
 
 $('#all').change(function() {
     console.log(this.checked);

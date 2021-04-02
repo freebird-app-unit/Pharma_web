@@ -442,3 +442,4 @@ Route::get('getlogisticdepositeamount/{id}', 'CurrentdepositController@getlogist
 Route::get('/deliverycharges', array('as' => 'deliverycharges.index', 'uses' => 'DeliveryChargesController@index'));
 Route::post('/getdeliverychargesorderlist', array('as' => 'deliverycharges.getdeliverychargesorderlist', 'uses' => 'DeliveryChargesController@getdeliverychargesorderlist'));
 Route::post('/deliverycharges_payment_create', array('as' => 'deliverycharges.deliverycharges_payment_create', 'uses' => 'DeliveryChargesController@deliverycharges_payment_create'));
+Route::get('getlogisticpendingamount/{id}', 'DeliveryChargesController@getlogisticpendingamount');
