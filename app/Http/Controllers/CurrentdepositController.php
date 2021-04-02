@@ -48,7 +48,7 @@ class CurrentdepositController extends Controller
 			->join('new_pharmacies', 'new_pharmacies.id', '=', 'new_orders.pharmacy_id')
             ->select('new_orders.order_number','new_orders.order_status','new_orders.order_type','new_orders.order_amount', 'new_users.name as customer_name', 'new_users.mobile_number as customer_number', 'new_logistics.name as logistic_name', 'address_new.address as myaddress', 'new_delivery_charges.delivery_type as delivery_type', 'new_pharmacies.name as pharmacy_name','new_orders.created_at as created_at')
 			->where('new_orders.is_external_delivery','1')
-			//->where('new_orders.is_deposit_clear','0')
+			->where('new_orders.is_deposit_clear','0')
             ->latest();
 	    $request = $_REQUEST;
         return Datatables::of($data)
