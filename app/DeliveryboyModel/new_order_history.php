@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 namespace App\DeliveryboyModel;
 
 use Illuminate\Database\Eloquent\Model;
