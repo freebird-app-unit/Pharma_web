@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\RedirectResponse;
 use App\Packages;
+use App\Packagetransaction;
 use App\User;
 use App\new_pharmacies;
 use DB;
@@ -156,16 +157,41 @@ class PackagesController extends Controller
 		 
 		// Add Billing Address
 		$obj->addBillingAddress($pharmacy->country, $pharmacy->state, $pharmacy->city, $pharmacy->pincode, $pharmacy->address);
-		 
+		
+		$obj->setCustomFields(array('package_id' => $package_id, 'user_id' => $user_id));
+		
 		echo $obj->submit();
+	}
+	
+	public function generate_order_ID(){
+		
 	}
 	
 	public function success(){
 		$payment_id = $_REQUEST['payment-id'];
 		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
 		$transactionData = $obj->getTransactionInfo($payment_id);
-		echo '<pre>';
-		print_r($transactionData);exit;
+		if ($transactionData['status'])
+        {
+            $arr_transaction = $transactionData['data']['transaction'];
+            // Check if payment_id already exists in the database
+            $isPaymentExist = Packagetransaction::where('payment_id', $arr_transaction['payment_id'])->first();
+            if(!$isPaymentExist)
+            {
+				$payment = new Packagetransaction;
+				$payment->package_id = $arr_transaction['customer']['email_id'];
+				$payment->payment_id = $arr_transaction['payment_id'];
+				$payment->user_id = $arr_transaction['customer']['mobile_no'];
+				$payment->total_delivery = $arr_transaction['order']['gross_amount'];
+				$payment->package_purchase_date = date('Y-m-d H:i:s');
+				$payment->is_active = 1;
+				$payment->package_amount = 1;
+				$payment->created_at = date('Y-m-d H:i:s');
+				$payment->updated_at = date('Y-m-d H:i:s');
+				$payment->save();
+            }
+			return "Payment is successful. Your transaction id is: ". $arr_transaction['payment_id'];
+        }
 		return redirect('/packages')->with('success_msg', 'Your Payment successfully completed');
 	}
 	
