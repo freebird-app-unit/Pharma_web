@@ -74,13 +74,13 @@ class AcceptorderController extends Controller
         $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
-                $check_data = new_orders::find($order_id);
+                $check_data = new_orders::select('id','checking_by')->where('id',$order_id)->first();
                 $check_data->checking_by = $user_id;
                 $check_data->save();
 
-                $user_data = new_pharma_logistic_employee::where('id',$user_id)->first();
+                $seller_data = new_pharma_logistic_employee::where('id',$user_id)->first();
                 $check[] = [
-                    'checking_by' => $user_data->name         
+                    'checking_by' => $seller_data->name         
                 ];
 
                 $response['status'] = 200;
