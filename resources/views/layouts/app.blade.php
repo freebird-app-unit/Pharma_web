@@ -459,6 +459,12 @@
 							</li>
 							<?php } ?>
 							
+							<?php if(Auth::user()->user_type=='admin'){ ?>
+							<li>
+								<a href="{{ url('/deliverycharges') }}" class="waves-effect <?php echo ($page_condition=='page_delivery_charges')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Delivery Charges') }}</span></a>
+							</li>
+							<?php } ?>
+							
                         </ul>
                         <div class="clearfix"></div>
                     </div>
