@@ -21,6 +21,7 @@
                          <h4 class="page-title">{{ $page_title }}</h4>
                     </div>
                 </div>
+				<?php if(Auth::user()->user_type=='admin'){ ?>
 				<div class="row">
 					<div class="col-sm-4">
 						<div class="form-group">
@@ -37,6 +38,9 @@
 						</div>	
 					</div>
 				</div>
+				<?php }else{ ?>
+				<input type="hidden" name="logistic" id="logistic" value="<?php echo (isset($logistic_user->id))?$logistic_user->id:''; ?>"/>
+				<?php } ?>
                 <!-- table start -->
                 <table id="simpleDatatable" class="table table-stripped simpleDatatable">
                     <thead>
