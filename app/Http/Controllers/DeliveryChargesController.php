@@ -46,9 +46,17 @@ class DeliveryChargesController extends Controller
 		$data['total_order_amount'] = new_order_history::where(['is_logistic_charge_collect'=>'0','is_external_delivery'=>'1'])->sum('order_amount');
 		$data['total_order'] = new_order_history::where(['is_logistic_charge_collect'=>'0','is_external_delivery'=>'1'])->count();
 		
+		$data['total_order_amount'] = 0;
+		$data['total_order'] = 0;
+		
         return view('deliverycharges.index', $data);
 	}
-    
+    public function getlogisticpendingamount($id){
+		$total_order_amount = new_order_history::leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')->where(['new_order_history.is_logistic_charge_collect'=>0,'new_order_history.is_external_delivery'=>1,'new_order_history.order_status'=>'complete','logistic_user_id'=>$id])->sum('new_delivery_charges.delivery_price');
+		$total_order = new_order_history::where(['new_order_history.is_logistic_charge_collect'=>0,'new_order_history.is_external_delivery'=>1,'new_order_history.order_status'=>'complete','logistic_user_id'=>$id])->count();
+		echo $total_order.'##'.$total_order_amount;exit;
+		
+	}
     public function getdeliverychargesorderlist()
     {
         $user_id = Auth::user()->user_id;
@@ -74,6 +82,7 @@ class DeliveryChargesController extends Controller
 		->where('new_order_history.order_status','complete');
 
 		//if(isset($_POST['logistic_id']) && $_POST['logistic_id'] != ''){
+			$order_detail = $order_detail->where('new_order_history.is_external_delivery', 1);
 			$order_detail = $order_detail->where('new_order_history.logistic_user_id', $_POST['logistic_id']);
 			$order_detail = $order_detail->where('new_order_history.logistic_user_id', '!=' , '');
 		//}

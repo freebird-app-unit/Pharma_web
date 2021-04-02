@@ -158,7 +158,7 @@ class PackagesController extends Controller
 		// Add Billing Address
 		$obj->addBillingAddress($pharmacy->country, $pharmacy->state, $pharmacy->city, $pharmacy->pincode, $pharmacy->address);
 		
-		$obj->setCustomFields(array('package_id' => $package_id, 'user_id' => $user_id));
+		$obj->setCustomFields(array('custom_field_1' => $package_id, 'custom_field_2' => $user_id));
 		
 		echo $obj->submit();
 	}
@@ -179,9 +179,9 @@ class PackagesController extends Controller
             if(!$isPaymentExist)
             {
 				$payment = new Packagetransaction;
-				$payment->package_id = $arr_transaction['customer']['email_id'];
+				$payment->package_id = $arr_transaction['custom_field_1'];
 				$payment->payment_id = $arr_transaction['payment_id'];
-				$payment->user_id = $arr_transaction['customer']['mobile_no'];
+				$payment->user_id = $arr_transaction['custom_field_2'];
 				$payment->total_delivery = $arr_transaction['order']['gross_amount'];
 				$payment->package_purchase_date = date('Y-m-d H:i:s');
 				$payment->is_active = 1;
