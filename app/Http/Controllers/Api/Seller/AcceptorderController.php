@@ -144,7 +144,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];      
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
             if(count($data_array)>0){
                 foreach($data_array as $value) { 
@@ -274,9 +274,9 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
         }
 
-        /*$token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){*/
+        $token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
                                     $prescription_image = '';
@@ -328,10 +328,10 @@ class AcceptorderController extends Controller
                         $response['status'] = 404;
                         $response['message'] = 'Accepted Order List';
                 }
-        /*}else{
+        }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-        }*/
+        }
 
         $response['data']->content = $accept;
         
@@ -412,7 +412,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(!empty($data_array)){
                     foreach($data_array as $value) {
@@ -581,7 +581,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(!empty($data_array)){
                          foreach($data_array as $value) {
@@ -717,7 +717,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
@@ -835,7 +835,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -1023,7 +1023,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -1131,7 +1131,7 @@ class AcceptorderController extends Controller
 
         $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
-        if(count($user)>0){
+        if(!empty($user)){
                 $orders = new_orders::select('id','customer_id','pharmacy_id','order_number')->where('id',$order_id)->first();
                 if(!empty($orders)){
                         $destinationPath = 'storage/app/public/uploads/invoice/'; 
@@ -1211,7 +1211,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
             $calls= Callhistory::where(['user_id' => $user_id,'order_id'=>$order_id])->get();
             if(!empty($calls)){
@@ -1259,44 +1259,32 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
         $logistic_data = [];
-        $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
-        if(!empty($user)){
+        /*$token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        if(!empty($user)){*/
         	if($user_id > 0){
 				$ids = array();
-				$order_data = new_orders::where('id',$order_id)->first();
+				$order_data = new_orders::select('id','customer_id','order_number')->where('id',$order_id)->first();
 				if(!empty($order_data)){
-					$customerdetail =  new_users::where('id',$order_data->customer_id)->first();
+					$customerdetail =  new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
 					if($customerdetail->fcm_token!=''){
 						$ids[] = $customerdetail->fcm_token;
 					}
-					$msg = array
-					(
-						'body'   => ' Order number '. $order_data->order_number,
-						'title'     => 'Your Order Accepted'
-					);
-					// if(count($ids)>0){
-						// $fields = array(
-							// 'to' => $customerdetail->fcm_token,
-							// 'notification' => $msg
-						// );
-						// $this->sendPushNotification($fields);   
-					// }
 					if (count($ids) > 0) {					
 						Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
 					}
 					$notification = new notification_user();
 					$notification->user_id=$customerdetail->id;
 					$notification->order_id=$order_data->id;
-					$notification->subtitle=$msg['body'];
-					$notification->title=$msg['title'];
+					$notification->subtitle='Order number'. $order_data->order_number;
+					$notification->title='Your Order Accepted';
 					$notification->created_at=date('Y-m-d H:i:s');
 					$notification->save();
 				}
 			}
 
-            $orders = new_orders::where('id',$order_id)->get();
-            if(count($orders)>0){
+            $orders = new_orders::where('id',$order_id)->first();
+            if(!empty($orders)){
 				foreach ($orders as $order) {
 					if($order->process_user_id == 0){
 						$order->process_user_id = $user_id;
@@ -1519,10 +1507,10 @@ class AcceptorderController extends Controller
                 $response['status'] = 404;
                 $response['message'] = 'This order was already cancelled';
             }
-        } else {
+        /*} else {
 			$response['status'] = 401;
 			$response['message'] = 'Unauthenticated';
-        }
+        }*/
         return decode_string($response, 200);
     }
     public function AssignOrderOutsideLogistic($order_id,$order)
@@ -1735,9 +1723,9 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
-			$reject = new_orders::find($order_id);
+			$reject = new_orders::select('id','process_user_id','reject_user_id','rejectby_user','order_status','reject_cancel_reason','reject_datetime')->where('id',$order_id)->first();
 			if(!empty($reject)){
 				$reject->process_user_id=$user_id;
 				$reject->reject_user_id=$user_id;
@@ -1747,43 +1735,29 @@ class AcceptorderController extends Controller
 				$reject->reject_datetime = date('Y-m-d H:i:s');
 				if($reject->save()){
                     if($user_id > 0){
-                $ids = array();
-                $order_data = new_orders::where('id',$order_id)->first();
-                if(!empty($order_data)){
-                     $customerdetail =  new_users::where('id',$order_data->customer_id)->first();
-                     if(!empty($customerdetail)){
-                        if($customerdetail->fcm_token!=''){
-                            $ids[] = $customerdetail->fcm_token;
+                    $ids = array();
+                    $order_data = new_orders::select('id','customer_id','order_number')->where('id',$order_id)->first();
+                    if(!empty($order_data)){
+                         $customerdetail =  new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
+                         if(!empty($customerdetail)){
+                            if($customerdetail->fcm_token!=''){
+                                $ids[] = $customerdetail->fcm_token;
+                            }
+                            if (count($ids) > 0) {                  
+                                Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Rejected', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                            }
+                            
+                            $notification = new notification_user();
+                            $notification->user_id=$customerdetail->id;
+                            $notification->order_id=$order_data->id;
+                            $notification->subtitle='Order number'. $order_data->order_number;
+                            $notification->title='Your Order Rejected';
+                            $notification->created_at=date('Y-m-d H:i:s');
+                            $notification->save();
                         }
-                        
-                        $msg = array
-                        (
-                            'body'   => ' Order number '. $order_data->order_number,
-                            'title'     => 'Your Order Rejected '
-                        );
-                        // if(count($ids)>0){
-                            // $fields = array(
-                                // 'to' => $customerdetail->fcm_token,
-                                // 'notification' => $msg
-                            // );
-                            // $this->sendPushNotification($fields);   
-                        // }
-                        
-                        if (count($ids) > 0) {                  
-                            Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Rejected', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
-                        }
-                        
-                        $notification = new notification_user();
-                        $notification->user_id=$customerdetail->id;
-                        $notification->order_id=$order_data->id;
-                        $notification->subtitle=$msg['body'];
-                        $notification->title=$msg['title'];
-                        $notification->created_at=date('Y-m-d H:i:s');
-                        $notification->save();
                     }
                 }
             }
-                }
 				$response['status'] = 200;
 				$response['message'] = 'Reject Order';
 			}else{
@@ -1797,7 +1771,7 @@ class AcceptorderController extends Controller
         }
         return decode_string($response, 200);
     }
-    public function reject_order(Request $request){
+    /*public function reject_order(Request $request){
         $response = array();
 		$data = $request->input('data');
 		$encode_string = encode_string($data);
@@ -1845,32 +1819,8 @@ class AcceptorderController extends Controller
                 $response['message'] = 'Unauthenticated';
         }
         return decode_string($response, 200);
-    }
+    }*/
     
-     public function reason_list(Request $request){
-        $response = array();
-		$data = $request->input('data');
-		$encode_string = encode_string($data);
-		$content = json_decode($encode_string);
-
-        $reasons=[];
-        $data = Rejectreason::all();
-        if(!empty($data)){
-                 foreach($data as $value) {
-                    $reasons[] = [
-                            'id' => $value->id,
-                            'reason' => $value->reason
-                        ];
-                    }
-                $response['status'] = 200;
-                $response['message'] = 'Reasons';
-        } else {
-                $response['status'] = 404;
-        }
-        $response['data'] = $reasons;
-        return decode_string($response, 200);
-    }
-
      public function add_time(Request $request){
         $response = array();
 		$data = $request->input('data');
@@ -1898,8 +1848,8 @@ class AcceptorderController extends Controller
         }
         $time=[];
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        if(!empty($user)){
             $data = new Callhistory();
             $data->user_id=$user_id;
             $data->order_id=$order_id;
@@ -1973,7 +1923,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
@@ -2062,41 +2012,9 @@ class AcceptorderController extends Controller
         $response['status'] = 200;
         $response['message'] = '';
         $response['data'] = (object)array();
-        $logistic_id = 0;
-        $upcoming_order_details =  new_orders::where('id',$order_id)->get()->first();
-
-        if(!empty($upcoming_order_details)){
-            $delivery_data = new_address::where('id',$upcoming_order_details->address_id)->get()->first();
-            $delivery_location = array($delivery_data->latitude, $delivery_data->longitude);
-
-            $pickup_data = new_pharmacies::where('id',$upcoming_order_details->pharmacy_id)->get()->first();
-            $pickup_location = array($pickup_data->lat, $pickup_data->lon);
-
-            $logistics = new_logistics::select('new_logistics.*')
-            /*->where('new_users.user_type', '=', 'logistic')*/
-            ->where('new_logistics.city', '=', $pickup_data->city)->get();
-
-            if(count($logistics)){
-                if(count($logistics)>0){
-                    $logistic = $this->getLogisticList($logistics, $pickup_location);
-                    if(count($logistic) > 0){
-                        $result = $this->pharamcyGeofenceCheck($logistic, $delivery_location);
-                        if($result[0] == 'true'){
-                            $logisticValue = $result[1];
-                        }
-                    }
-                }
-            }
-            if(isset($logisticValue)){
-                $logistic_id = $logisticValue->id;
-            }
-        }
-        //old code
-        /*$delivery_charges_data = new_delivery_charges::where('logistic_id', $logistic_id)->orWhere('logistic_id', 0)->orderBy('logistic_id', 'ASC')->get();*/
+        
         $delivery_charges_data = new_delivery_charges::all();
-        $logistic_get_data = new_orders::where('id',$order_id)->first();
-
-        // $delivery_charges_data = delivery_charges::all();
+        $logistic_get_data = new_orders::select('id','logistic_user_id')->where('id',$order_id)->first();
         if(!empty($delivery_charges_data)){
             foreach($delivery_charges_data as $value) {
                 if($value->is_user == 0){
@@ -3067,43 +2985,29 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
 
-        $cancel = new_orders::find($order_id);
+        $cancel = new_orders::select('id','reject_cancel_reason','cancel_datetime','order_status')->where('id',$order_id)->first();
         if(!empty($cancel)){
             $cancel->reject_cancel_reason = $rejectreason;
             $cancel->cancel_datetime =date('Y-m-d H:i:s');
             $cancel->order_status = 'cancel';
             $cancel->save();
 
-            $user = new_pharma_logistic_employee::where(['id'=>$user_id])->first();
-
+            $user = new_pharma_logistic_employee::select('id')->where(['id'=>$user_id])->first();
             if($user_id > 0){
                 $ids = array();
-                $order_data = new_orders::where('id',$order_id)->first();
-                $customerdetail =  new_users::where('id',$order_data->customer_id)->first();
-                    if($customerdetail->fcm_token!=''){
-                        $ids[] = $customerdetail->fcm_token;
-                    }
-                    $delivery_address =  new_address::where('id',$order_data->address_id)->first();
-                    $msg = array
-                (
-                    'body'   => ' Order number '.$order_data->order_number,
-                    'title'     => 'Your Order Cancelled'
-                );
-                // if(count($ids)>0){
-                    // $fields = array(
-                        // 'to' => $customerdetail->fcm_token,
-                        // 'notification' => $msg
-                    // );
-                    // $this->sendPushNotification($fields);   
-                // }
+                $order_data = new_orders::select('id','customer_id','order_number')->where('id',$order_id)->first();
+                $customerdetail =  new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
+                if($customerdetail->fcm_token!=''){
+                    $ids[] = $customerdetail->fcm_token;
+                }
                 if (count($ids) > 0) {
                     Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Cancelled', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
                 }
                 $notification = new notification_user();
                 $notification->user_id=$customerdetail->id;
                 $notification->order_id=$order_data->id;
-                $notification->subtitle=$msg['body'];
-                $notification->title=$msg['title'];
+                $notification->subtitle= 'Order number'.$order_data->order_number;
+                $notification->title='Your Order Cancelled';
                 $notification->created_at=date('Y-m-d H:i:s');
                 $notification->save();
             }
@@ -3138,6 +3042,7 @@ class AcceptorderController extends Controller
             $order_history->cancel_datetime  = $order->cancel_datetime;
             $order_history->rejectby_user  = $order->rejectby_user;
             $order_history->reject_user_id  = $order->reject_user_id;
+             $order_history->return_confirmtime  = $order->return_confirmtime;
             $order_history->reject_cancel_reason  = $order->reject_cancel_reason;
             $order_history->leave_neighbour  = $order->leave_neighbour;
             $order_history->neighbour_info  = $order->neighbour_info;
@@ -3172,8 +3077,7 @@ class AcceptorderController extends Controller
 
     }
     public function return_confirm(Request $request)
-    {
-        
+    {  
         $response = array();
 		$data = $request->input('data');
 		$encode_string = encode_string($data);
@@ -3201,15 +3105,15 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token = $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id, 'api_token'=>$token])->first();
 
         if(!empty($user)){
-            $order = new_orders::find($order_id);
+            $order = new_orders::select('id','return_confirmtime','deliveryboy_id')->where('id',$order_id)->first();
             if(!empty($order)){
-                $order_data = new_orders::where('id',$order_id)->first();
-                $order_assign = Orderassign::where('order_id',$order_id)->first();
+                $order_data = new_orders::select('id','order_number','logistic_user_id','deliveryboy_id')->where('id',$order_id)->first();
+                $order_assign = Orderassign::select('order_id')->where('order_id',$order_id)->first();
                 if(!empty($order_assign)){
-                         $logistic_data = new_logistics::where('id',$order_data->logistic_user_id)->first();
+                         $logistic_data = new_logistics::select('id','name','email')->where('id',$order_data->logistic_user_id)->first();
                                 $data = [
                                     'name' => $logistic_data->name,
                                     'orderno'=>$order_data->order_number
@@ -3222,25 +3126,12 @@ class AcceptorderController extends Controller
 
                 if($user_id > 0){
                     $ids = array();
-                    $order_data = new_orders::where('id',$order_id)->first();
+                    $order_data = new_orders::select('id','deliveryboy_id','order_number')->where('id',$order_id)->first();
                     if(!empty($order_data)){
-                       $deliveryboydetail =  new_pharma_logistic_employee::where('id',$order_data->deliveryboy_id)->first();
+                       $deliveryboydetail =  new_pharma_logistic_employee::select('id','fcm_token')->where('id',$order_data->deliveryboy_id)->first();
                         if($deliveryboydetail->fcm_token!=''){
                             $ids[] = $deliveryboydetail->fcm_token;
                         }
-                        $msg = array
-                        (
-                            'body'   => ' Order number '. $order_data->order_number,
-                            'title'     => 'Order Return Confirmed'
-                        );
-                        if(count($ids)>0){
-                            $fields = array(
-                                'to' => $deliveryboydetail->fcm_token,
-                                'notification' => $msg
-                            );
-                            // $this->sendPushNotificationDeliveryboy($fields);   
-                        }
-                        
                         if(count($ids)>0){
                             Helper::sendNotificationDeliveryboy($ids, 'Order number '.$order_data->order_number, 'Order Return Confirmed', $user->id, 'seller', $deliveryboydetail->id, 'delivery_boy', $deliveryboydetail->fcm_token);
                         }
@@ -3250,7 +3141,7 @@ class AcceptorderController extends Controller
                 $order->deliveryboy_id = 0;
                 $order->save();
 
-                $orderAssign = Orderassign::where('order_id',$order_id)->first();
+                $orderAssign = Orderassign::select('order_id','deliveryboy_id')->where('order_id',$order_id)->first();
                 $orderAssign->deliveryboy_id = 0;
                 $orderAssign->save();
                 $response['status'] = 200;
@@ -3501,8 +3392,8 @@ class AcceptorderController extends Controller
                                     'invoice'=> $invoice_images,
                                     'order_note' => $order_details->order_note,
                                     'order_type' => $order_details->order_type,
-                                    'total_days' => $order_details->total_days,
-                                    'reminder_days' => $order_details->reminder_days,
+                                    'total_days' => ($order_details->total_days)?$order_details->total_days:'',
+                                    'reminder_days' => ($order_details->reminder_days)?$order_details->reminder_days:'',
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
                                     'return_confirmtime' => ($order_details->return_confirmtime)?$order_details->return_confirmtime:'',
@@ -3660,8 +3551,8 @@ class AcceptorderController extends Controller
                                     'invoice'=> $invoice_images,
                                     'order_note' => $order_details_complete->order_note,
                                     'order_type' => $order_details_complete->order_type,
-                                    'total_days' => $order_details_complete->total_days,
-                                    'reminder_days' => $order_details_complete->reminder_days,
+                                    'total_days' => ($order_details_complete->total_days)?$order_details_complete->total_days:'',
+                                    'reminder_days' => ($order_details_complete->reminder_days)?$order_details_complete->reminder_days:'',
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
                                     'return_confirmtime' => ($order_details_complete->return_confirmtime)?$order_details_complete->return_confirmtime:'',
@@ -3728,8 +3619,8 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
 		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+		if(!empty($user)){
 		$notification_arr = [];
 		
 		$notification = notification_seller::where('user_id','=',$user_id)->delete();

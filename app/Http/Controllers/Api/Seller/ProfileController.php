@@ -11,6 +11,7 @@ use Storage;
 use Image;
 use File;
 use Validator;
+use Exception;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class ProfileController extends Controller
@@ -32,62 +33,55 @@ class ProfileController extends Controller
             'user_id' => 'required'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
-		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
-				$login = new_pharma_logistic_employee::find($user_id);
-		        if($login) 
-				{
-					if($login->count() > 0) 
-					{
-						$profile_image = '';
-						if (!empty($login->profile_image)) {
 
-							$filename = storage_path('app/public/uploads/new_seller/' . $login->profile_image);
-						
-							if (File::exists($filename)) {
-								$profile_image = asset('storage/app/public/uploads/new_seller/' . $login->profile_image);
-							} else {
-								$profile_image = '';
-							}
-						}
-						
-						$response['status'] = 200;
-						$response['message'] = 'Profile';
-						$response['data']->user_id=$login->id;
-						$response['data']->name=$login->name; 
-						$response['data']->email=$login->email;
-						$response['data']->mobile_number=$login->mobile_number;
-						$response['data']->profile_image=$profile_image;
-						$response['data']->pharmacy_id=$login->pharma_logistic_id;
-						$pharmacy = new_pharmacies::where('id',$login->pharma_logistic_id)->first();
-						$response['data']->pharmacy=$pharmacy->name;
-						$response['data']->api_token=($login->api_token)?$login->api_token:'';
-						$response['data']->fcm_token=($login->fcm_token)?$login->fcm_token:'';
-		            } 
-					else 
-					{
-						$response['status'] = 404;
-						$response['message'] = 'User not found';
-		            }
-		        } 
-				else 
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+			$token =  $request->bearerToken();
+			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			if(!empty($user)){
+				$login = new_pharma_logistic_employee::select('id','password','mobile_number','profile_image','name','email','pharma_logistic_id','api_token','fcm_token')->where('id', $user_id)->first();
+		        
+				if(empty($login)) 
 				{
-					$response['status'] = 404;
-		            $response['message'] = 'User not found';
-		        }
-		}else{
-	    		$response['status'] = 401;
-	            $response['message'] = 'Unauthenticated';
-	    }
-		
+					throw new Exception("User not found");
+				}
+				$profile_image = '';
+				if (!empty($login->profile_image)) {
+
+					$filename = storage_path('app/public/uploads/new_seller/' . $login->profile_image);
+						
+					if (File::exists($filename)) {
+						$profile_image = asset('storage/app/public/uploads/new_seller/' . $login->profile_image);
+					} else {
+						$profile_image = '';
+					}
+				}
+						
+				$response['status'] = 200;
+				$response['message'] = 'Profile';
+				$response['data']->user_id=$login->id;
+				$response['data']->name=$login->name; 
+				$response['data']->email=$login->email;
+				$response['data']->mobile_number=$login->mobile_number;
+				$response['data']->profile_image=$profile_image;
+				$response['data']->pharmacy_id=$login->pharma_logistic_id;
+				$pharmacy = new_pharmacies::select('id','name')->where('id',$login->pharma_logistic_id)->first();
+				$response['data']->pharmacy=$pharmacy->name;
+				$response['data']->api_token=($login->api_token)?$login->api_token:'';
+				$response['data']->fcm_token=($login->fcm_token)?$login->fcm_token:'';
+			}else{
+			    $response['status'] = 401;
+			    $response['message'] = 'Unauthenticated';
+			}
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }
         return decode_string($response, 200);
     }
 	public function editprofile(Request $request)
@@ -114,64 +108,59 @@ class ProfileController extends Controller
             'user_id' => 'required',
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
-		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
-				$login = new_pharma_logistic_employee::find($user_id);
-		        if($login) 
+
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+			$token =  $request->bearerToken();
+			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			if(!empty($user)){
+				$login = new_pharma_logistic_employee::select('id','mobile_number','profile_image','name','email')->where('id', $user_id)->first();
+		        
+				if(empty($login)) 
 				{
-					if($login->count() > 0) 
-					{
-						$profile_image = '';
-						if ($request->hasFile('profile_image')) {
+					throw new Exception("User not found");
+				}
+		
+				$profile_image = '';
+				if ($request->hasFile('profile_image')) {
 							
-							$filename = storage_path('app/public/uploads/new_seller/' . $login->profile_image);
+					$filename = storage_path('app/public/uploads/new_seller/' . $login->profile_image);
 		            
-							if (File::exists($filename)) {
-								File::delete($filename);
-							}
+					if (File::exists($filename)) {
+						File::delete($filename);
+					}
 							
-							$image         = $request->file('profile_image');
-							$profile_image = time() . '.' . $image->getClientOriginalExtension();
+					$image         = $request->file('profile_image');
+					$profile_image = time() . '.' . $image->getClientOriginalExtension();
 
-							$img = Image::make($image->getRealPath());
-							$img->stream(); // <-- Key point
+					$img = Image::make($image->getRealPath());
+					$img->stream(); // <-- Key point
 
-							Storage::disk('public')->put('uploads/new_seller/'.$profile_image, $img, 'public');
-						}
-						$user = new_pharma_logistic_employee::find($user_id);
-						$user->name = $name;
-						$user->email = $email; 
-						$user->mobile_number = $mobile_number;
-						if (!empty($profile_image)) {
-							$user->profile_image = $profile_image;
-						}
-						$user->save();
-						$response['status'] = 200;
-						$response['message'] = 'Profile updated';
-		            } 
-					else 
-					{
-						$response['status'] = 404;
-						$response['message'] = 'User not found';
-		            }
-		        } 
-				else 
-				{
-					$response['status'] = 404;
-		            $response['message'] = 'User not found';
-		        }
-		     }else{
+					Storage::disk('public')->put('uploads/new_seller/'.$profile_image, $img, 'public');
+				}
+				$user = new_pharma_logistic_employee::find($user_id);
+				$user->name = $name;
+				$user->email = $email; 
+				$user->mobile_number = $mobile_number;
+				if (!empty($profile_image)) {
+					$user->profile_image = $profile_image;
+				}
+				$user->save();
+				$response['status'] = 200;
+				$response['message'] = 'Profile updated';   
+		    }else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   		 }
+	   		}
+	   	} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }
 		
 		return decode_string($response, 200);
     }

@@ -12,6 +12,7 @@ use Validator;
 use Storage;
 use Image;
 use File;
+use Exception;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class LoginController extends Controller
@@ -38,85 +39,76 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
 		
-		$login = new_pharma_logistic_employee::where(['mobile_number' => $mobile_number,"user_type"=>"seller"])->first();
-        if($login) 
-		{
-			if($login->count() > 0) 
-			{
-				$active = new_pharma_logistic_employee::where(['mobile_number'=>$mobile_number,"user_type"=>"seller",'is_active'=>'1'])->first();
-				if(!empty($active)){
-						if(Hash::check($password, $login->password)) 
-						{
-							
-							$profile_image = '';
-							if (!empty($login->profile_image)) {
+         try {
+ 
+	        if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
 
-								$filename = storage_path('app/public/uploads/new_seller/' . $login->profile_image);
-							
-								if (File::exists($filename)) {
-									$profile_image = asset('storage/app/public/uploads/new_seller/' . $login->profile_image);
-								} else {
-									$profile_image = '';
-								}
-							}
+	        $login = new_pharma_logistic_employee::select('mobile_number','user_type','id','name','email','password','profile_image','mobile_number','pharma_logistic_id','api_token','fcm_token','is_active','is_available')->where(['mobile_number' => $mobile_number,"user_type"=>"seller"])->first();
+	        
+			if(empty($login)) 
+			{
+				throw new Exception("You have entered wrong mobileno");
+			}
+
+			if(!Hash::check($password, $login->password)) 
+			{
+				throw new Exception("You have entered wrong password");
+			}
 					
-							$response['status'] = 200;
-							$response['message'] = 'Login success';
-							$response['data']->user_id=$login->id;
-							$response['data']->name=$login->name;
-							$response['data']->email=$login->email;
-							$response['data']->mobile_number=$login->mobile_number;
-							$response['data']->profile_image=$profile_image;
-							$response['data']->pharmacy_id=$login->pharma_logistic_id;
-							$pharmacy = new_pharmacies::where('id',$login->pharma_logistic_id)->first();
-							if(!empty($pharmacy)){
-								$response['data']->pharmacy=$pharmacy->name;	
-							}else{
-								$response['data']->pharmacy='';	
-							}
+			if($login->is_active == 0){
+				throw new Exception("Your account is not active please contact to adminstrator");	
+			}
+					
+			if($login->is_available == 0){
+				throw new Exception("Not available");
+			}
+			$profile_image = '';
+			if (!empty($login->profile_image)) {
+
+				$filename = storage_path('app/public/uploads/new_seller/' . $login->profile_image);
 							
+				if (File::exists($filename)) {
+					$profile_image = asset('storage/app/public/uploads/new_seller/' . $login->profile_image);
+				} else {
+					$profile_image = '';
+				}
+			}
+					
+			$response['status'] = 200;
+			$response['message'] = 'Login success';
+			$response['data']->user_id=$login->id;
+			$response['data']->name=$login->name;
+			$response['data']->email=$login->email;
+			$response['data']->mobile_number=$login->mobile_number;
+			$response['data']->profile_image=$profile_image;
+			$response['data']->pharmacy_id=$login->pharma_logistic_id;
+			$pharmacy = new_pharmacies::select('id','name')->where('id',$login->pharma_logistic_id)->first();
+			if(!empty($pharmacy)){
+				$response['data']->pharmacy=$pharmacy->name;	
+			}else{
+				$response['data']->pharmacy='';	
+			}							
+			$data = new_pharma_logistic_employee::find($login->id);
+			$data->api_token = $login->createToken('MyApp')-> accessToken;
+			$data->save();
+			$response['data']->api_token =  $data->api_token;
 
-							$data = new_pharma_logistic_employee::find($login->id);
-							$data->api_token = $login->createToken('MyApp')-> accessToken;
-							$data->save();
-							$response['data']->api_token =  $data->api_token;
+			$token = new_pharma_logistic_employee::find($login->id);
+			$token->fcm_token = $fcm_token;
+			$token->save();
 
-							$token = new_pharma_logistic_employee::find($login->id);
-							$token->fcm_token = $fcm_token;
-							$token->save();
-
-							$response['data']->fcm_token= ($token->fcm_token) ? $token->fcm_token :'';
-		                } 
-						else 
-						{
-		                    $response['status'] = 404;
-							$response['message'] = 'You entered wrong Mobile Number or password';
-		                }
-		            }else{
-		            		$response['status'] = 404;	
-							$response['message'] = 'Your account is not active please contact to adminstrator';
-		            }
-            } 
-			else 
-			{
-				$response['status'] = 404;
-				$response['message'] = 'You entered wrong Mobile Number or password';
-            }
+			$response['data']->fcm_token= ($token->fcm_token) ? $token->fcm_token :'';
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
         } 
-		else 
-		{
-			$response['status'] = 404;
-            $response['message'] = 'You entered wrong Mobile Number or password';
-        }
-		
+		                	
 		return decode_string($response, 200);
     }
 	public function forgotpassword(Request $request)
@@ -136,61 +128,54 @@ class LoginController extends Controller
             'mobile_number' => 'required'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
 		$response['status'] = 200;
 		$response['message'] = ''; 
 		$response['data'] = (object)array();
-		
-		$login = new_pharma_logistic_employee::where('mobile_number', $mobile_number)->first();
-        if($login) 
-		{
-			if($login->count() > 0) 
-			{
-				/*if ($login->is_verify == 0) {
-					
-					$response['status'] = 401;
-					$response['message'] = 'Please verify your account first';
-					return response($response, 200);
-				}*/
-				$verification_code = rand(1111,9999);//Str::random(6);
-					
-				$data = [
-					'name' => $login->name,
-					'otp' => $verification_code,
-				];
-				$message       = "Forgot Password OTP " . $verification_code;
-				$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
-				$sms = file_get_contents($api);
-				/*$result = Mail::send('email.sendotp', $data, function ($message) use ($email) {
+	
+		try{
 
-					$message->to($email)->subject('Forgot Password OTP');
+	 		if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
 
-				});*/
-				
-				$user = new_pharma_logistic_employee::find($login->id);
-				$user->otp = $verification_code;
-				$user->otp_time = date('Y-m-d H:i:s');
-				$user->save();
-				
-				$response['status'] = 200;
-				$response['data']->otp=$user->otp;
-				$response['message'] = 'Verification code successfully sent';
-            } 
-			else 
+			$login = new_pharma_logistic_employee::select('id','mobile_number','name','is_available','is_active','otp','otp_time')->where('mobile_number', $mobile_number)->first();		
+	        
+			if(empty($login)) 
 			{
-				$response['status'] = 404;
-				$response['message'] = 'Mobile Number not found';
-            }
+				throw new Exception("Mobile Number not found");
+			}
+
+			if($login->is_available == 0){
+				throw new Exception("Not available");
+			}
+
+			if($login->is_active == 0){
+				throw new Exception("Your account is not active please contact to adminstrator");	
+			}
+			$verification_code = rand(1111,9999);//Str::random(6);
+					
+			$data = [
+				'name' => $login->name,
+				'otp' => $verification_code,
+			];
+			$message       = "Forgot Password OTP " . $verification_code;
+			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
+			$sms = file_get_contents($api);
+			
+			$seller = new_pharma_logistic_employee::select('id','otp','otp_time')->where('id',$login->id)->first();
+			$seller->otp = $verification_code;
+			$seller->otp_time = date('Y-m-d H:i:s');
+			$seller->save();
+				
+			$response['status'] = 200;
+			$response['data']->otp=$seller->otp;
+			$response['message'] = 'Verification code successfully sent';
+
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
         } 
-		else 
-		{
-			$response['status'] = 404;
-            $response['message'] = 'Mobile Number not found';
-        }
-		
+            	
         return decode_string($response, 200);
     } 
 	
@@ -213,51 +198,53 @@ class LoginController extends Controller
             'otp' => 'required|numeric'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
 
 		$success = false;
-		$login = new_pharma_logistic_employee::where('mobile_number', $mobile_number)->first();
-		if($login) {
-			if($login->count() > 0) {
-				if ($otp == $login->otp) {
-				
-					$current = date("Y-m-d H:i:s");
-					$otp_time = $login->otp_time;
-					$diff = strtotime($current) - strtotime($otp_time);
-					$days    = floor($diff / 86400);
-					$hours   = floor(($diff - ($days * 86400)) / 3600);
-					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
-					if (($diff > 0) && ($minutes <= 10)) {
-						$success = true;
-						$response['status'] = 200;
-						$response['message'] = 'OTP verify successfully!';
-					} else {
-						$response['status'] = 404;
-						$response['message'] = 'OTP expired';
-					}
-				} else {
-					$response['status'] = 404;
-					$response['message'] = 'OTP is not valid';
-				}
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+					
+			$login = new_pharma_logistic_employee::select('mobile_number','otp','otp_time','is_active','is_available')->where('mobile_number',$mobile_number)->first();
+	        
+			if(empty($login)) 
+			{
+				throw new Exception("Mobile Number not found");
+			}
+
+			if ($otp != $login->otp) 
+			{
+				throw new Exception("OTP is not valid");
+			}
+			if($login->is_available == 0){
+				throw new Exception("Not available");
+			}
+
+			if($login->is_active == 0){
+				throw new Exception("Your account is not active please contact to adminstrator");	
+			}	
+			$current = date("Y-m-d H:i:s");
+			$otp_time = $login->otp_time;
+			$diff = strtotime($current) - strtotime($otp_time);
+			$days    = floor($diff / 86400);
+			$hours   = floor(($diff - ($days * 86400)) / 3600);
+			$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
+			if (($diff > 0) && ($minutes <= 10)) {
+				$success = true;
+				$response['status'] = 200;
+				$response['message'] = 'OTP verify successfully!';
 			} else {
 				$response['status'] = 404;
-				$response['message'] = 'Mobile Number not found';
+				$response['message'] = 'OTP expired';
 			}
-		} else {
-			$response['status'] = 404;
-			$response['message'] = 'Mobile Number not found';
-		} 
 		
-		/*if ($success) {
-			return $this->send_response([], $msg);
-		} else {
-			return $this->send_error($msg, []);
-		}*/
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }
 		return decode_string($response, 200);	
 	}
 
@@ -284,53 +271,44 @@ class LoginController extends Controller
             'confirm_password' => 'required|same:password',
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        } 
-		
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
-		
-		
-		$login = new_pharma_logistic_employee::where('mobile_number', $mobile_number)->first();
-		if($login) 
-		{
-			if($login->count() > 0) 
-			{	
-
-				$check_a =Hash::check($password, $login->password);
-				if($check_a){
-					$response['status'] = 404;
-					$response['message'] = 'Old password and new password cannot be same';
-				}else{
-					$user = new_pharma_logistic_employee::find($login->id);
-					$user->password = Hash::make($password); 
-					$user->otp = '';
-					$user->save();
-					  
-					$data = [
-						'name' => $login->name
-					];
-					$message       = "Pharma - Your password is changed ";
-					$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
-					$sms = file_get_contents($api);
-					/*$result = Mail::send('email.change_password', $data, function ($message) use ($email) {
-
-						$message->to($email)->subject('Pharma - Password Change');
-
-					});*/
-					$response['status'] = 200;
-					$response['message'] = 'Your password successfully changed!';
-				}	
-			} else {
-				$response['status'] = 404;
-				$response['message'] = 'Mobile Number not found';
+	
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+					
+			$login = new_pharma_logistic_employee::select('mobile_number','password','otp','id')->where('mobile_number', $mobile_number)->first();
+	        
+			if(empty($login)) 
+			{
+				throw new Exception("Mobile Number not found");
 			}
-		} else {
-			$response['status'] = 404;
-			$response['message'] = 'Mobile Number not found';
-		}
+			
+			if (Hash::check($password, $login->password)) 
+			{
+				throw new Exception("Old password and new password cannot be same");
+			}
+			$user = new_pharma_logistic_employee::find($login->id);
+			$user->password = Hash::make($password); 
+			$user->otp = '';
+			$user->save();
+					  
+			$data = [
+				'name' => $login->name
+			];
+			$message       = "Pharma - Your password is changed ";
+			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
+			$sms = file_get_contents($api);
+					
+			$response['status'] = 200;
+			$response['message'] = 'Your password successfully changed!';
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        } 
 		
         return decode_string($response, 200);
     }
@@ -362,75 +340,56 @@ class LoginController extends Controller
             'confirm_password' => 'required|same:password',
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        } 
-		
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
-		
-		$success = false;
-		$msg = '';
-		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
-				$login = new_pharma_logistic_employee::where('id', $user_id)->first();
-				if($login) 
+	
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+			$token =  $request->bearerToken();
+			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			if(!empty($user)){
+				$login = new_pharma_logistic_employee::select('id','password','mobile_number')->where('id', $user_id)->first();
+		        
+				if(empty($login)) 
 				{
-					if($login->count() > 0) 
-					{	
-						$check_a =Hash::check($current_password, Hash::make($password));
-						if($check_a){
-							$response['status'] = 404;
-							$response['message'] = 'Old password and new password cannot be same';
-						}elseif (Hash::check($current_password, $login->password)) { 
-							$user = new_pharma_logistic_employee::find($login->id);
-							$user->password = Hash::make($password); 
-							$user->otp = '';
-							$user->save();
-							  
-							$data = [
-								'name' => $login->name
-							];
-							
-							$mobile_number = $login->mobile_number;
-							$message       = "Pharma - Password Change " . $login->name;
-							$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
-							$sms = file_get_contents($api);
-							/*$result = Mail::send('email.change_password', $data, function ($message) use ($email) {
-
-								$message->to($email)->subject('Pharma - Password Change');
-
-							});*/
-							//$success = true;
-							$response['status'] = 200;
-							$response['message']= 'Your password successfully changed!';
-							
-						} else {
-							$response['status'] = 404;
-							$response['message']= 'Current password doent not match';
-						}
-					
-					} else {
-						$response['status'] = 404;
-						$response['message']= 'User not found';
-					}
-
-				} else {
-					$response['status'] = 404;
-					$response['message']= 'User not found';
+					throw new Exception("User not found");
 				}
-			 }else{
+				if(!Hash::check($current_password, $login->password))
+				{
+					throw new Exception("Current password doent not match");
+				}
+				if (Hash::check($current_password, Hash::make($password)))
+				{
+					throw new Exception("Old password and new password cannot be same");
+				}
+					
+				$user = new_pharma_logistic_employee::find($login->id);
+				$user->password = Hash::make($password); 
+				$user->otp = '';
+				$user->save();
+							  
+				$data = [
+					'name' => $login->name
+				];
+							
+				$mobile_number = $login->mobile_number;
+				$message       = "Pharma - Password Change " . $login->name;
+				$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
+				$sms = file_get_contents($api);
+				$response['status'] = 200;
+				$response['message']= 'Your password successfully changed!';				
+			}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   		 }
+	   		}
+	   	} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }
 		return decode_string($response, 200);
-        /*if ($success) {
-			return $this->send_response([], $response);
-		} else {
-			return $this->send_error($response, []);
-		}*/
     }
 
 	public function logout(Request $request){
@@ -458,8 +417,8 @@ class LoginController extends Controller
 		$response['data'] = (object)array();
 
 		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+		if(!empty($user)){
 			$user = new_pharma_logistic_employee::find($user_id);
 			$user->api_token = '';
 			$user->fcm_token = '';
@@ -467,8 +426,8 @@ class LoginController extends Controller
 			$response['status'] = 200;
 			$response['message'] = 'Logged Out Successfully ';
 		 }else{
-	    		$response['status'] = 401;
-	            $response['message'] = 'Unauthenticated';
+	    	$response['status'] = 401;
+	        $response['message'] = 'Unauthenticated';
 	   	 }
 			return decode_string($response, 200);
     }
