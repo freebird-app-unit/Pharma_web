@@ -147,7 +147,7 @@ class PackagesController extends Controller
 		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
  
 		// Initializing Order
-		$obj->initOrder('215421659887', $package->name, $package->price, url('packages/success'),  url('packages/fail'));
+		$obj->initOrder('PKG-ORD-'.$user_id.'-'.$package_id, $package->name, $package->price, url('packages/success'),  url('packages/fail'));
 		 
 		// Add Customer
 		$obj->addCustomer($user->name, $user->email, $user->mobile_number);
@@ -158,7 +158,7 @@ class PackagesController extends Controller
 		// Add Billing Address
 		$obj->addBillingAddress($pharmacy->country, $pharmacy->state, $pharmacy->city, $pharmacy->pincode, $pharmacy->address);
 		
-		$obj->setCustomFields(array('custom_field_1' => $package_id, 'custom_field_2' => $user_id));
+		//$obj->setCustomFields(array('custom_field_1' => $package_id, 'custom_field_2' => $user_id));
 		
 		echo $obj->submit();
 	}
@@ -190,7 +190,7 @@ class PackagesController extends Controller
 				$payment->updated_at = date('Y-m-d H:i:s');
 				$payment->save();
             }
-			return "Payment is successful. Your transaction id is: ". $arr_transaction['payment_id'];
+			//return "Payment is successful. Your transaction id is: ". $arr_transaction['payment_id'];
         }
 		return redirect('/packages')->with('success_msg', 'Your Payment successfully completed');
 	}
