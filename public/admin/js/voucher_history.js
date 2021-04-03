@@ -10,11 +10,12 @@ function getvoucherhistorylist(pageno){
 	var perpage = $('#perpage').val();
 	var ord_field=$('#sortfield').val();
     var sortord=$('#sortord').val();
+	var search_text = $('#search_text').val();
 
 	$.ajax({
 		type: "post",
 		url: base_url+'/getvoucherhistorylist',
-		data: 'pageno='+pageno+"&perpage="+perpage+"&_token="+token+"&ord_field="+ord_field+"&sortord="+sortord+"&filter_start_date="+filter_start_date+"&filter_end_date="+filter_end_date,
+		data: 'pageno='+pageno+"&perpage="+perpage+"&_token="+token+"&ord_field="+ord_field+"&sortord="+sortord+"&filter_start_date="+filter_start_date+"&filter_end_date="+filter_end_date+"&search_text="+search_text,
 		success: function (responce) {	
 			var data = responce.split('##');
 			$('#admin_voucher_history_list tbody').html(data[0]);

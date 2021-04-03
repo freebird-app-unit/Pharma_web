@@ -193,12 +193,29 @@ class VoucherController extends Controller
 
         $filter_end_date=(isset($_POST['filter_end_date']) && $_POST['filter_end_date']!='')?$_POST['filter_end_date']:'';
         $filter_start_date=(isset($_POST['filter_start_date']) && $_POST['filter_start_date']!='')?$_POST['filter_start_date']:'';
+		
+		$search_text=(isset($_POST['search_text']) && $_POST['search_text']!='')?$_POST['search_text']:'';
 
         $order_detail = vouchers::select('vouchers.*','new_pharmacies.name as pharmacy_name', 'new_logistics.name as logistic_name')
 		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'vouchers.payer_id')
-		->leftJoin('new_logistics', 'new_logistics.id', '=', 'vouchers.payer_id')
-		->where(['payer_type'=> $user_type, 'payer_id'=> $user_id]);
-
+		->leftJoin('new_logistics', 'new_logistics.id', '=', 'vouchers.payer_id');
+		//->where(['payer_type'=> $user_type, 'payer_id'=> $user_id]);
+		
+		$order_detail= $order_detail->where(function ($query) use($user_type,$user_id) {
+            $query->where('vouchers.payer_type',$user_type)
+			->orWhere('vouchers.payer_id',$user_id);
+        });
+			
+		if($search_text!=''){
+			$order_detail= $order_detail->where(function ($query) use($search_text) {
+                $query->where('vouchers.voucher_number', 'like', '%'.$search_text.'%')
+				->orWhere('vouchers.transation_number', 'like', '%'.$search_text.'%')
+				->orWhere('new_pharmacies.name', 'like', '%'.$search_text.'%')
+				->orWhere('vouchers.amount', 'like', '%'.$search_text.'%')
+				->orWhere('vouchers.voucher_info', 'like', '%'.$search_text.'%');
+            });
+		}
+		
         $total = $order_detail->count();
 		$total_page = ceil($total/$per_page);
 

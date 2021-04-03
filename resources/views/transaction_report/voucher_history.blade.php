@@ -24,7 +24,7 @@
 			<div class="table-rep-plugin">
 				<div class="table-responsive" data-pattern="priority-columns">
 					<div class="col-sm-4">
-						<input type="text" class="form-control" name="search_text" placeholder="Search" id="search_text"/>
+						<input type="text" class="form-control" name="search_text" placeholder="Search" id="search_text" onkeyup="getvoucherhistorylist(1)"/>
 					</div>
 					<div class="col-sm-7"></div>
 					<table id="admin_voucher_history_list" class="table  table-striped">
@@ -46,7 +46,7 @@
 					<div class="col-sm-12"><br></div>
 					<div class="col-sm-8 total_summary" id="total_summary"></div>
 					<div class="col-sm-2 perpage_container" id="perpage_container">
-						<select id="perpage" class="form-control">
+						<select id="perpage" class="form-control" onchange="getvoucherhistorylist(1)">
 							<option value="10">10</option>
 							<option value="25">25</option>
 							<option value="50">50</option>
