@@ -72,16 +72,32 @@ class VoucherController extends Controller
 		$page=(isset($_POST['pageno']) && $_POST['pageno']!='')?$_POST['pageno']:1;
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
         $order_type=(isset($_POST['order_type']) && $_POST['order_type']!='')?$_POST['order_type']:'';
+		$search_text=(isset($_POST['search_text']) && $_POST['search_text']!='')?$_POST['search_text']:'';
 
         $filter_end_date=(isset($_POST['filter_end_date']) && $_POST['filter_end_date']!='')?$_POST['filter_end_date']:'';
         $filter_start_date=(isset($_POST['filter_start_date']) && $_POST['filter_start_date']!='')?$_POST['filter_start_date']:'';
 
         $order_detail = vouchers::select('vouchers.*','new_pharmacies.name as pharmacy_name', 'new_logistics.name as logistic_name')
 		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'vouchers.payer_id')
-		->leftJoin('new_logistics', 'new_logistics.id', '=', 'vouchers.payer_id')
-		->orWhere(['receiver_type'=> $user_type])
-		->orWhere(['receiver_id'=> $user_id]);
-
+		->leftJoin('new_logistics', 'new_logistics.id', '=', 'vouchers.payer_id');
+		//->orWhere(['receiver_type'=> $user_type])
+		//->orWhere(['receiver_id'=> $user_id]);
+		
+		$order_detail= $order_detail->where(function ($query) use($user_type,$user_id) {
+                $query->where('vouchers.receiver_type',$user_type)
+				->orWhere('vouchers.receiver_id',$user_id);
+            });
+		
+		if($search_text!=''){
+			$order_detail= $order_detail->where(function ($query) use($search_text) {
+                $query->where('vouchers.voucher_number', 'like', '%'.$search_text.'%')
+				->orWhere('vouchers.transation_number', 'like', '%'.$search_text.'%')
+				->orWhere('new_pharmacies.name', 'like', '%'.$search_text.'%')
+				->orWhere('vouchers.amount', 'like', '%'.$search_text.'%')
+				->orWhere('vouchers.voucher_info', 'like', '%'.$search_text.'%');
+            });
+		}
+		
         $total = $order_detail->count();
 		$total_page = ceil($total/$per_page);
 
@@ -122,20 +138,32 @@ class VoucherController extends Controller
 			}
 			if($page==1){
 				$prev='disabled';
+				$pagination.='<li class="page-item '.$prev.'">
+						<a class="page-link" href="javascript:;" tabindex="-1"> <i class="fa fa-angle-left"></i></a>
+					</li>';
 			}else{
 				$prev='';
+				$pagination.='<li class="page-item '.$prev.'">
+						<a class="page-link" onclick="getvoucherlist('.($page-1).')" href="javascript:;" tabindex="-1"> <i class="fa fa-angle-left"></i></a>
+					</li>';
 			}
 			if($total_page==$page){
 				$next='disabled';
+				$pagination.='<li class="page-item '.$next.'">
+						<a class="page-link" href="javascript:;"><i class="fa fa-angle-right"></i></a>
+					</li>';
 			}else{
 				$next='';
+				$pagination.='<li class="page-item '.$next.'">
+						<a class="page-link" onclick="getvoucherlist('.($page+1).')" href="javascript:;"><i class="fa fa-angle-right"></i></a>
+					</li>';
 			}
-			$pagination.='<li class="page-item '.$prev.'">
+			/* $pagination.='<li class="page-item '.$prev.'">
 						<a class="page-link" onclick="getvoucherlist('.($page-1).')" href="javascript:;" tabindex="-1"> <i class="fa fa-angle-left"></i></a>
 					</li>
 					<li class="page-item '.$next.'">
 						<a class="page-link" onclick="getvoucherlist('.($page+1).')" href="javascript:;"><i class="fa fa-angle-right"></i></a>
-					</li>';
+					</li>'; */
 					$from = ($per_page*($page-1));
 					if($from<=0){$from=1;}
 					$to = ($page*$per_page);

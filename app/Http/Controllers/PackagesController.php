@@ -178,14 +178,20 @@ class PackagesController extends Controller
             $isPaymentExist = Packagetransaction::where('payment_id', $arr_transaction['payment_id'])->first();
             if(!$isPaymentExist)
             {
+				$orderidarr = explode('-',$arr_transaction['order']['order_id']);
+				$user_id = $orderidarr[2];
+				$package_id = $orderidarr[3];
+				$package = Packages::find($package_id);
 				$payment = new Packagetransaction;
-				$payment->package_id = $arr_transaction['custom_field_1'];
+				$payment->package_id = $package_id;
 				$payment->payment_id = $arr_transaction['payment_id'];
-				$payment->user_id = $arr_transaction['custom_field_2'];
-				$payment->total_delivery = $arr_transaction['order']['gross_amount'];
+				$payment->order_number = $arr_transaction['order']['order_id'];
+				$payment->user_id = $user_id;
+				$payment->total_delivery = $package->total_delivery;
 				$payment->package_purchase_date = date('Y-m-d H:i:s');
 				$payment->is_active = 1;
-				$payment->package_amount = 1;
+				$payment->package_amount = $package->price;
+				$payment->signature = $arr_transaction['signature'];
 				$payment->created_at = date('Y-m-d H:i:s');
 				$payment->updated_at = date('Y-m-d H:i:s');
 				$payment->save();
@@ -199,8 +205,6 @@ class PackagesController extends Controller
 		$payment_id = $_REQUEST['payment-id'];
 		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
 		$transactionData = $obj->getTransactionInfo($payment_id);
-		echo '<pre>';
-		print_r($transactionData);exit;
 		return redirect('/packages')->with('fail_msg', 'Payment failed');
 	}
 }

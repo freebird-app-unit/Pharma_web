@@ -160,7 +160,7 @@ class DeliveryChargesController extends Controller
 		if($orderIds != ''){
 			$vouchers = new vouchers();
 			$vouchers->voucher_type = $request->voucher_type;
-			$vouchers->voucher_status = 'new';
+			$vouchers->voucher_status = 'accept';
 			$vouchers->voucher_number = $this->generate_unique_number();
 			$vouchers->amount = $amount;
 			$vouchers->payer_type = $user_type;

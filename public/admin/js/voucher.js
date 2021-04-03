@@ -7,6 +7,7 @@ function getvoucherlist(pageno){
 	var order_type = $('#order_type').val();
 	var filter_start_date = $('#filter_start_date').val();
     var filter_end_date = $('#filter_end_date').val();
+	var search_text = $('#search_text').val();
     
 	var perpage = $('#perpage').val();
 	var ord_field=$('#sortfield').val();
@@ -15,7 +16,7 @@ function getvoucherlist(pageno){
 	$.ajax({
 		type: "post",
 		url: base_url+'/getvoucherlist',
-		data: 'pageno='+pageno+"&perpage="+perpage+"&_token="+token+"&order_type="+order_type+"&ord_field="+ord_field+"&sortord="+sortord+"&filter_start_date="+filter_start_date+"&filter_end_date="+filter_end_date,
+		data: 'pageno='+pageno+"&perpage="+perpage+"&_token="+token+"&order_type="+order_type+"&ord_field="+ord_field+"&sortord="+sortord+"&filter_start_date="+filter_start_date+"&filter_end_date="+filter_end_date+"&search_text="+search_text,
 		success: function (responce) {	
 			var data = responce.split('##');
 			$('#admin_voucher_list tbody').html(data[0]);
