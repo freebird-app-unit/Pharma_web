@@ -15,7 +15,7 @@ use App\SellerModel\delivery_charges;
 use App\SellerModel\invoice;
 use App\SellerModel\Orderassign;
 use App\SellerModel\new_address;
-use App\SellerModel\new_orders;
+use App\new_orders;
 use App\SellerModel\new_pharma_logistic_employee;
 use App\DeliveryboyModel\new_order_images;
 use App\DeliveryboyModel\new_order_history;
@@ -72,7 +72,7 @@ class AcceptorderController extends Controller
         ]);
         
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
                 $check_data = new_orders::select('id','checking_by')->where('id',$order_id)->first();
                 $check_data->checking_by = $user_id;
@@ -1130,11 +1130,10 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
         if(count($user)>0){
-                $orders = new_orders::where('id',$order_id)->first();
+                $orders = new_orders::select('id','customer_id','pharmacy_id','order_number')->where('id',$order_id)->first();
                 if(!empty($orders)){
-                        $data= new_orders::where(['process_user_id' => $user_id,'id'=>$order_id])->get();
                         $destinationPath = 'storage/app/public/uploads/invoice/'; 
                         if($files=$request->file('invoice')){
                             foreach($files as $key => $file){
@@ -1148,13 +1147,13 @@ class AcceptorderController extends Controller
                                 $invoice_data->save();
                             }
                         }
-                        $invoice_path= new_orders::find($order_id);
+                        $invoice_path= new_orders::select('id','order_amount')->where('id',$order_id)->first();
                         $invoice_path->order_amount = $order_amount;
                         $invoice_path->save();
 
                        //send sms to user
-                         $mobile_data = new_users::where('id',$orders->customer_id)->first();
-                        $pharmacy_data = new_pharmacies::where('id',$orders->pharmacy_id)->first();
+                         $mobile_data = new_users::select('id','name','mobile_number','email')->where('id',$orders->customer_id)->first();
+                        $pharmacy_data = new_pharmacies::select('id','name')->where('id',$orders->pharmacy_id)->first();
                         $message       = 'Dear Customer '.$mobile_data->name.
                                          ', Thank you for ordering your medicine with '.$pharmacy_data->name.
                                          '. Your order '.$orders->order_number.' has been confirmed and your order amount is '.$order_amount.'.';
@@ -1641,12 +1640,12 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
-             $dupicate_data = new_orders::where('id',$order_id)->first();
+            $dupicate_data = new_orders::select('id','deliveryboy_id')->where('id',$order_id)->first();
             $dupicate_data->deliveryboy_id = 0;
             $dupicate_data->save();
-			$assign = new_orders::find($order_id);
+			$assign = new_orders::select('deliveryboy_id','order_status','assign_datetime','deliveryboy_id')->where('id',$order_id)->first();
 			if(!empty($assign)){
 				if($assign->deliveryboy_id == 0){
 					$assign->order_status='assign';
@@ -1669,33 +1668,19 @@ class AcceptorderController extends Controller
 						if($order_assign->save()){
                                 if($user_id > 0){
                                 $ids = array();
-                                $order_data = new_orders::where('id',$order_id)->first();
-                                $deliveryboydetail =  new_pharma_logistic_employee::where('id',$order_data->deliveryboy_id)->first();
-                                    if($deliveryboydetail->fcm_token!=''){
-                                        $ids[] = $deliveryboydetail->fcm_token;
-                                    }
-                                 $delivery_address =  new_address::where('id',$order_data->address_id)->first();
-                                 $msg = array
-                                (
-                                    'body'   => ' Order number '.$order_data->order_number,
-                                    'title'     => 'Order Assigned'
-                                );
-                                // if(count($ids)>0){
-                                    // $fields = array(
-                                        // 'to' => $deliveryboydetail->fcm_token,
-                                        // 'notification' => $msg
-                                    // );
-                                    // $this->sendPushNotificationDeliveryboy($fields);   
-                                // }
+                                $order_data = new_orders:: select('id','deliveryboy_id','order_number')->where('id',$order_id)->first();
+                                $deliveryboydetail =  new_pharma_logistic_employee::select('id','fcm_token')->where('id',$order_data->deliveryboy_id)->first();
+                                if(!empty($deliveryboydetail)){
+                                    $ids[] = $deliveryboydetail->fcm_token;
+                                }
                                 if (count($ids) > 0) {                  
                                     Helper::sendNotificationDeliveryboy($ids, 'Order number '.$order_data->order_number, 'Order Assigned', $user->id, 'seller', $deliveryboydetail->id, 'delivery_boy', $deliveryboydetail->fcm_token);
-                                }
-                    
+                                }                    
                                 $notification = new notification_deliveryboy();
                                 $notification->user_id=$deliveryboydetail->id;
                                 $notification->order_id=$order_data->id;
-                                $notification->subtitle=$msg['body'];
-                                $notification->title=$msg['title'];
+                                $notification->subtitle= 'Order number'.$order_data->order_number;
+                                $notification->title='Order Assigned';
                                 $notification->created_at=date('Y-m-d H:i:s');
                                 $notification->save();
                             }
@@ -3382,15 +3367,14 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
-                $order_details =  new_orders::where('id' , $order_id)->orderBy('id', 'DESC')->get();
-                $order_details_complete =  new_order_history::where('order_id' , $order_id)->orderBy('order_id', 'DESC')->get();
-                if(count($order_details)>0){
-                         foreach($order_details as $value) {
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        if(!empty($user)){
+                $order_details =  new_orders::select('id','prescription_id','customer_id','address_id','deliveryboy_id','delivery_charges_id','order_number','order_note','order_type','total_days','reminder_days','return_confirmtime','accept_datetime','reject_cancel_reason','reject_datetime','order_amount','cancel_datetime','created_at','order_status','external_delivery_initiatedby','create_datetime','pickup_datetime','deliver_datetime')->where('id' , $order_id)->orderBy('id', 'DESC')->first(); 
+                $order_details_complete =  new_order_history::select('id','prescription_id','customer_id','address_id','deliveryboy_id','delivery_charges_id','order_number','order_note','order_type','total_days','reminder_days','return_confirmtime','accept_datetime','reject_cancel_reason','reject_datetime','order_amount','cancel_datetime','created_at','order_status','external_delivery_initiatedby','create_datetime','pickup_datetime','deliver_datetime')->where('order_id' , $order_id)->orderBy('order_id', 'DESC')->first();
+
+                if(!empty($order_details)){
                                     $prescription_image = '';
-                                    $image_list = Prescription::where('id',$value->prescription_id)->get();
-                                    foreach ($image_list as $p_img) {
+                                    $p_img = Prescription::where('id',$order_details->prescription_id)->first();
                                     if (!empty($p_img->image)) {
 
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -3401,7 +3385,6 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
-                                }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
                                 foreach ($invoice_data as $invoice) {
@@ -3421,40 +3404,51 @@ class AcceptorderController extends Controller
                                         'invoice' => $invoice_image
                                     ];
                                 }
-                               $user_list = new_users::where('id',$value->customer_id)->get();
-                               $name='';
-                               $mobile='';
-                                foreach ($user_list as $u_img) { 
-                                    $name = $u_img->name;
-                                    $mobile = $u_img->mobile_number;
-                                }
-                                $address_data = new_address::where('id',$value->address_id)->get();
-                                foreach ($address_data as $key => $val) {
-                                    $destination_address[] = [
-                                        'address_id' => $val->id,
-                                        'user_id' => $val->user_id,
-                                        'locality'=>$val->locality,
-                                        'address' =>$val->address,
-                                        'name' => $val->name,
-                                        'mobileno' =>$val->mobileno,
-                                        'blockno' =>$val->blockno,
-                                        'streetname'=>$val->streetname,
-                                        'city'=>$val->city,
-                                        'pincode'=>$val->pincode,
-                                        'latitude'=>$val->latitude,
-                                        'longitude'=>$val->longitude
-                                    ];
-                                }
-                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$value->deliveryboy_id)->get();
-                                $deliveryboy='';
-                                foreach ($deliveryboy_name as $d_name) {
-                                    $deliveryboy = $d_name->name;
-                                }
-                                $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
 
+                               $user_data = new_users::where('id',$order_details->customer_id)->first();
+                               if(!empty($user_data)){
+                                    $name = $user_data->name;
+                                    $mobile = $user_data->mobile_number;
+                               }else{
+                                    $name = '';
+                                    $mobile = '';
+                               }
+                               
+                               $address_data = new_address::where('id',$order_details->address_id)->first();
+                               if(!empty($address_data)){
+                                     $destination_address[] = [
+                                        'address_id' => $address_data->id,
+                                        'user_id' => $address_data->user_id,
+                                        'locality'=>$address_data->locality,
+                                        'address' =>$address_data->address,
+                                        'name' => $address_data->name,
+                                        'mobileno' =>$address_data->mobileno,
+                                        'blockno' =>$address_data->blockno,
+                                        'streetname'=>$address_data->streetname,
+                                        'city'=>$address_data->city,
+                                        'pincode'=>$address_data->pincode,
+                                        'latitude'=>$address_data->latitude,
+                                        'longitude'=>$address_data->longitude
+                                    ];
+                               }
+                                   
+                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$order_details->deliveryboy_id)->first();
+                                if(!empty($deliveryboy_name)){
+                                     $deliveryboy = $deliveryboy_name->name;
+                                }else{
+                                    $deliveryboy ='';
+                                }
+                               
+                                $delivery_type_data = new_delivery_charges::where('id',$order_details->delivery_charges_id)->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type = $delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
+                                }
+                                
                                  $pickup_images=[];
                                  $pickup_date = '';
-                                 if($value->order_status == 'pickup'){
+                                 if($order_details->order_status == 'pickup'){
                                      $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
                                     foreach ($pickup_data as $pickup) {
                                             $pickup_image = '';
@@ -3473,12 +3467,12 @@ class AcceptorderController extends Controller
                                             'pickup_image' => $pickup_image
                                         ];
                                     }
-                                    $pickup_date = $value->pickup_datetime;
+                                    $pickup_date = $order_details->pickup_datetime;
                                  }
                                 
                                 $delivered_images=[];
                                 $deliver_date = '';
-                                 if($value->order_status == 'complete'){  
+                                 if($order_details->order_status == 'complete'){  
                                      $deliver_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'deliver'])->get();
                                     foreach ($deliver_data as $deliver) {
                                             $deliver_image = '';
@@ -3497,57 +3491,49 @@ class AcceptorderController extends Controller
                                             'deliver_image' => $deliver_image
                                         ];
                                     }
-                                    $deliver_date = $value->deliver_datetime;
+                                    $deliver_date = $order_details->deliver_datetime;
                                 }
-                                   
-
-                                $delivery_type = '';
-                                foreach ($delivery_type_data as $dt) {
-                                    $delivery_type =$dt->delivery_type;
-                                }
+                              
                                     $orders[] = [
-                                    'order_id' => $value->id,
-                                    'order_number' => $value->order_number,
+                                    'order_id' => $order_details->id,
+                                    'order_number' => $order_details->order_number,
                                     'prescription_image' => $prescription_image,
                                     'invoice'=> $invoice_images,
-                                    'order_note' => $value->order_note,
-                                    'order_type' => $value->order_type,
-                                    'total_days' => $value->total_days,
-                                    'reminder_days' => $value->reminder_days,
+                                    'order_note' => $order_details->order_note,
+                                    'order_type' => $order_details->order_type,
+                                    'total_days' => $order_details->total_days,
+                                    'reminder_days' => $order_details->reminder_days,
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
-                                    'return_confirmtime' => ($value->return_confirmtime)?$value->return_confirmtime:'',
-                                    'location' => ($destination_address)?$destination_address[0]:'',
+                                    'return_confirmtime' => ($order_details->return_confirmtime)?$order_details->return_confirmtime:'',
+                                    'location' => ($destination_address)?$destination_address:'',
                                     'order_assign_to' => $deliveryboy,
                                     'deliver_to' =>  $name,
-                                    'accept_date' => ($value->accept_datetime)?$value->accept_datetime:'',
+                                    'accept_date' => ($order_details->accept_datetime)?$order_details->accept_datetime:'',
                                     'deliver_date' => $deliver_date,
-                                    'assign_date' => ($value->assign_datetime)?$value->assign_datetime:'',
-                                    'cancel_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
-                                    'return_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
-                                    'reject_reason' => ($value->reject_cancel_reason) ?$value->reject_cancel_reason: '',
-                                    'return_date' => ($value->reject_datetime)?$value->reject_datetime:'',
-                                    'order_amount' => ($value->order_amount)?$value->order_amount:'',
-                                    'delivery_type' => ($delivery_type)?$delivery_type:'free',
+                                    'assign_date' => ($order_details->assign_datetime)?$order_details->assign_datetime:'',
+                                    'cancel_reason' => ($order_details->reject_cancel_reason) ? $order_details->reject_cancel_reason: '',
+                                    'return_reason' => ($order_details->reject_cancel_reason) ? $order_details->reject_cancel_reason: '',
+                                    'reject_reason' => ($order_details->reject_cancel_reason) ?$order_details->reject_cancel_reason: '',
+                                    'return_date' => ($order_details->reject_datetime)?$order_details->reject_datetime:'',
+                                    'order_amount' => ($order_details->order_amount)?$order_details->order_amount:'',
+                                    'delivery_type' => $delivery_type,
                                     'pickup_images' => $pickup_images,
                                     'pickup_date' => $pickup_date,
                                     'drop_images' => $delivered_images,
                                     'drop_date' => $deliver_date,
-                                    'reject_date' => ($value->reject_datetime)?$value->reject_datetime:'',
-                                    'cancel_date' => ($value->cancel_datetime)?$value->cancel_datetime:'',
-                                    'received_date' => (date_format($value->created_at,"Y-m-d H:i:s"))?(date_format($value->created_at,"Y-m-d H:i:s")):'',
-                                    'order_status' => $value->order_status,
-                                    'external_delivery_initiatedby' => ($value->external_delivery_initiatedby)?$value->external_delivery_initiatedby:'',
-                                    'order_time'=>($value->create_datetime)?$value->create_datetime:''
+                                    'reject_date' => ($order_details->reject_datetime)?$order_details->reject_datetime:'',
+                                    'cancel_date' => ($order_details->cancel_datetime)?$order_details->cancel_datetime:'',
+                                    'received_date' => (date_format($order_details->created_at,"Y-m-d H:i:s"))?(date_format($order_details->created_at,"Y-m-d H:i:s")):'',
+                                    'order_status' => $order_details->order_status,
+                                    'external_delivery_initiatedby' => ($order_details->external_delivery_initiatedby)?$order_details->external_delivery_initiatedby:'',
+                                    'order_time'=>($order_details->create_datetime)?$order_details->create_datetime:''
                                 ];
-                            }
                         $response['status'] = 200;
                         $response['message'] = 'Order Details';
-                } elseif (count($order_details_complete)>0) {
-                    foreach($order_details_complete as $value) {
-                                    $prescription_image = '';
-                                    $image_list = Prescription::where('id',$value->prescription_id)->get();
-                                    foreach ($image_list as $p_img) {
+                } elseif (!empty($order_details_complete)) {
+                                $prescription_image = '';
+                                    $p_img = Prescription::where('id',$order_details_complete->prescription_id)->first();
                                     if (!empty($p_img->image)) {
 
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -3558,7 +3544,6 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
-                                }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
                                 foreach ($invoice_data as $invoice) {
@@ -3578,41 +3563,52 @@ class AcceptorderController extends Controller
                                         'invoice' => $invoice_image
                                     ];
                                 }
-                               $user_list = new_users::where('id',$value->customer_id)->get();
-                               $name='';
-                               $mobile='';
-                                foreach ($user_list as $u_img) { 
-                                    $name = $u_img->name;
-                                    $mobile = $u_img->mobile_number;
-                                }
-                                $address_data = new_address::where('id',$value->address_id)->get();
-                                foreach ($address_data as $key => $val) {
-                                    $destination_address[] = [
-                                        'address_id' => $val->id,
-                                        'user_id' => $val->user_id,
-                                        'locality'=>$val->locality,
-                                        'address' =>$val->address,
-                                        'name' => $val->name,
-                                        'mobileno' =>$val->mobileno,
-                                        'blockno' =>$val->blockno,
-                                        'streetname'=>$val->streetname,
-                                        'city'=>$val->city,
-                                        'pincode'=>$val->pincode,
-                                        'latitude'=>$val->latitude,
-                                        'longitude'=>$val->longitude
-                                    ];
-                                }
-                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$value->deliveryboy_id)->get();
-                                $deliveryboy='';
-                                foreach ($deliveryboy_name as $d_name) {
-                                    $deliveryboy = $d_name->name;
-                                }
-                                $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
 
-                                 $pickup_images=[];
-                                 $pickup_date = '';
-                                 if($value->order_status == 'pickup'){
-                                     $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
+                              $user_data = new_users::where('id',$order_details_complete->customer_id)->first();
+                               if(!empty($user_data)){
+                                    $name = $user_data->name;
+                                    $mobile = $user_data->mobile_number;
+                               }else{
+                                    $name = '';
+                                    $mobile = '';
+                               }
+                               
+                               $address_data = new_address::where('id',$order_details_complete->address_id)->first();
+                               if(!empty($address_data)){
+                                     $destination_address[] = [
+                                        'address_id' => $address_data->id,
+                                        'user_id' => $address_data->user_id,
+                                        'locality'=>$address_data->locality,
+                                        'address' =>$address_data->address,
+                                        'name' => $address_data->name,
+                                        'mobileno' =>$address_data->mobileno,
+                                        'blockno' =>$address_data->blockno,
+                                        'streetname'=>$address_data->streetname,
+                                        'city'=>$address_data->city,
+                                        'pincode'=>$address_data->pincode,
+                                        'latitude'=>$address_data->latitude,
+                                        'longitude'=>$address_data->longitude
+                                    ];
+                               }
+                                   
+                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$order_details_complete->deliveryboy_id)->first();
+                                if(!empty($deliveryboy_name)){
+                                     $deliveryboy = $deliveryboy_name->name;
+                                }else{
+                                    $deliveryboy ='';
+                                }
+                               
+                                $delivery_type_data = new_delivery_charges::where('id',$order_details_complete->delivery_charges_id)->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type = $delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
+                                }
+
+                                $pickup_images=[];
+                                $pickup_date = '';
+                                if($order_details_complete->order_status == 'pickup'){
+                                    $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
                                     foreach ($pickup_data as $pickup) {
                                             $pickup_image = '';
                                             if (!empty($pickup->image_name)) {
@@ -3625,17 +3621,17 @@ class AcceptorderController extends Controller
                                                     $pickup_image = '';
                                                 }
                                             }
-                                        $pickup_images[] =[
-                                            'id' => $pickup->id,
-                                            'pickup_image' => $pickup_image
-                                        ];
-                                    }
-                                    $pickup_date = $value->pickup_datetime;
-                                 }
+                                            $pickup_images[] =[
+                                                'id' => $pickup->id,
+                                                'pickup_image' => $pickup_image
+                                            ];
+                                        }
+                                    $pickup_date = $order_details_complete->pickup_datetime;
+                                }
                                 
                                 $delivered_images=[];
                                 $deliver_date = '';
-                                 if($value->order_status == 'complete'){  
+                                 if($order_details_complete->order_status == 'complete'){  
                                      $deliver_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'deliver'])->get();
                                     foreach ($deliver_data as $deliver) {
                                             $deliver_image = '';
@@ -3654,53 +3650,47 @@ class AcceptorderController extends Controller
                                             'deliver_image' => $deliver_image
                                         ];
                                     }
-                                    $deliver_date = $value->deliver_datetime;
+                                    $deliver_date = $order_details_complete->deliver_datetime;
                                 }
-                                   
-
-                                $delivery_type = '';
-                                foreach ($delivery_type_data as $dt) {
-                                    $delivery_type =$dt->delivery_type;
-                                }
+                              
                                     $orders[] = [
-                                    'order_id' => $value->order_id,
-                                    'order_number' => $value->order_number,
+                                    'order_id' => $order_details_complete->id,
+                                    'order_number' => $order_details_complete->order_number,
                                     'prescription_image' => $prescription_image,
                                     'invoice'=> $invoice_images,
-                                    'order_note' => $value->order_note,
-                                    'order_type' => $value->order_type,
-                                    'total_days' => $value->total_days,
-                                    'reminder_days' => $value->reminder_days,
+                                    'order_note' => $order_details_complete->order_note,
+                                    'order_type' => $order_details_complete->order_type,
+                                    'total_days' => $order_details_complete->total_days,
+                                    'reminder_days' => $order_details_complete->reminder_days,
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
-                                    'return_confirmtime' => ($value->return_confirmtime)?$value->return_confirmtime:'',
-                                    'location' => ($destination_address)?$destination_address[0]:'',
+                                    'return_confirmtime' => ($order_details_complete->return_confirmtime)?$order_details_complete->return_confirmtime:'',
+                                    'location' => ($destination_address)?$destination_address:'',
                                     'order_assign_to' => $deliveryboy,
                                     'deliver_to' =>  $name,
-                                    'accept_date' => ($value->accept_datetime)?$value->accept_datetime:'',
+                                    'accept_date' => ($order_details_complete->accept_datetime)?$order_details_complete->accept_datetime:'',
                                     'deliver_date' => $deliver_date,
-                                    'assign_date' => ($value->assign_datetime)?$value->assign_datetime:'',
-                                    'cancel_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
-                                    'return_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
-                                    'reject_reason' => ($value->reject_cancel_reason) ?$value->reject_cancel_reason: '',
-                                    'return_date' => ($value->reject_datetime)?$value->reject_datetime:'',
-                                    'order_amount' => ($value->order_amount)?$value->order_amount:'',
-                                    'delivery_type' => ($delivery_type)?$delivery_type:'free',
+                                    'assign_date' => ($order_details_complete->assign_datetime)?$order_details_complete->assign_datetime:'',
+                                    'cancel_reason' => ($order_details_complete->reject_cancel_reason) ? $order_details_complete->reject_cancel_reason: '',
+                                    'return_reason' => ($order_details_complete->reject_cancel_reason) ? $order_details_complete->reject_cancel_reason: '',
+                                    'reject_reason' => ($order_details_complete->reject_cancel_reason) ?$order_details_complete->reject_cancel_reason: '',
+                                    'return_date' => ($order_details_complete->reject_datetime)?$order_details_complete->reject_datetime:'',
+                                    'order_amount' => ($order_details_complete->order_amount)?$order_details_complete->order_amount:'',
+                                    'delivery_type' => $delivery_type,
                                     'pickup_images' => $pickup_images,
                                     'pickup_date' => $pickup_date,
                                     'drop_images' => $delivered_images,
                                     'drop_date' => $deliver_date,
-                                    'reject_date' => ($value->reject_datetime)?$value->reject_datetime:'',
-                                    'cancel_date' => ($value->cancel_datetime)?$value->cancel_datetime:'',
-                                    'received_date' => (date_format($value->created_at,"Y-m-d H:i:s"))?(date_format($value->created_at,"Y-m-d H:i:s")):'',
-                                    'order_status' => $value->order_status,
-                                    'external_delivery_initiatedby' => ($value->external_delivery_initiatedby)?$value->external_delivery_initiatedby:'',
-                                    'order_time'=>($value->create_datetime)?$value->create_datetime:''
+                                    'reject_date' => ($order_details_complete->reject_datetime)?$order_details_complete->reject_datetime:'',
+                                    'cancel_date' => ($order_details_complete->cancel_datetime)?$order_details_complete->cancel_datetime:'',
+                                    'received_date' => (date_format($order_details_complete->created_at,"Y-m-d H:i:s"))?(date_format($order_details_complete->created_at,"Y-m-d H:i:s")):'',
+                                    'order_status' => $order_details_complete->order_status,
+                                    'external_delivery_initiatedby' => ($order_details_complete->external_delivery_initiatedby)?$order_details_complete->external_delivery_initiatedby:'',
+                                    'order_time'=>($order_details_complete->create_datetime)?$order_details_complete->create_datetime:''
                                 ];
-                            }
                         $response['status'] = 200;
                         $response['message'] = 'Order Details';
-                }  else {
+                } else {
                         $response['status'] = 404;
                 }
             }else{
