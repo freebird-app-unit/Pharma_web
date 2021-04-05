@@ -326,15 +326,15 @@ class LoginController extends Controller
 		$response['data'] = (object)array();
 
 		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		$pending_oreder = new_orders::where(['deliveryboy_id'=>$user_id]);
+		$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+		$pending_oreder = new_orders::select('deliveryboy_id','order_status')->where(['deliveryboy_id'=>$user_id]);
 		$pending_oreder = $pending_oreder->where(function($query) {
 			$query->where('order_status', '<>', 'complete');
 			$query->orWhere('order_status', '=', 'incomplete');
 			$query->orWhere('order_status', '=', 'cancel');
 			$query->orWhere('order_status', '=', 'reject');
 		})->get();
-		if(count($user)>0){
+		if(!empty($user)){
 			if((count($pending_oreder) == 0)){
 				$user = new_pharma_logistic_employee::find($user_id);
 				$user->is_available = ($is_available == 'true')?1:0;
@@ -375,52 +375,45 @@ class LoginController extends Controller
             'confirm_password' => 'required|same:password',
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        } 
-		
+        
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
 		
-		
-		$login = new_pharma_logistic_employee::where('mobile_number', $mobile_number)->first();
-		if($login) 
-		{
-			if($login->count() > 0) 
-			{		
-				$check_a =Hash::check($password, $login->password);
-				if($check_a){
-					$response['status'] = 404;
-					$response['message'] = 'Old password and new password cannot be same';
-				}else{
-					$user = new_pharma_logistic_employee::find($login->id);
-					$user->password = Hash::make($password); 
-					$user->otp = '';
-					$user->save();
-					  
-					$data = [
-						'name' => $login->name
-					];
-					$message       = "Pharma - Password Change " . $login->name;
-					$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
-					$sms = file_get_contents($api);
-					/*$result = Mail::send('email.change_password', $data, function ($message) use ($email) {
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
 
-						$message->to($email)->subject('Pharma - Password Change');
+			$login = new_pharma_logistic_employee::select('mobile_number','password','otp','id')->where('mobile_number', $mobile_number)->first();
 
-					});*/
-					$response['status'] = 200;
-					$response['message'] = 'Your password successfully changed!';
-				}
-			} else {
-				$response['status'] = 404;
-				$response['message'] = 'Mobile Number not found';
+			if(empty($login)) 
+			{
+				throw new Exception("Mobile Number not found");
 			}
-		} else {
-			$response['status'] = 404;
-			$response['message'] = 'Mobile Number not found';
-		}
+			
+			if (Hash::check($password, $login->password)) 
+			{
+				throw new Exception("Old password and new password cannot be same");
+			}
+			$user = new_pharma_logistic_employee::find($login->id);
+			$user->password = Hash::make($password); 
+			$user->otp = '';
+			$user->save();
+			  
+			$data = [
+				'name' => $login->name
+			];
+			$message       = "Pharma - Password Change " . $login->name;
+			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
+			$sms = file_get_contents($api);
+					
+			$response['status'] = 200;
+			$response['message'] = 'Your password successfully changed!';
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        } 		
 		
         return decode_string($response, 200);
     }
