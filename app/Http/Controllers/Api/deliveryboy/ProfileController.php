@@ -10,6 +10,7 @@ use Storage;
 use Image;
 use File;
 use Validator;
+use Exception;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class ProfileController extends Controller
@@ -31,67 +32,54 @@ class ProfileController extends Controller
             'user_id' => 'required'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
+        
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
-		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
-				$login = new_pharma_logistic_employee::find($user_id);
-		        if($login) 
-				{
-					if($login->count() > 0) 
-					{
+
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+			$token =  $request->bearerToken();
+			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			if(!empty($user)){
+				$login = new_pharma_logistic_employee::select('id','password','mobile_number','profile_image','name','email','api_token','fcm_token')->where('id',$user_id)->first();
+		        
+				$profile_image = '';
+				if (!empty($login->profile_image)) {
+
+					$filename = storage_path('app/public/uploads/new_delivery_boy/' . $login->profile_image);
+						
+					if (File::exists($filename)) {
+						$profile_image = asset('storage/app/public/uploads/new_delivery_boy/' . $login->profile_image);
+					} else {
 						$profile_image = '';
-						if (!empty($login->profile_image)) {
-
-							$filename = storage_path('app/public/uploads/new_delivery_boy/' . $login->profile_image);
+					}
+				}
 						
-							if (File::exists($filename)) {
-								$profile_image = asset('storage/app/public/uploads/new_delivery_boy/' . $login->profile_image);
-							} else {
-								$profile_image = '';
-							}
-						}
-						
-					$response['status'] = 200;
-					$response['message'] = 'Profile';
-					$response['data']->user_id=$login->id;
-					$response['data']->name=$login->name;
-					$response['data']->email=$login->email;
-					$response['data']->mobile_number=$login->mobile_number;
-					$response['data']->profile_image=$profile_image;
+				$response['status'] = 200;
+				$response['message'] = 'Profile';
+				$response['data']->user_id=$login->id;
+				$response['data']->name=$login->name;
+				$response['data']->email=$login->email;
+				$response['data']->mobile_number=$login->mobile_number;
+				$response['data']->profile_image=$profile_image;
 
-					$parent_data = new_pharma_logistic_employee::where('pharma_logistic_id',$login->pharma_logistic_id)->get();
-						foreach ($parent_data as $t) {
-							if($t->parent_type=='logistic'){
-								$response['data']->delivery_service_type="1";	
-							}else{
-								$response['data']->delivery_service_type="0";	
-							}
-						}
-					$response['data']->api_token=($login->api_token)?$login->api_token:'';
-		            } 
-					else 
-					{
-						$response['status'] = 404;
-						$response['message'] = 'User not found';
-		            }
-		        } 
-				else 
-				{
-					$response['status'] = 404;
-		            $response['message'] = 'User not found';
-		        }
-		}else{
-	    		$response['status'] = 401;
-	            $response['message'] = 'Unauthenticated';
-	    }
-		
+				if($login->parent_type=='logistic'){
+					$response['data']->delivery_service_type="1";	
+				}else{
+					$response['data']->delivery_service_type="0";	
+				}
+				$response['data']->api_token=($login->api_token)?$login->api_token:'';
+			}else{
+		    		$response['status'] = 401;
+		            $response['message'] = 'Unauthenticated';
+		    }
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }
         return decode_string($response, 200);
     }
 	public function editprofile(Request $request)
@@ -116,83 +104,70 @@ class ProfileController extends Controller
             'user_id' => 'required',
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
+        
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
-		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
-				$login = new_pharma_logistic_employee::find($user_id);
-		        if($login) 
-				{
-					if($login->count() > 0) 
-					{
-						$profile_image = '';
-						if ($request->hasFile('profile_image')) {
+
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+			$token =  $request->bearerToken();
+			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			if(!empty($user)){
+				$login = new_pharma_logistic_employee::select('id','mobile_number','profile_image','name','email')->where('id', $user_id)->first();
+
+		       	$profile_image = '';
+				if ($request->hasFile('profile_image')) {
 							
-							$filename = storage_path('app/public/uploads/new_delivery_boy/' . $login->profile_image);
+					$filename = storage_path('app/public/uploads/new_delivery_boy/' . $login->profile_image);
 		            
-							if (File::exists($filename)) {
-								File::delete($filename);
-							}
+					if (File::exists($filename)) {
+						File::delete($filename);
+					}
 							
-							$image         = $request->file('profile_image');
-							$profile_image = time() . '.' . $image->getClientOriginalExtension();
+					$image         = $request->file('profile_image');
+					$profile_image = time() . '.' . $image->getClientOriginalExtension();
 
-							$img = Image::make($image->getRealPath());
-							$img->stream(); // <-- Key point
+					$img = Image::make($image->getRealPath());
+					$img->stream(); // <-- Key point
 
-							Storage::disk('public')->put('uploads/new_delivery_boy/'.$profile_image, $img, 'public');
-						}
+					Storage::disk('public')->put('uploads/new_delivery_boy/'.$profile_image, $img, 'public');
+				}
 						
-						$user = new_pharma_logistic_employee::find($user_id);
-						$user->name = $name;
-						$user->email = $email; 
-						if (!empty($profile_image)) {
-							$user->profile_image = $profile_image;
-						}
-						$user->save();
+				$user = new_pharma_logistic_employee::find($user_id);
+				$user->name = $name;
+				$user->email = $email; 
+				if (!empty($profile_image)) {
+					$user->profile_image = $profile_image;
+				}
+				$user->save();
 
-						$response['status'] = 200;
-						$response['message'] = 'Profile updated';
+				$response['status'] = 200;
+				$response['message'] = 'Profile updated';
 
-						$response['data']->user_id=$user->id;
-						$response['data']->name=$user->name;
-						$response['data']->email=$user->email;
-						$response['data']->mobile_number=$user->mobile_number;
-						$response['data']->profile_image=asset('storage/app/public/uploads/new_delivery_boy/' . $user->profile_image);
+				$response['data']->user_id=$user->id;
+				$response['data']->name=$user->name;
+				$response['data']->email=$user->email;
+				$response['data']->mobile_number=$user->mobile_number;
+				$response['data']->profile_image=asset('storage/app/public/uploads/new_delivery_boy/' . $user->profile_image);
 
-						$parent_data = new_pharma_logistic_employee::where('pharma_logistic_id',$login->pharma_logistic_id)->get();
-						foreach ($parent_data as $t) {
-							if($t->parent_type=='logistic'){
-								$response['data']->delivery_service_type="1";	
-							}else{
-								$response['data']->delivery_service_type="0";	
-							}
-						}
-						$response['data']->api_token=($user->api_token)?$user->api_token:'';
-		            } 
-					else 
-					{
-						$response['status'] = 404;
-						$response['message'] = 'User not found';
-		            }
-		        } 
-				else 
-				{
-					$response['status'] = 404;
-		            $response['message'] = 'User not found';
-		        }
-		     }else{
+				if($login->parent_type=='logistic'){
+					$response['data']->delivery_service_type="1";	
+				}else{
+					$response['data']->delivery_service_type="0";	
+				}
+				$response['data']->api_token=($user->api_token)?$user->api_token:'';      
+		    }else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   		 }
-		
-			return decode_string($response, 200);
+	   		}
+	   	} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }
+		return decode_string($response, 200);
     }
 }
 
