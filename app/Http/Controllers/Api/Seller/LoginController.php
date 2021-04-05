@@ -162,13 +162,13 @@ class LoginController extends Controller
 			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
 			$sms = file_get_contents($api);
 			
-			$seller = new_pharma_logistic_employee::select('id','otp','otp_time')->where('id',$login->id)->first();
-			$seller->otp = $verification_code;
-			$seller->otp_time = date('Y-m-d H:i:s');
-			$seller->save();
+			
+			$login->otp = $verification_code;
+			$login->otp_time = date('Y-m-d H:i:s');
+			$login->save();
 				
 			$response['status'] = 200;
-			$response['data']->otp=$seller->otp;
+			$response['data']->otp=$login->otp;
 			$response['message'] = 'Verification code successfully sent';
 
 		} catch (Exception $ex) {

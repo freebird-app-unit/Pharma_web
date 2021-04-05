@@ -15,6 +15,7 @@ use Image;
 use File;
 use App\new_logistics;
 use App\SellerModel\new_pharmacies;
+use Exception;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class LoginController extends Controller
@@ -41,93 +42,80 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
 		
-		$login = new_pharma_logistic_employee::where(['mobile_number' => $mobile_number,"user_type"=>"delivery_boy"])->first();
-        if($login) 
-		{
-			if($login->count() > 0) 
-			{
-				$active = new_pharma_logistic_employee::where(['mobile_number'=>$mobile_number,"user_type"=>"delivery_boy",'is_active'=>'1'])->first();
-				if(!empty($active)){
-						if(Hash::check($password, $login->password)) 
-						{
-							
-							$profile_image = '';
-							if (!empty($login->profile_image)) {
 
-								$filename = storage_path('app/public/uploads/new_delivery_boy/' . $login->profile_image);
-							
-								if (File::exists($filename)) {
-									$profile_image = asset('storage/app/public/uploads/new_delivery_boy/' . $login->profile_image);
-								} else {
-									$profile_image = '';
-								}
-							}
+		try {
+ 
+	        if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+			$login = new_pharma_logistic_employee::select('id','mobile_number','user_type','profile_image','name','email','is_available','parent_type','api_token','fcm_token','password','is_active','pharma_logistic_id')->where(['mobile_number' => $mobile_number,"user_type"=>"delivery_boy"])->first();
+       
+			if(empty($login)) 
+			{
+				throw new Exception("You have entered wrong mobileno");
+			}
+
+			if(!Hash::check($password, $login->password)) 
+			{
+				throw new Exception("You have entered wrong password");
+			}
 					
-							$response['status'] = 200;
-							$response['message'] = 'Login success';
-							$response['data']->user_id=$login->id;
-							$response['data']->name=$login->name;
-							$response['data']->email=$login->email;
-							$response['data']->mobile_number=$login->mobile_number;
-							$response['data']->profile_image=$profile_image;
-							$response['data']->is_available=($login->is_available == 0)?'false':'true';
+			if($login->is_active == 0){
+				throw new Exception("Your account is not active please contact to adminstrator");	
+			}
+					
+			if($login->is_available == 0){
+				throw new Exception("Not available");
+			}				
+			$profile_image = '';
+				if (!empty($login->profile_image)) {
+					$filename = storage_path('app/public/uploads/new_delivery_boy/' . $login->profile_image);
+					if (File::exists($filename)) {
+						$profile_image = asset('storage/app/public/uploads/new_delivery_boy/' . $login->profile_image);
+					} else {
+						$profile_image = '';
+					}
+				}
+					
+			$response['status'] = 200;
+			$response['message'] = 'Login success';
+			$response['data']->user_id=$login->id;
+			$response['data']->name=$login->name;
+			$response['data']->email=$login->email;
+			$response['data']->mobile_number=$login->mobile_number;
+			$response['data']->profile_image=$profile_image;
+			$response['data']->is_available=($login->is_available == 0)?'false':'true';
 
-							$parent_data = new_pharma_logistic_employee::where('pharma_logistic_id',$login->pharma_logistic_id)->get();
-								foreach ($parent_data as $t) {
-									if($t->parent_type=='logistic'){
-										$response['data']->delivery_service_type="1";	
-									}else{
-										$response['data']->delivery_service_type="0";	
-									}
-								}
-							$pharmacy_logistic_data = new_pharma_logistic_employee::where('mobile_number',$mobile_number)->first();
-							if($pharmacy_logistic_data->parent_type =="pharmacy"){
-								$pharmacy_data = new_pharmacies::where('id',$login->pharma_logistic_id)->first();
-								$response['data']->pharmacy_logistic=$pharmacy_data->name;	
-							}else{
-								$logistic_data = new_logistics::where('id',$login->pharma_logistic_id)->first();
-								$response['data']->pharmacy_logistic=$logistic_data->name;	
-							}
-							$data = new_pharma_logistic_employee::find($login->id);
-							$data->api_token = $login->createToken('MyApp')-> accessToken;
-							$data->save();
-							$response['data']->api_token =  $data->api_token;
+			$parent_data = new_pharma_logistic_employee::select('pharma_logistic_id','parent_type')->where('pharma_logistic_id',$login->pharma_logistic_id)->first();
+				if($parent_data->parent_type=='logistic'){
+					$response['data']->delivery_service_type="1";	
+				}else{
+					$response['data']->delivery_service_type="0";	
+				}
+				if($login->parent_type =="pharmacy"){
+					$pharmacy_data = new_pharmacies::select('id','name')->where('id',$login->pharma_logistic_id)->first();
+					$response['data']->pharmacy_logistic=$pharmacy_data->name;	
+				}else{
+					$logistic_data = new_logistics::select('id','name')->where('id',$login->pharma_logistic_id)->first();
+					$response['data']->pharmacy_logistic=$logistic_data->name;	
+				}
+			$data = new_pharma_logistic_employee::find($login->id);
+			$data->api_token = $login->createToken('MyApp')-> accessToken;
+			$data->save();
+			$response['data']->api_token =  $data->api_token;
 
-							$token = new_pharma_logistic_employee::find($login->id);
-							$token->fcm_token = $fcm_token;
-							$token->save();
-
-							$response['data']->fcm_token= ($token->fcm_token) ? $token->fcm_token :'';
-		                } 
-						else 
-						{
-		                    $response['status'] = 404;
-							$response['message'] = 'You entered wrong Mobile Number or password';
-		                }
-		            }else{
-		            		$response['status'] = 404;	
-							$response['message'] = 'Your account is not active please contact to adminstrator';
-		            }
-            } 
-			else 
-			{
-				$response['status'] = 404;
-				$response['message'] = 'You entered wrong Mobile Number or password';
-            }
+			$token = new_pharma_logistic_employee::find($login->id);
+			$token->fcm_token = $fcm_token;
+			$token->save();
+			$response['data']->fcm_token= ($token->fcm_token) ? $token->fcm_token :'';
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
         } 
-		else 
-		{
-			$response['status'] = 404;
-            $response['message'] = 'You entered wrong Mobile Number or password';
-        }
 		
         return decode_string($response, 200);
     }
@@ -157,19 +145,19 @@ class LoginController extends Controller
 		$response['data'] = (object)array();
 
 		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+		if(!empty($user)){
 			$user = new_pharma_logistic_employee::find($user_id);
 			$user->api_token = '';
 			$user->fcm_token = '';
 			$user->save();
 			$response['status'] = 200;
 			$response['message'] = 'Logged Out Successfully ';
-		 }else{
-	    		$response['status'] = 401;
-	            $response['message'] = 'Unauthenticated';
-	   	 }
-			return decode_string($response, 200);
+		}else{
+	   		$response['status'] = 401;
+	        $response['message'] = 'Unauthenticated';
+	   	}
+		return decode_string($response, 200);
     }
 
 	public function forgotpassword(Request $request)
@@ -189,60 +177,53 @@ class LoginController extends Controller
             'mobile_number' => 'required'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-		
+        
 		$response['status'] = 200;
 		$response['message'] = ''; 
 		$response['data'] = (object)array();
 		
-		$login = new_pharma_logistic_employee::where('mobile_number', $mobile_number)->first();
-        if($login) 
-		{
-			if($login->count() > 0) 
-			{
-				/*if ($login->is_verify == 0) {
-					
-					$response['status'] = 401;
-					$response['message'] = 'Please verify your account first';
-					return response($response, 200);
-				}*/
-				$verification_code = rand(1111,9999);//Str::random(6);
-					
-				$data = [
-					'name' => $login->name,
-					'otp' => $verification_code,
-				];
-				$message       = "Forgot Password OTP " . $verification_code;
-				$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
-				$sms = file_get_contents($api);
-				/*$result = Mail::send('email.sendotp', $data, function ($message) use ($email) {
+		try{
 
-					$message->to($email)->subject('Forgot Password OTP');
+	 		if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
 
-				});*/
-				
-				$user = new_pharma_logistic_employee::find($login->id);
-				$user->otp = $verification_code;
-				$user->otp_time = date('Y-m-d H:i:s');
-				$user->save();
-				
-				$response['status'] = 200;
-				$response['data']->otp=$user->otp;
-				$response['message'] = 'Verification code successfully sent';
-            } 
-			else 
+			$login = new_pharma_logistic_employee::select('id','mobile_number','name','is_available','is_active','otp','otp_time')->where('mobile_number', $mobile_number)->first();
+
+			if(empty($login)) 
 			{
-				$response['status'] = 404;
-				$response['message'] = 'Mobile Number not found';
-            }
-        } 
-		else 
-		{
-			$response['status'] = 404;
-            $response['message'] = 'Mobile Number not found';
-        }
+				throw new Exception("Mobile Number not found");
+			}
+
+			if($login->is_available == 0){
+				throw new Exception("Not available");
+			}
+
+			if($login->is_active == 0){
+				throw new Exception("Your account is not active please contact to adminstrator");	
+			}
+       
+			$verification_code = rand(1111,9999);//Str::random(6);
+					
+			$data = [
+				'name' => $login->name,
+				'otp' => $verification_code,
+			];
+			$message       = "Forgot Password OTP " . $verification_code;
+			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$mobile_number."'&message=" . urlencode($message);
+			$sms = file_get_contents($api);
+				
+			$login->otp = $verification_code;
+			$login->otp_time = date('Y-m-d H:i:s');
+			$login->save();
+				
+			$response['status'] = 200;
+			$response['data']->otp=$login->otp;
+			$response['message'] = 'Verification code successfully sent';
+        } catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }   
 		
         return decode_string($response, 200);
     } 
@@ -266,51 +247,53 @@ class LoginController extends Controller
             'otp' => 'required|numeric'
         ]);
  
-        if ($validator->fails()) {
-            return validation_error($validator->errors()->first());  
-        }
-
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
 		$success = false;
-		$login = new_pharma_logistic_employee::where('mobile_number', $mobile_number)->first();
-		if($login) {
-			if($login->count() > 0) {
-				if ($otp == $login->otp) {
-				
-					$current = date("Y-m-d H:i:s");
-					$otp_time = $login->otp_time;
-					$diff = strtotime($current) - strtotime($otp_time);
-					$days    = floor($diff / 86400);
-					$hours   = floor(($diff - ($days * 86400)) / 3600);
-					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
-					if (($diff > 0) && ($minutes <= 10)) {
-						$success = true;
-						$response['status'] = 200;
-						$response['message'] = 'OTP verify successfully!';
-					} else {
-						$response['status'] = 404;
-						$response['message'] = 'OTP expired';
-					}
-				} else {
-					$response['status'] = 404;
-					$response['message'] = 'OTP is not valid';
-				}
+
+		try{
+			if ($validator->fails()) {
+	            throw new Exception($validator->errors()->first());
+	        }
+
+			$login = new_pharma_logistic_employee::select('mobile_number','otp','otp_time','is_active','is_available')->where('mobile_number', $mobile_number)->first();
+		
+			if(empty($login)) 
+			{
+				throw new Exception("Mobile Number not found");
+			}
+
+			if ($otp != $login->otp) 
+			{
+				throw new Exception("OTP is not valid");
+			}
+			if($login->is_available == 0){
+				throw new Exception("Not available");
+			}
+
+			if($login->is_active == 0){
+				throw new Exception("Your account is not active please contact to adminstrator");	
+			}	
+			$current = date("Y-m-d H:i:s");
+			$otp_time = $login->otp_time;
+			$diff = strtotime($current) - strtotime($otp_time);
+			$days    = floor($diff / 86400);
+			$hours   = floor(($diff - ($days * 86400)) / 3600);
+			$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
+			if (($diff > 0) && ($minutes <= 10)) {
+				$success = true;
+				$response['status'] = 200;
+				$response['message'] = 'OTP verify successfully!';
 			} else {
 				$response['status'] = 404;
-				$response['message'] = 'Mobile Number not found';
+				$response['message'] = 'OTP expired';
 			}
-		} else {
-			$response['status'] = 404;
-			$response['message'] = 'Mobile Number not found';
-		} 
+		} catch (Exception $ex) {
+            $response['message'] = $ex->getMessage();
+            $response['status'] = 404;
+        }
 		
-		/*if ($success) {
-			return $this->send_response([], $msg);
-		} else {
-			return $this->send_error($msg, []);
-		}*/
 		return decode_string($response, 200);	
 			
 	}
