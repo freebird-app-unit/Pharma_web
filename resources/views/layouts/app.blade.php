@@ -466,6 +466,9 @@
 							<li>
 								<a href="{{ url('/deliverycharges') }}" class="waves-effect <?php echo ($page_condition=='page_delivery_charges')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Delivery Charges') }}</span></a>
 							</li>
+							<li>
+								<a href="{{ url('/onboardingrequest') }}" class="waves-effect <?php echo ($page_condition=='page_onboarfingrequest')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('On Boarding request') }}</span></a>
+							</li>
 							<?php } ?>
 							
                         </ul>

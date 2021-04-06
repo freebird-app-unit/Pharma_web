@@ -452,3 +452,8 @@ Route::get('/deliverycharges', array('as' => 'deliverycharges.index', 'uses' => 
 Route::post('/getdeliverychargesorderlist', array('as' => 'deliverycharges.getdeliverychargesorderlist', 'uses' => 'DeliveryChargesController@getdeliverychargesorderlist'));
 Route::post('/deliverycharges_payment_create', array('as' => 'deliverycharges.deliverycharges_payment_create', 'uses' => 'DeliveryChargesController@deliverycharges_payment_create'));
 Route::get('getlogisticpendingamount/{id}', 'DeliveryChargesController@getlogisticpendingamount');
+
+// Onboarding Request
+Route::get('/onboardingrequest', 'OnboardingrequestController@index');
+Route::get('onboardingrequest_list', 'OnboardingrequestController@list');
+Route::get('/onboardingrequestapprove/{id}', 'OnboardingrequestController@approve');
