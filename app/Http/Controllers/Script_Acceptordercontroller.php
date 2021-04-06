@@ -18,6 +18,7 @@ use App\notification_user;
 use Mail;
 use App\Events\CreateNewOrder;
 use App\SellerModel\invoice;
+use App\SellerModel\Orderassign;
 
 class Script_Acceptordercontroller extends Controller
 {
@@ -49,7 +50,7 @@ class Script_Acceptordercontroller extends Controller
     {
     	$data = array();
   		$data['page_title'] = 'Accept order script';
-  		$data['page_condition'] = 'page_createorder';
+  		$data['page_condition'] = 'page_acceptorder';
   		$data['pharmacies'] = new_pharmacies::where(['is_active'=>'1','is_available'=>'1','is_approve'=>'1'])->get();
   		$data['site_title'] = 'Accept order script | ' . $this->data['site_title'];
   		return view('acceptorder.create', array_merge($this->data, $data));
@@ -69,6 +70,15 @@ class Script_Acceptordercontroller extends Controller
             $find_data->checking_by = $request->seller_id;
             $find_data->process_user_id = $request->seller_id;
             $find_data->process_user_type = "seller";
+            $find_data->accept_datetime = date('Y-m-d H:i:s');
+
+            $orderAssign = new Orderassign();
+            $orderAssign->order_id = $request->order_number;
+            $orderAssign->logistic_id = 0;
+            $orderAssign->order_status = 'new';
+            $orderAssign->updated_at = date('Y-m-d H:i:s');
+            $orderAssign->save();
+
             if($request->accept_reject == "accept"){
                 $find_data->order_amount = $request->order_amount;
                 $find_data->accept_datetime =date('Y-m-d H:i:s');
@@ -92,19 +102,14 @@ class Script_Acceptordercontroller extends Controller
                         if($customerdetail->fcm_token!=''){
                           $ids[] = $customerdetail->fcm_token;
                         }
-                        $msg = array
-                        (
-                          'body'   => ' Order number '. $order_data->order_number,
-                          'title'     => 'Your Order Accepted'
-                        );
                         if (count($ids) > 0) {          
                           Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
                         }
                         $notification = new notification_user();
                         $notification->user_id=$customerdetail->id;
                         $notification->order_id=$order_data->id;
-                        $notification->subtitle=$msg['body'];
-                        $notification->title=$msg['title'];
+                        $notification->subtitle='Order number'.$order_data->order_number;
+                        $notification->title='Your Order Accepted';
                         $notification->created_at=date('Y-m-d H:i:s');
                         $notification->save();
                       }
