@@ -66,33 +66,58 @@ class Script_Acceptordercontroller extends Controller
 
         if($validate){
             $find_data = new_orders::where('id',$request->order_number)->first();
-            $find_data->order_status = "accept";
-            $find_data->checking_by = $request->seller_id;
-            $find_data->process_user_id = $request->seller_id;
-            $find_data->process_user_type = "seller";
-            $find_data->accept_datetime = date('Y-m-d H:i:s');
-
-            $orderAssign = new Orderassign();
-            $orderAssign->order_id = $request->order_number;
-            $orderAssign->logistic_id = 0;
-            $orderAssign->order_status = 'new';
-            $orderAssign->updated_at = date('Y-m-d H:i:s');
-            $orderAssign->save();
-
             if($request->accept_reject == "accept"){
+                $find_data->checking_by = $request->seller_id;
+                $find_data->process_user_id = $request->seller_id;
+                $find_data->process_user_type = "seller";
                 $find_data->order_amount = $request->order_amount;
-                $find_data->accept_datetime =date('Y-m-d H:i:s');
+                if($request->freepaid == "free"){
+                    $find_data->accept_datetime =date('Y-m-d H:i:s');
+                    $find_data->order_status = "accept";
+                    $find_data->is_external_delivery=0;
+                    $find_data->delivery_charges_id=1;
+                    $orderAssign = new Orderassign();
+                    $orderAssign->order_id = $request->order_number;
+                    $orderAssign->logistic_id = 0;
+                    $orderAssign->order_status = 'new';
+                    $orderAssign->updated_at = date('Y-m-d H:i:s');
+                    $orderAssign->save();
+                }elseif ($request->freepaid == "standard") {
+                    $find_data->assign_datetime =date('Y-m-d H:i:s');
+                    $find_data->order_status = "assign";
+                    $find_data->logistic_user_id = 29;
+                    $find_data->is_external_delivery=1;
+                    $find_data->delivery_charges_id=8;
+                    $orderAssign = new Orderassign();
+                    $orderAssign->order_id = $request->order_number;
+                    $orderAssign->logistic_id = 29;
+                    $orderAssign->order_status = 'new';
+                    $orderAssign->updated_at = date('Y-m-d H:i:s');
+                    $orderAssign->save();
+                }else{
+                    $find_data->assign_datetime =date('Y-m-d H:i:s');
+                    $find_data->order_status = "assign";
+                    $find_data->logistic_user_id = 29;
+                    $find_data->is_external_delivery=1;
+                    $find_data->delivery_charges_id=7;
+                    $orderAssign = new Orderassign();
+                    $orderAssign->order_id = $request->order_number;
+                    $orderAssign->logistic_id = 29;
+                    $orderAssign->order_status = 'new';
+                    $orderAssign->updated_at = date('Y-m-d H:i:s');
+                    $orderAssign->save();
+                }
                 $destinationPath = 'storage/app/public/uploads/invoice/'; 
-                        if($file=$request->file('invoice')){
-                                $filename = time().'-'.$file->getClientOriginalName();
-                                $tesw = $file->move($destinationPath, $filename);
-                                $invoice_data = new invoice();
-                                $invoice_data->order_id = $request->order_number;
-                                $invoice_data->invoice = $filename;
-                                $invoice_data->created_at = date('Y-m-d H:i:s');
-                                $invoice_data->updated_at = date('Y-m-d H:i:s');
-                                $invoice_data->save();
-                            }
+                if($file=$request->file('invoice')){
+                  $filename = time().'-'.$file->getClientOriginalName();
+                  $tesw = $file->move($destinationPath, $filename);
+                  $invoice_data = new invoice();
+                  $invoice_data->order_id = $request->order_number;
+                  $invoice_data->invoice = $filename;
+                  $invoice_data->created_at = date('Y-m-d H:i:s');
+                  $invoice_data->updated_at = date('Y-m-d H:i:s');
+                  $invoice_data->save();
+                }
                 if($find_data->save()){
                       $ids = array();
                       $order_data = new_orders::where('id',$find_data->id)->first();
@@ -129,19 +154,14 @@ class Script_Acceptordercontroller extends Controller
                         if($customerdetail->fcm_token!=''){
                           $ids[] = $customerdetail->fcm_token;
                         }
-                        $msg = array
-                        (
-                          'body'   => ' Order number '. $order_data->order_number,
-                          'title'     => 'Your Order Rejected'
-                        );
                         if (count($ids) > 0) {          
                           Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Rejected', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
                         }
                         $notification = new notification_user();
                         $notification->user_id=$customerdetail->id;
                         $notification->order_id=$order_data->id;
-                        $notification->subtitle=$msg['body'];
-                        $notification->title=$msg['title'];
+                        $notification->subtitle='Order number'.$order_data->order_number;
+                        $notification->title='Your Order Rejected';
                         $notification->created_at=date('Y-m-d H:i:s');
                         $notification->save();
                       }

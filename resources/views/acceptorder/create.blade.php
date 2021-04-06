@@ -85,6 +85,18 @@
 						@if ($errors->has('accept_reject')) <div class="errors_msg">{{ $errors->first('accept_reject') }}</div>@endif
 					</div>
 				</div>
+				<div class="form-group" id="freepaid">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="freepaid">Choose Order Free Or Paid<span class="required">*</span></label>
+					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('freepaid')) bad @endif">
+						<select class="form-control" name="freepaid" id="freepaid">
+							<option>select</option>
+							<option value="free">free</option>
+							<option value="standard">standard</option>
+							<option value="express">express</option>
+						</select>
+						@if ($errors->has('freepaid')) <div class="errors_msg">{{ $errors->first('freepaid') }}</div>@endif
+					</div>
+				</div>
 
 				<div class="form-group" id="order_amount" style="display: none">
 					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="order_amount">Order Amount<span class="required">*</span></label>
@@ -294,10 +306,12 @@ $('#order_number').change(function(){
 
 	$('#accept_reject').change(function(){
 	            if ($(this).val() == "accept") {
+	            	$("#freepaid").show();
 					$("#order_amount").show();
 					$("#invoice").show();
 					$("#reject_reason").hide();
 	            } else {
+	            	$("#freepaid").hide();
 	               	$("#order_amount").hide();
 	               	$("#invoice").hide();
 				   	$("#reject_reason").show();
