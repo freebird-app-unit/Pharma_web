@@ -330,14 +330,11 @@
 							<?php } ?>
 							
 							<?php if(Auth::user()->user_type=='admin'){ ?>
-							<!-- <li>
-                                <a href="{{ route('createorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_createorder')?'active':''; ?>"><img src="{{ asset('public/images/crete_order.png') }}"/><span>{{ __('Create Orders') }}</span></a> 
+							<li>
+                               <!--  <a href="{{ route('createorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_createorder')?'active':''; ?>"><img src="{{ asset('public/images/crete_order.png') }}"/><span>{{ __('Create Orders') }}</span></a> -->
                             </li>
-                            <li>
+                           <!--  <li>
                                 <a href="{{ route('acceptorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_acceptorder')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Accept Orders Script') }}</span></a> 
-                            </li>  
-                              <li>
-                                <a href="{{ route('assignorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_assignorder')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Assign Orders Script') }}</span></a> 
                             </li>  -->
 							<li>
 								<a href="{{ route('adminupcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_adminacceptedorders' || $page_condition=='page_adminupcomingorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/></i> <span>{{ __('Live Orders') }}</span></a>
@@ -469,6 +466,9 @@
 							<li>
 								<a href="{{ url('/onboardingrequest') }}" class="waves-effect <?php echo ($page_condition=='page_onboarfingrequest')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('On Boarding request') }}</span></a>
 							</li>
+							<li>
+								<a href="{{ url('/termscondition') }}" class="waves-effect <?php echo ($page_condition=='page_termscondition')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Terms & condition') }}</span></a>
+							</li>
 							<?php } ?>
 							
                         </ul>
@@ -573,9 +573,12 @@
 	<script>var action = '<?php echo $page_condition; ?>'</script>
 	<script>var search_text_global = "<?php echo (isset($_REQUEST['search_text']))?$_REQUEST['search_text']:''; ?>"</script>
     <!-- jQuery  -->
+	
+	
 	@if($page_condition!='page_forms_create')
 	<script src="{{ asset('public/admin/js/jquery.min.js') }}"></script>
 	@endif
+	
 	<!--<script src="{{ asset('public/admin/js/jquery.min.js') }}"></script>-->
 	<script src="{{ asset('public/admin/js/bootstrap.min.js') }}"></script>
 	<script src="{{ asset('public/admin/js/detect.js') }}"></script>
@@ -691,6 +694,9 @@
 				})
 			})
 		</script>
+	@endif
+	@if($page_condition=='page_termscondition')
+		<script src="{{ asset('public/admin/js/termscondition.js') }}"></script> 
 	@endif
 	@if($page_condition=='page_order_report')
 		<script src="{{ asset('public/admin/js/order_report.js') }}"></script>
@@ -989,9 +995,6 @@
 	@endif
 	@if($page_condition=='page_acceptorder')
 		<script src="{{ asset('public/admin/js/acceptorder.js') }}"></script>
-	@endif
-	@if($page_condition=='page_assignorder')
-		<script src="{{ asset('public/admin/js/assignorder.js') }}"></script>
 	@endif
 	@if($page_condition=='page_order_filter')
 		<script src="{{ asset('public/admin/js/order_filter.js') }}"></script>

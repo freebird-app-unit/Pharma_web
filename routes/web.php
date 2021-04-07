@@ -412,19 +412,10 @@ Route::get('get-prescription-list','Createordercontroller@getprescriptionList');
 Route::get('get-address-list','Createordercontroller@getaddressList');
 
 //accept and reject order script
-Route::get('/acceptorder/create', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@create'));
-Route::post('/acceptorder/create', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@store'));
+Route::get('/acceptorder/accept', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@create'));
 Route::get('get-order-list','Script_Acceptordercontroller@getorderList');
 Route::get('get-customer-list','Script_Acceptordercontroller@getcustomerList');
 Route::get('get-seller-list','Script_Acceptordercontroller@getsellerList');
-
-//assign order script
-Route::get('/assignorder/create', array('as' => 'assignorder.create', 'uses' => 'Script_assignordercontroller@create'));
-Route::post('/assignorder/create', array('as' => 'assignorder.create', 'uses' => 'Script_assignordercontroller@store'));
-Route::get('assign/get-order-list','Script_assignordercontroller@getorderList');
-Route::get('assign/get-customer-list','Script_assignordercontroller@getcustomerList');
-Route::get('assign/get-deliveryboy-list','Script_assignordercontroller@getdeliveryboyList');
-
 
 // packages
 Route::get('/packages', 'PackagesController@index');
@@ -457,3 +448,12 @@ Route::get('getlogisticpendingamount/{id}', 'DeliveryChargesController@getlogist
 Route::get('/onboardingrequest', 'OnboardingrequestController@index');
 Route::get('onboardingrequest_list', 'OnboardingrequestController@list');
 Route::get('/onboardingrequestapprove/{id}', 'OnboardingrequestController@approve');
+
+//Terms and condition
+Route::get('/termscondition', array('as' => 'termscondition.index', 'uses' => 'TermsconditionController@index'));
+Route::post('/gettermsconditionlist', array('as' => 'termscondition.getlist', 'uses' => 'TermsconditionController@getlist'));
+Route::get('/termscondition/create', array('as' => 'termscondition.create', 'uses' => 'TermsconditionController@create'));
+Route::post('/termscondition/create', array('as' => 'termscondition.create', 'uses' => 'TermsconditionController@store'));
+Route::get('/termscondition/edit/{id}', array('as' => 'termscondition.edit', 'uses' => 'TermsconditionController@edit'));
+Route::post('/termscondition/edit/{id}', array('as' => 'termscondition.edit', 'uses' => 'TermsconditionController@update'));
+Route::get('/termscondition/delete/{id}', array('as' => 'termscondition.delete', 'uses' => 'TermsconditionController@delete'));
