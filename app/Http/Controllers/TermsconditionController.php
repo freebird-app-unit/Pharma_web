@@ -7,13 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\RedirectResponse;
 use App\User;
-
+use App\Onboardingrequest;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 use Storage;
 use Image;
 use File;
+use Mail;
+use Illuminate\Support\Facades\Crypt;
 
 use App\Termscondition;
 use Illuminate\Validation\Rule;
@@ -139,6 +141,22 @@ class TermsconditionController extends Controller
 			$termscondition->created_at = date('Y-m-d H:i:s');
 
 			if($termscondition->save()){
+				$Onboardingrequest = Onboardingrequest::get();
+				if(count($Onboardingrequest)>0){
+					foreach($Onboardingrequest as $onboarding){
+						//send email
+						$data = [
+							'name' => $onboarding->first_name.' '.$onboarding->last_name,
+							'termscondition_id' => $termscondition->id,
+							'onboarding_id' => $onboarding->id,
+						];
+						$email = $onboarding->email;
+						$message = "";
+						Mail::send('email.termscondition', $data, function ($message) use ($email) {
+							$message->to($email)->subject('Accept new terms & condition');
+						});
+					}
+				}
 				return redirect(route('termscondition.index'))->with('success_message', trans('Added Successfully'));
 			}
 		}
