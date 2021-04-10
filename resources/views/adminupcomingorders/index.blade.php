@@ -18,10 +18,10 @@
 		<a href="{{ route('adminacceptedorders.index') }}" class="nav-link">Accepted Orders</a>
 	</li>
 	<li class="nav-item">
-		<a href="{{ route('adminpickup.index') }}" class="nav-link">Ready For Pickup</a>
+		<a href="{{ route('adminoutfordelivery.index') }}" class="nav-link">Out For Delivery</a>
 	</li>
 	<li class="nav-item">
-		<a href="{{ route('adminoutfordelivery.index') }}" class="nav-link">Out For Delivery</a>
+		<a href="{{ route('adminpickup.index') }}" class="nav-link">Ready For Pickup</a>
 	</li>
 </ul>
 <div class="row">

@@ -82,6 +82,14 @@ class SearchordersController extends Controller
 			}else if(isset($new_order_history->order_status) && $new_order_history->order_status == 'complete' && $new_order_history->pharmacy_id == $parentuser_id){
 				return redirect('/complete?search_text='.$data['search_text']);
 			}
+		}else if($user_type=='logistic'){
+			if(isset($order->order_status) && $order->order_status == 'assign' && $order->logistic_user_id == $user_id){
+				return redirect('/logistic/upcoming?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'pickup'){
+				return redirect('/logistic/pickup?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'complete' && $order->logistic_user_id == $user_id){
+				return redirect('/logistic/complete?search_text='.$data['search_text']);
+			}
 		}
 		$data['page_title'] = 'Search Orders';
 		$data['page_condition'] = 'page_searchorders';

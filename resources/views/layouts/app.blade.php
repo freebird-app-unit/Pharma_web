@@ -281,12 +281,12 @@
 							<li>
 								<a href="{{ route('logisticupcoming.index') }}" class="waves-effect <?php echo ($page_condition=='page_logisticupcoming')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
 							</li>
-              				<li>
-                                <a href="{{ route('logistic.upcoming.index') }}" class="waves-effect <?php echo ($page_condition=='page_upcoming')?'active':''; ?>"><i class="ti-write"></i> <span>{{ __('Upcoming Orders') }}</span></a>
+              				<!--<li>
+                                <a href="{{ route('logistic.upcoming.index') }}" class="waves-effect <?php //echo ($page_condition=='page_upcoming')?'active':''; ?>"><i class="ti-write"></i> <span>{{ __('Upcoming Orders') }}</span></a>
                             </li>
                  			<li>
-                                <a href="{{ route('logistic.pickup.index') }}" class="waves-effect <?php echo ($page_condition=='page_pickup')?'active':''; ?>"><i class="ti-shopping-cart-full"></i> <span>{{ __('Pickup Orders') }}</span></a>
-                            </li>
+                                <a href="{{ route('logistic.pickup.index') }}" class="waves-effect <?php //echo ($page_condition=='page_pickup')?'active':''; ?>"><i class="ti-shopping-cart-full"></i> <span>{{ __('Pickup Orders') }}</span></a>
+                            </li>-->
                 			<li>
                                 <a href="{{ route('logistic.complete.index') }}" class="waves-effect <?php echo ($page_condition=='page_complete_logistic')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
                             </li>
