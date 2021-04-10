@@ -252,7 +252,7 @@ class UpcomingordersController extends Controller
 		$total = $order_detail->count();
 		$total_page = ceil($total/$per_page);
 
-		$order_detail = $order_detail->orderby('new_orders.accept_datetime','desc');
+		$order_detail = $order_detail->orderby('new_orders.id','desc');
 		$order_detail = $order_detail->paginate($per_page,'','',$page);
 		$queries = DB::getQueryLog();
 		//get list

@@ -124,7 +124,7 @@ class OrdersController extends Controller
 		$total = $order_detail->count();
 		$total_page = ceil($total/$per_page);
 
-		$order_detail = $order_detail->orderby('new_orders.created_at','desc');
+		$order_detail = $order_detail->orderby('new_orders.id','desc');
 		$order_detail = $order_detail->paginate($per_page,'','',$page);
 		//get list
 		if(count($order_detail)>0){
@@ -136,7 +136,7 @@ class OrdersController extends Controller
 						$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
 					}
 				}
-				$html.='<tr><td><a href="'.url('/orders/prescription/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				$html.='<tr><td><a href="'.url('/orders/order_details/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
 				if($order->is_external_delivery > 0){
 					$html.=' <i class="ti-truck" style="color: orange;"></i>';
 				}

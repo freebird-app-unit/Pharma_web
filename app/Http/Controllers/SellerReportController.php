@@ -47,14 +47,14 @@ class SellerReportController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$record_display = (isset($_REQUEST['record_display']))?$_REQUEST['record_display']:'';
 
-		$total_res =new_pharma_logistic_employee::select('id','name','pharma_logistic_id')->where('parent_type','=','pharmacy')->where('user_type','=','seller')->where('user_type','=','seller')->where('pharma_logistic_id','=',$user_id);
+		$total_res =new_pharma_logistic_employee::select('id','name','pharma_logistic_id')->where('parent_type','=','pharmacy')->where('user_type','=','seller')->where('user_type','=','seller')->where('pharma_logistic_id','=',Auth::user()->user_id);
 
         $total_res= $total_res->get();
 		$total = count($total_res);
         $total_page = ceil($total/$per_page);
         
         //getlist
-        $detail =  new_pharma_logistic_employee::select('id','name','pharma_logistic_id')->where('parent_type','=','pharmacy')->where('user_type','=','seller')->where('pharma_logistic_id','=',$user_id);
+        $detail =  new_pharma_logistic_employee::select('id','name','pharma_logistic_id')->where('parent_type','=','pharmacy')->where('user_type','=','seller')->where('pharma_logistic_id','=',Auth::user()->user_id);
 
         $detail = $detail->orderby('new_pharma_logistic_employee.id','desc');
         $detail = $detail->paginate($per_page,'','',$page);

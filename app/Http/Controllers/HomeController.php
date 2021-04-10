@@ -60,8 +60,8 @@ class HomeController extends Controller
 			$data['total_delivery'] = $total_delivery;
 
 			//Pending
-			$total_res = DB::table('new_orders')->select('new_orders.*')->whereDate('accept_datetime','=',$current_date)
-			->where('order_status','incomplete')->where('pharmacy_id', $user->user_id);
+			$total_res = DB::table('new_orders')->select('new_orders.*')->whereDate('create_datetime','=',$current_date)
+			->where('order_status','new')->where('pharmacy_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_incomplete'] = $total;
 			//Pending
@@ -75,28 +75,28 @@ class HomeController extends Controller
 			//accepted
 			
 			//completed
-			$total_res = DB::table('new_order_history')->select('new_orders.*')->whereDate('accept_datetime','=',$current_date)
+			$total_res = DB::table('new_order_history')->select('new_orders.*')->whereDate('deliver_datetime','=',$current_date)
 			->where('order_status','complete')->where('pharmacy_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_complete'] = $total;
 			//completed
 
 			//Delivery
-			$total_res = DB::table('new_orders')->select('new_orders.*')->whereDate('accept_datetime','=',$current_date)
+			$total_res = DB::table('new_orders')->select('new_orders.*')->whereDate('pickup_datetime','=',$current_date)
 			->where('order_status','pickup')->where('pharmacy_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_outfordelivery'] = $total;
 			//Delivery
 			
 			//canceled
-			$total_res = DB::table('new_order_history')->select('new_orders.*')->whereDate('accept_datetime','=',$current_date)
+			$total_res = DB::table('new_order_history')->select('new_orders.*')->whereDate('cancel_datetime','=',$current_date)
 			->where('order_status','cancel')->where('pharmacy_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_canceled'] = $total;
 			//canceled
 			
 			//rejected
-			$total_res = DB::table('new_order_history')->select('new_orders.*')->whereDate('accept_datetime','=',$current_date)
+			$total_res = DB::table('new_order_history')->select('new_orders.*')->whereDate('reject_datetime','=',$current_date)
 			->where('order_status','reject')->where('pharmacy_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_rejected'] = $total;
