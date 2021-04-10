@@ -457,3 +457,7 @@ Route::post('/termscondition/create', array('as' => 'termscondition.create', 'us
 Route::get('/termscondition/edit/{id}', array('as' => 'termscondition.edit', 'uses' => 'TermsconditionController@edit'));
 Route::post('/termscondition/edit/{id}', array('as' => 'termscondition.edit', 'uses' => 'TermsconditionController@update'));
 Route::get('/termscondition/delete/{id}', array('as' => 'termscondition.delete', 'uses' => 'TermsconditionController@delete'));
+
+// pharmacy rejected order
+Route::get('/pharmacyrejected', array('as' => 'pharmacyrejected.index', 'uses' => 'PharmacyrejectedController@index'));
+Route::post('/getpharmacyrejectedlist', array('as' => 'pharmacyrejected.getlist', 'uses' => 'PharmacyrejectedController@getlist'));

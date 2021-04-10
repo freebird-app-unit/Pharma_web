@@ -253,6 +253,11 @@
 								<li>
 									<a href="{{ route('complete.index') }}" class="waves-effect <?php echo ($page_condition=='page_complete')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
 								</li>
+								<?php if(Auth::user()->user_type=='pharmacy'){ ?>
+								<li>
+									<a href="{{ route('pharmacyrejected.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharmacyrejected')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Rejected Orders') }}</span></a>
+								</li>
+								<?php } ?>
 								<li class="has_sub">
 	                                <a href="javascript:void(0);" class="waves-effect"><img src="{{ asset('public/images/report.png') }}"/><span>{{ __('Reports') }} </span> <span class="menu-arrow"></span> </a>
 	                                <ul class="list-unstyled">
@@ -1122,7 +1127,9 @@
 	@if($page_condition=='page_delivery_charges')
 		<script src="{{ asset('public/admin/js/delivery_charges.js') }}"></script>
 	@endif
-	
+	@if($page_condition=='page_pharmacyrejected')
+		<script src="{{ asset('public/admin/js/pharmacyrejected.js') }}"></script>
+	@endif
 	<script src="{{asset('public/admin/plugins/jquery-validator/jquery.validate.js')}}"></script> 
 	<script src="{{asset('public/admin/plugins/lightbox/simple-lightbox.js')}}"></script> 
 	
