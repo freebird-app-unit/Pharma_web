@@ -86,3 +86,4 @@ div[data-type=slider] .ui-sortable li label:nth-child(3), div[data-type=slider] 
 #packages_data .col-sm-4{margin-bottom:20px;}
 .package_box .payment_btn{padding: 10px 0px;text-align: center;background: #58b2eb;}
 .package_box .payment_btn .payment_btn_link{color: #fff;font-size: 18px;}
+table tr td, table tr th{text-align:center;}
