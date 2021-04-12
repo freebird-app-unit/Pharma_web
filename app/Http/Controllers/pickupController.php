@@ -165,7 +165,7 @@ class pickupController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','order_note','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image','new_orders.pickup_datetime')
+		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','order_note','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image','new_orders.pickup_datetime','new_orders.logistic_user_id')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')
 		->where('new_orders.order_status','pickup');
@@ -201,7 +201,7 @@ class pickupController extends Controller
 						$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
 					}
 				}
-				$assign_to = get_name('new_pharma_logistic_employee','name',$order->deliveryboy_id);
+				$assign_to = get_name('new_logistics','name',$order->logistic_user_id);
 				$time = get_order_time($order->id,$order->deliveryboy_id);
 				$html.='<tr>
 					<td>'.$order->customer_name.'</td>
