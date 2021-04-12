@@ -54,7 +54,7 @@
 								<th width="20%" data-priority="6">Order number</th>
 								<th width="20%" data-priority="6">Address</th>
 								<th width="20%" data-priority="7">Accept By</th>
-								<th width="10%" data-priority="8">Order date</th>
+								<th width="10%" data-priority="8">Accept Order date</th>
 								<th width="20%" data-priority="9">Action</th>
 							</tr>
 						</thead>
