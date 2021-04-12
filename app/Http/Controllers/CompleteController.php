@@ -106,7 +106,6 @@ class CompleteController extends Controller
 					<td>'.$order->order_note.'</td>*/
 				
 				$html.='<tr>
-					<td>'.$order->customerid.'</td>
 					<td>'.$order->customer_name.'</td>
 					<td><span>'.$order->order_number.'</span></td>
 					<td>'.$order->address.'</td>

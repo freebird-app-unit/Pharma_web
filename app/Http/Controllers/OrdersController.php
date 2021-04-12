@@ -157,7 +157,7 @@ class OrdersController extends Controller
 				<td>'.$accept_date.'</td>
 				'; 
 					
-				/* $html.='<td>';
+				$html.='<td>';
 				if($homepage!=''){
 					$html.='<a class="btn btn-success waves-effect waves-light" href="'.url('/orders/accept/'.$order->id.'?home').'" title="Accept order">Accept</a>';
 				}else{
@@ -165,10 +165,10 @@ class OrdersController extends Controller
 				}
 				$html.='<a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
 				$html.='</td>';
-				*/
-				$html.='<td>';
-				$html.= ucfirst($order->order_status);
-				$html.='</td>';	
+				
+				//$html.='<td>';
+				//$html.= ucfirst($order->order_status);
+				//$html.='</td>';	
 				$html.='</tr>';
 			}
 			if($page==1){

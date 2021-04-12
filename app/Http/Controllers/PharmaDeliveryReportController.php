@@ -58,7 +58,7 @@ class PharmaDeliveryReportController extends Controller{
 			foreach($detail as $data){
 				$created_at = ($data->created_at!='')?date('d-M-Y',strtotime($data->created_at)):'';
                 ///////////////////////////////////////////////////////////////////
-                $number_of_delivery_new_order = new_orders::select('id')->where('process_user_id','=',$data->id)->where('order_status','=','complete');
+                $number_of_delivery_new_order = new_orders::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -86,7 +86,7 @@ class PharmaDeliveryReportController extends Controller{
 		            }
 		            $number_of_delivery_new_order = $number_of_delivery_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }
-                $number_of_delivery_count = new_order_history::select('id')->where('process_user_id','=',$data->id)->where('order_status','=','complete');
+                $number_of_delivery_count = new_order_history::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -116,7 +116,7 @@ class PharmaDeliveryReportController extends Controller{
 		        }
                 $number_of_delivery_count = $number_of_delivery_count->union($number_of_delivery_new_order)->count();
                 /////////////////////////////////////////////////////
-                $delivered_return_new_order = new_orders::select('id')->where('process_user_id','=',$data->id)->where('order_status','=','complete');
+                $delivered_return_new_order = new_orders::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -144,7 +144,7 @@ class PharmaDeliveryReportController extends Controller{
 		            }
 		            $delivered_return_new_order = $delivered_return_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }
-                $delivered_return_count = new_order_history::select('id')->where('process_user_id','=',$data->id)->where('order_status','=','reject');
+                $delivered_return_count = new_order_history::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','reject');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -174,7 +174,7 @@ class PharmaDeliveryReportController extends Controller{
 		        }
                 $delivered_return_count = $delivered_return_count->union($delivered_return_new_order)->count();
                 ///////////////////////////////////////////////////////
-                $total_amount_new_order = new_orders::where('process_user_id','=',$data->id)->where('order_status','=','complete');
+                $total_amount_new_order = new_orders::where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -203,7 +203,7 @@ class PharmaDeliveryReportController extends Controller{
 		            $total_amount_new_order = $total_amount_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }
                 $total_amount_new_order = $total_amount_new_order->sum('order_amount');
-                $total_amount_new_order_history = new_order_history::where('process_user_id','=',$data->id)->where('order_status','=','complete');
+                $total_amount_new_order_history = new_order_history::where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -237,8 +237,8 @@ class PharmaDeliveryReportController extends Controller{
 				$html.='<tr>
 					<td>'.$data->name.'</td>
 					<td>'.$number_of_delivery_count.'</td>
-                    <td>'.$delivered_return_count.'</td>
-					<td>'.$total_amount.'</td>';
+                    <td>'.$total_amount.'</td>
+					<td>'.$delivered_return_count.'</td>';
 				$html.='</tr>';
 				
 			}

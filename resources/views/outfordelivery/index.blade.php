@@ -47,7 +47,6 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead> 
 							<tr>
-								<th width="10%" data-priority="1">Customer number</th>
 								<!-- <th width="10%" data-priority="2">Order type</th> -->
 								<!-- <th width="10%" data-priority="3">Prescription Name</th> -->
 								<!-- <th width="10%" data-priority="4">Order note</th> -->

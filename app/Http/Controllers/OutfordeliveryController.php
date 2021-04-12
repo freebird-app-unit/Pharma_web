@@ -96,7 +96,6 @@ class OutfordeliveryController extends Controller
 				$time = get_order_time($order->id, $order->deliveryboy_id);
 				$assign_to = ($order->assign_to !== null)?($order->assign_to):($order->logistic_name);
 				$html.='<tr>
-					<td>'.$order->customerid.'</td>
 					<td>'.$order->customer_name.'</td>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td class="text-warning">'.$assign_to.'</td>

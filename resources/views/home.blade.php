@@ -281,7 +281,7 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_canceled; ?></h2>
-			<div class="text-muted m-t-5">Canceled</div>
+			<div class="text-muted m-t-5">Cancelled</div>
 		</div>
 	</div>
 	<div class="col-lg-2 col-sm-12">
