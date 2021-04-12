@@ -72,11 +72,12 @@
 					<table id="admin_report_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th width="20%" data-priority="1">Order Id</th>
-								<th width="20%" data-priority="2">User Name</th>
+								<th width="10%" data-priority="1">Order Id</th>
+								<th width="10%" data-priority="2">User Name</th>
 								<th width="20%" data-priority="3">Address</th>
 								<th width="20%" data-priority="4">Seller Name</th>
 								<th width="20%" data-priority="5">Delivery Name</th>
+								<th width="20%" data-priority="6">Date</th>
 							</tr>
 						</thead>
 						<tbody>

@@ -47,7 +47,7 @@ class PharmaOrderReportController extends Controller
          $per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
          $record_display = (isset($_REQUEST['record_display']))?$_REQUEST['record_display']:'';
         
-        $detail = new_orders::select('customer_id','id','order_number','process_user_id','deliveryboy_id')->where('pharmacy_id','=',$user_id);
+        $detail = new_orders::select('customer_id','id','order_number','process_user_id','deliveryboy_id','accept_datetime')->where('pharmacy_id','=',$user_id);
 
         if($record_display == 'yearly'){
           $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
@@ -108,7 +108,8 @@ class PharmaOrderReportController extends Controller
                    <td>'.$customer_name.'</td>
                    <td>'.$customer_address.'</td>
                    <td>'.$seller_name.'</td>
-                   <td>'.$delievry_name.'</td>';
+                   <td>'.$delievry_name.'</td>
+				   <td>'.$data->accept_datetime.'</td>';
                $html.='</tr>';
            }
            if($page==1){
