@@ -37,7 +37,7 @@
 								<th width="10%" data-priority="2">Order type</th>
 								<th width="10%" data-priority="3">Order note</th>
 								<th width="20%" data-priority="4">Customer name</th>
-								<th width="20%" data-priority="5">Customer number</th>
+								<th width="20%" data-priority="5">Customer contact number</th>
 								<th width="10%" data-priority="6">Location</th>
 								<th width="20%" data-priority="7">Time</th>
 							</tr>

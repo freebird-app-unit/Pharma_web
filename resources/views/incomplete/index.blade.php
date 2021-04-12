@@ -33,7 +33,7 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th data-priority="1">Customer Number</th>
+								<th data-priority="1">Customer contact Number</th>
                                 <th data-priority="2">Customer Name</th>
                                 <th data-priority="3">Order number</th>
                                 <th data-priority="4">Reason</th>

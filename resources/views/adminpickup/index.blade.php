@@ -80,7 +80,7 @@
 							<tr>
 								<th width="10%" data-priority="1">Order Number</th>
 								<th width="20%" data-priority="5">Customer name</th>
-								<th width="20%" data-priority="6">Customer number</th>
+								<th width="20%" data-priority="6">Customer contact number</th>
 								<th width="15%" data-priority="7">Order Type</th>
 								<th width="10%" data-priority="8">Pickedup by</th>
 							</tr>

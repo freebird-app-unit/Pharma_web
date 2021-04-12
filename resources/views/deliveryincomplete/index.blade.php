@@ -36,7 +36,7 @@
 								<th width="10%" data-priority="1">Prescription</th>
 								<th width="10%" data-priority="2">Order type</th>
 								<th width="20%" data-priority="4">Customer name</th>
-								<th width="20%" data-priority="5">Customer number</th>
+								<th width="20%" data-priority="5">Customer contact number</th>
 								<th width="10%" data-priority="3">Address</th>
 								<th width="20%" data-priority="5">Reached time</th>
 								<th width="10%" data-priority="6">Reason</th>

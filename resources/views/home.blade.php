@@ -309,7 +309,7 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 								<!-- <th width="10%" data-priority="2">Order type</th> -->
 								<!-- <th width="10%" data-priority="3">Order note</th> -->
 								<th width="16%" data-priority="4">Customer name</th>
-								<th width="14%" data-priority="5">Customer number</th>
+								<th width="14%" data-priority="5">Customer contact number</th>
 								<th width="20%" data-priority="6">Address</th>
 								<th width="10%" data-priority="7">Order date</th>
 								<th width="20%" data-priority="8">Action</th>
@@ -376,7 +376,7 @@ if($user->user_type=='delivery_boy'){
 								<!-- <th width="10%" data-priority="1">Order type</th> -->
 								<!-- <th width="10%" data-priority="2">Order note</th> -->
 								<th width="20%" data-priority="3">Customer name</th>
-								<th width="20%" data-priority="4">Customer number</th>
+								<th width="20%" data-priority="4">Customer contact number</th>
 								<th width="10%" data-priority="5">Order date</th>
 								<th width="20%" data-priority="7">Action</th>
 							</tr>

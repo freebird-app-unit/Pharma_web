@@ -40,7 +40,7 @@
 								<th width="10%" data-priority="4">Order note</th> -->
 								<th width="15%" data-priority="2">Customer name</th>
 								<th width="15%" data-priority="3">Neighbour name</th>
-								<th width="15%" data-priority="4">Customer number</th>
+								<th width="15%" data-priority="4">Customer contact number</th>
 								<th width="20%" data-priority="5">Address</th>
 								<th width="15%" data-priority="6">Pharmacy Name</th>
 								<th width="10%" data-priority="7">Delivered by</th>
