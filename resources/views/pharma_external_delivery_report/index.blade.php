@@ -75,9 +75,10 @@
 						<thead>
 							<tr>
 								<th width="20%" data-priority="1">Name Of Delivery Guy</th>
-								<th width="30%" data-priority="2">Number Of Delivery  </th>
-								<th width="30%" data-priority="3">Total Amount Of Order Delivered</th>
-								<th width="30%" data-priority="4">Total Delivered Return</th>
+								<th width="20%" data-priority="2">Code</th>
+								<th width="20%" data-priority="3">Number Of Delivery  </th>
+								<th width="20%" data-priority="4">Total Amount Of Order Delivered</th>
+								<th width="20%" data-priority="5">Total Delivered Return</th>
 							</tr>
 						</thead>
 						<tbody>

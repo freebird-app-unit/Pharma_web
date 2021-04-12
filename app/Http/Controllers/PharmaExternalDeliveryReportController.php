@@ -75,9 +75,12 @@ class PharmaExternalDeliveryReportController extends Controller{
                 $total_amount_new_order_history = $total_amount_new_order_history->sum('order_amount');
                 $total_amount = $total_amount_new_order + $total_amount_new_order_history;
                 $delivery_boy_name = get_name('new_pharma_logistic_employee','name',$data->id);
+				$pharma_logistic_id = get_name('new_pharma_logistic_employee','pharma_logistic_id',$data->id);
+				$delivery_code = get_name('new_logistics','code',$pharma_logistic_id);
                 //////////////////////////////////////////////////////////////////////////////////////////////////
 				$html.='<tr>
 					<td>'.$delivery_boy_name.'</td>
+					<td>'.$delivery_code.'</td>
 					<td>'.$number_of_delivery_count.'</td>
                     <td>'.$delivered_return_count.'</td>
 					<td>'.$total_amount.'</td>';

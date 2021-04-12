@@ -140,10 +140,15 @@ class OrdersController extends Controller
 				if($order->is_external_delivery > 0){
 					$html.=' <i class="ti-truck" style="color: orange;"></i>';
 				}
-				$deliveryboy_details = new_pharma_logistic_employee::select('name')->where('id','=',$order->deliveryboy_id)->first();
+				$deliveryboy_details = new_pharma_logistic_employee::select('name','pharma_logistic_id')->where('id','=',$order->deliveryboy_id)->first();
 				$deliveryboy_name = "";
+				$logistic_name = "";
 				if($deliveryboy_details){
 					$deliveryboy_name = $deliveryboy_details->name;
+					$logistics = new_logistics::find($deliveryboy_details->pharma_logistic_id);
+					if($logistics){
+						$logistic_name = $logistics->code;
+					}
 				}
 				$seller_details = new_pharma_logistic_employee::select('name')->where('id','=',$order->process_user_id)->first();
 				$seller_name = "";
@@ -154,6 +159,7 @@ class OrdersController extends Controller
 				$html.='</td><td>'.$order->customer_name.'</td>
 				<td>'.$order->customer_number.'</td>
 				<td>'.$order->address.'</td>
+				<td>'.$logistic_name.'</td>
 				<td>'.$accept_date.'</td>
 				'; 
 					

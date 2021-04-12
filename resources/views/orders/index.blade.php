@@ -93,10 +93,11 @@
 							<tr>
 								<th data-priority="1">Order Id</th>
 								<th data-priority="1">Full Name</th>
+								<th data-priority="1">Customer contact Number</th>
 								<th data-priority="6" width="20%">Address</th>	
-								<th data-priority="4">Seller name</th>
-								<th data-priority="4">Delivery name</th>
-								<th data-priority="8">Status</th>
+								<th data-priority="4">Delivery Name</th>
+								<th data-priority="4">Order Date</th>
+								<th data-priority="8">Action</th>
 							</tr>
 						</thead>
 						<tbody>

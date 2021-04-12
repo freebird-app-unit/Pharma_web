@@ -267,8 +267,8 @@
 
 	                                    <li><a href="{{ route('pharma_external_delivery_report.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharma_external_delivery_report')?'active':''; ?>">{{ __('External Delivery Reports') }}</a></li>
 
-	                                    <li><a href="">Hisab</a></li>
-	                                    <li><a href="{{ route('myorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_myorder')?'active':''; ?>">My Orders</a></li>
+	                                    <!--<li><a href="">Hisab</a></li>-->
+	                                    <!--<li><a href="{{ route('myorder.index') }}" class="waves-effect <?php //echo ($page_condition=='page_myorder')?'active':''; ?>">My Orders</a></li>-->
 	                                </ul>
 	                            </li>
 	                            <li>
@@ -416,15 +416,17 @@
 							<li>
                                 <a href="{{ route('deliveryboy.index') }}" class="waves-effect <?php echo ($page_condition=='page_deliveryboy')?'active':''; ?>"><img src="{{ asset('public/images/delivery_boy.png') }}"/><span>{{ __('Delivery boy') }}</span></a>
                             </li>
-							<li>
-								<a href="{{ route('order_report.index') }}" class="waves-effect <?php echo ($page_condition=='page_order_report')?'active':''; ?>"><img src="{{ asset('public/images/order_report.png') }}"/><span>{{ __('Order report') }}</span></a>
-							</li>
+							<!--<li>
+								<a href="{{ route('order_report.index') }}" class="waves-effect <?php //echo ($page_condition=='page_order_report')?'active':''; ?>"><img src="{{ asset('public/images/order_report.png') }}"/><span>{{ __('Order report') }}</span></a>
+							</li>-->
+							<?php if(Auth::user()->user_type=='seller'){?>
 							<li>
 								<a href="{{ route('voucher.index') }}" class="waves-effect <?php echo ($page_condition=='page_order_voucher')?'active':''; ?>"><img src="{{ asset('public/images/vouchers.png') }}"/><span>{{ __('Voucher') }}</span></a>
 							</li>
 							<li>
 								<a href="{{ route('voucher.history') }}" class="waves-effect <?php echo ($page_condition=='page_voucher_history')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Voucher History') }}</span></a>
 							</li>
+							<?php } ?>
 							<?php } ?>
 							
                             <!--<li class="has_sub">
