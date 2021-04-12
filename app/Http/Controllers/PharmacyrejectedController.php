@@ -57,7 +57,7 @@ class PharmacyrejectedController extends Controller
 		
 		
 		//get list
-		$order_detail = new_orders::select('new_orders.id','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress')
+		$order_detail = new_orders::select('new_orders.id','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_orders.rejectby_user','new_orders.reject_user_id')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->where('new_orders.order_status','reject');
@@ -81,11 +81,13 @@ class PharmacyrejectedController extends Controller
 		//get list
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
+				$reject_by = $order->rejectby_user;
 				$html.='<tr>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->customer_name.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order->myaddress.'</td>
+					<td>'.$reject_by.'</td>
 					<td class="text-danger">'.$order->reject_cancel_reason.'</td></tr>';
 			}
 			if($page==1){

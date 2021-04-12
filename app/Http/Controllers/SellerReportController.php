@@ -123,7 +123,7 @@ class SellerReportController extends Controller
 		        }
 		        $number_of_complete_count = $number_of_complete_count->union($number_of_complete_new_order)->count();
                 ///////////////////////////////////////////////
-                $reject_new_order = new_orders::select('id')->where('process_user_id','=',$data->id)->where('process_user_type','=','seller')->where('order_status','=','reject');
+                $reject_new_order = new_orders::select('id')->where('reject_user_id','=',$data->id)->where('rejectby_user','=','seller')->where('order_status','=','reject');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -151,7 +151,7 @@ class SellerReportController extends Controller
 		            }
 		            $reject_new_order = $reject_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }
-                $reject_count = new_order_history::select('id')->where('process_user_id','=',$data->id)->where('process_user_type','=','seller')->where('order_status','=','reject');
+                $reject_count = new_order_history::select('id')->where('reject_user_id','=',$data->id)->where('rejectby_user','=','seller')->where('order_status','=','reject');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');

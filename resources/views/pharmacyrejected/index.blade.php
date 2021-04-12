@@ -40,6 +40,7 @@
 								<th width="20%" data-priority="2">Customer name</th>
 								<th width="20%" data-priority="3">Customer contact number</th>
 								<th width="20%" data-priority="4">Address</th>
+								<th width="20%" data-priority="4">Reject By</th>
 								<th width="10%" data-priority="5">Reason</th>
 							</tr>
 						</thead>
