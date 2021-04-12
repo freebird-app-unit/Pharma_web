@@ -50,7 +50,6 @@
 							<tr>
 								<th width="20%" data-priority="1">Customer name</th>
 								<th width="20%" data-priority="2">Order Number</th>
-								<th width="20%" data-priority="3">Order Note</th>
 								<th width="10%" data-priority="4">Pickedup Date</th>
 								<th width="10%" data-priority="5">Pickedup by</th>
 							</tr>

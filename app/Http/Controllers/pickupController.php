@@ -206,7 +206,6 @@ class pickupController extends Controller
 				$html.='<tr>
 					<td>'.$order->customer_name.'</td>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
-					<td>'.$order->order_note.'</td>
 					<td>'.$order->pickup_datetime.'</td>
 					
 					<td class="text-warning">'.$assign_to.'</td>';
