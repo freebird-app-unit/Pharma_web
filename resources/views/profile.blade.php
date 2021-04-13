@@ -23,10 +23,17 @@
 			<form class="form-horizontal" method="POST" action="{{ route('profile') }}" id="clinic_detail-form" enctype="multipart/form-data">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<input type="hidden" name="hidden_image" id="hidden_image" value="{{ isset($user_detail->profile_image) ? $user_detail->profile_image : '' }}">
-				<div class="form-group">
+				<!--<div class="form-group">
 					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="clinic_name">Email<span class="required">*</span></label>
 					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('clinic_name')) bad @endif">
 					{{ $user_detail->email }}
+					</div>
+				</div>-->
+				<div class="form-group">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="email">Email<span class="required">*</span></label>
+					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('email')) bad @endif">
+						<input type="text" placeholder="" class="form-control" value="{{{ old('email', isset($user_detail) ? $user_detail->email : null) }}}" name="email" id="email">
+						@if ($errors->has('email')) <div class="errors_msg">{{ $errors->first('email') }}</div>@endif
 					</div>
 				</div>
 				<div class="form-group">

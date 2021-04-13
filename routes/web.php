@@ -461,3 +461,7 @@ Route::get('/termscondition/delete/{id}', array('as' => 'termscondition.delete',
 // pharmacy rejected order
 Route::get('/pharmacyrejected', array('as' => 'pharmacyrejected.index', 'uses' => 'PharmacyrejectedController@index'));
 Route::post('/getpharmacyrejectedlist', array('as' => 'pharmacyrejected.getlist', 'uses' => 'PharmacyrejectedController@getlist'));
+
+// packages history
+Route::get('/packageshistory', 'PackageshistoryController@index');
+Route::get('packageshistory_list', 'PackageshistoryController@list');

@@ -38,6 +38,7 @@ class ProfileController extends Controller
 		if($user->user_type == 'pharmacy'){
 			$pharmacy = new_pharmacies::find($user->user_id); 
 			$user->discount = $pharmacy->discount; 
+			$user->profile_image = $pharmacy->profile_image; 
 		}
 		$data['user_detail'] = $user;
 		$data['site_title'] = 'My profile | ' . $this->data['site_title'];
@@ -47,6 +48,7 @@ class ProfileController extends Controller
 		$user = auth()->user();
 		$validate = $request->validate([
 			'name' => 'required|max:255',
+			'email' => 'required|max:255',
 		]);
 
 		switch ($user->user_type) {
@@ -83,10 +85,13 @@ class ProfileController extends Controller
 		
 			$user = User::find($user->id);
 			$user->name = $request->name;
+			$user->email = $request->email;
 			if($user->user_type == 'pharmacy'){
 				$pharmacy = new_pharmacies::find($user->user_id); 
 				$pharmacy->discount = $request->discount; 
+				$pharmacy->email = $request->email; 
 				$pharmacy->mobile_number = $request->mobile_number; 
+				$pharmacy->profile_image = $image_name; 
 				$pharmacy->save();
 			} else if($user->user_type == 'logistic') {
 				$user = new_logistics::find($user->user_id);

@@ -211,7 +211,21 @@
                                     </a>
 								</li>-->
 								<li class="hidden-xs">
+								<?php 
+								if(auth()->user()->user_type == 'pharmacy'){
+									$profile_image = get_name('new_pharmacies','profile_image',auth()->user()->user_id);
+									if(file_exists(storage_path('app/public/uploads/users/'.$profile_image))){
+										$profile_image_url = asset('storage/app/public/uploads/users/' . $profile_image);
+										echo '<a href="javascript:;" class="right-bar-toggle waves-effect waves-light"><img src="'.$profile_image_url.'" width="30"/></a>';
+									}else{
+								?>
+									<a href="javascript:;" class="right-bar-toggle waves-effect waves-light">{{ Auth::user()->name }}</a>
+								<?php
+									}
+								}else{
+								?>
                                     <a href="javascript:;" class="right-bar-toggle waves-effect waves-light">{{ Auth::user()->name }}</a>
+								<?php } ?>
                                 </li>
                                 <li class="dropdown">
                                     <a href="" class="dropdown-toggle profile" data-toggle="dropdown" aria-expanded="true"><!--<img src="assets/images/users/avatar-1.jpg" alt="user-img" class="img-circle">--><i class="ti-user m-r-5"></i> </a>
@@ -455,6 +469,11 @@
 							<li>
 								<a href="{{ url('/packages') }}" class="waves-effect <?php echo ($page_condition=='page_packages')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Packages') }}</span></a>
 							</li>
+								<?php if(Auth::user()->user_type=='pharmacy'){ ?>
+								<li>
+									<a href="{{ url('/packageshistory') }}" class="waves-effect <?php echo ($page_condition=='page_packagehistory')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Packages History') }}</span></a>
+								</li>
+								<?php } ?>
 							<?php } ?>
 							
 							<?php if(Auth::user()->user_type=='admin'){ ?>
