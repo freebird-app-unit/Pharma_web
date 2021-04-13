@@ -27,6 +27,7 @@
 									<option value='weekly'>Weekly</option>
 									<option value='monthly'>Monthly</option>
 									<option value='yearly'>Yearly</option>
+									<option value='custom_date'>Custom date range</option>
 								</select>
 								</div>
 							</div>
@@ -58,6 +59,20 @@
 									?>
 								</select>
 								</div>
+							</div>
+							<div class="col-sm-4 block_custom_date" style="display: none;">
+								<label>Start date</label>
+								<div class="input-group">
+									<input type="text" class="form-control" placeholder="Start date" id="filter_start_date">
+									<span class="input-group-addon bg-custom b-0 text-white"><i class="icon-calender"></i></span>
+								</div><!-- input-group -->
+							</div>
+							<div class="col-sm-4 block_custom_date" style="display: none;">
+								<label>End date</label>
+								<div class="input-group">
+									<input type="text" class="form-control" placeholder="End date" id="filter_end_date">
+									<span class="input-group-addon bg-custom b-0 text-white"><i class="icon-calender"></i></span>
+								</div><!-- input-group -->
 							</div>
 							<div class="col-sm-3">
 								<label>&nbsp;</label>
