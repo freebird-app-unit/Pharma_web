@@ -99,7 +99,7 @@ class SellersController extends Controller
 					$total_complete_order = $order_detail->count(); */
 					
 				$total_res = DB::table('new_orders')->select('new_orders.*')
-				->where('order_status','incomplete')->where('pharmacy_id', $user->id);
+				->where('order_status','incomplete')->where('process_user_type','=','seller')->where('process_user_id', $user->id);
 				$total_pending_order= $total_res->count();
 			
 				$pharmacy_name = get_name("new_pharmacies","name",$user->pharma_logistic_id);	

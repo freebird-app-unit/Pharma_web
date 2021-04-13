@@ -257,37 +257,37 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_incomplete; ?></h2>
-			<div class="text-muted m-t-5">Pending</div>
+			<div class="text-muted m-t-5"><a href="{{ url('/upcomingorders') }}">Pending</a></div>
 		</div>
 	</div>
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_accepted; ?></h2>
-			<div class="text-muted m-t-5">Accepted</div>
+			<div class="text-muted m-t-5"><a href="{{ url('/acceptedorders') }}">Accepted</a></div>
 		</div>
 	</div>
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_complete; ?></h2>
-			<div class="text-muted m-t-5">Completed</div>
+			<div class="text-muted m-t-5"><a href="{{ url('/complete') }}">Completed</a></div>
 		</div>
 	</div>
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_outfordelivery; ?></h2>
-			<div class="text-muted m-t-5">Delivery</div>
+			<div class="text-muted m-t-5"><a href="{{ url('/outfordelivery') }}">Delivery</a></div>
 		</div>
 	</div>
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_canceled; ?></h2>
-			<div class="text-muted m-t-5">Cancelled</div>
+			<div class="text-muted m-t-5"><a href="{{ url('/canceled') }}">Cancelled</a></div>
 		</div>
 	</div>
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_rejected; ?></h2>
-			<div class="text-muted m-t-5">Rejected</div>
+			<div class="text-muted m-t-5"><a href="{{ url('/pharmacyrejected') }}">Rejected</a></div>
 		</div>
 	</div>
 </div>

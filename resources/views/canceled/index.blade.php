@@ -36,10 +36,11 @@
 								<th width="10%" data-priority="1">Order Number</th>
 								<!-- <th width="10%" data-priority="2">Order type</th> -->
 								<!-- <th width="10%" data-priority="3">Order note</th> -->
-								<th width="10%" data-priority="4">Customer name</th>
-								<th width="10%" data-priority="5">Customer contact number</th>
-								<th width="10%" data-priority="6">Address</th>
-								<th width="10%" data-priority="7">Cancel Reason</th>
+								<th width="10%" data-priority="2">Customer name</th>
+								<th width="10%" data-priority="3">Customer contact number</th>
+								<th width="10%" data-priority="4">Address</th>
+								<th width="10%" data-priority="5">Cancel Reason</th>
+								<th width="10%" data-priority="6">Cancelled by</th>
 							</tr>
 						</thead>
 						<tbody>

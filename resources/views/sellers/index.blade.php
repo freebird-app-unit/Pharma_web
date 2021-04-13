@@ -27,6 +27,7 @@
 						<label>Search</label>
 						<input type="text" class="form-control" name="search_text" placeholder="Search" id="search_text"/>
 					</div>
+					<?php if(Auth::user()->user_type!='pharmacy'){ ?>
 					<div class="col-sm-4">
 						<label>Pharmacy</label>
 						<div class="form-group">
@@ -40,6 +41,9 @@
 						</select>
 						</div>
 					</div>
+					<?php }else{ ?>
+					<input type="hidden" name="search_pharmacy" id="search_pharmacy" value="<?php echo Auth::user()->user_id; ?>"/>
+					<?php } ?>
 					<div class="col-sm-11"></div>
 					<div class="col-sm-1">
 						<a href="{{ route('seller.create') }}" class="btn btn-success waves-effect waves-light">Create</a>

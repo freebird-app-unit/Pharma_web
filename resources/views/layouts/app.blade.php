@@ -319,6 +319,9 @@
 							<li>
                                 <a href="{{ route('allorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_allorder')?'active':''; ?>"><img src="{{ asset('public/images/all_order.png') }}"/><span>{{ __('All Orders') }}</span></a>
                             </li>
+							<li>
+                                <a href="{{ route('canceled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Canceled Orders') }}</span></a>
+                            </li>
 
              <!--  <li>
                                 <a href="{{ route('custom_notification.create') }}" class="waves-effect <?php echo ($page_condition=='page_notification')?'active':''; ?>"><i class="ion-navicon-round"></i> <span>{{ __('Notification') }}</span></a>
