@@ -41,12 +41,14 @@ class OnboardingrequestController extends Controller
             ->select('id','name','first_name','last_name','address', 'email', 'phone', 'dateofapplication', 'dateofapproval')
 			->where('is_registration_complete','1')
 			->where('dateofapproval',null)
+			->where('account_status','0')
             ->latest();
 	    $request = $_REQUEST;
         return Datatables::of($data)
             ->addIndexColumn()
 			->addColumn('action', function ($row) {
                 $btn = '<a class="action-icon approverequest" href="javascript:void(0)" data-id="'.$row->id.'"><i class="fa fa-check text-success"></i></a> ';
+				$btn .= '<a class="action-icon rejectrequest" href="javascript:void(0)" data-id="'.$row->id.'"><i class="fa fa-ban text-danger"></i></a> ';
                 return $btn;
             })
             ->rawColumns(['action'])
@@ -85,5 +87,12 @@ class OnboardingrequestController extends Controller
 			$Onboardingrequest->dateofapproval = date('Y-m-d H:i:s');
 			$Onboardingrequest->save();
 		}
+	}
+	public function reject($id){
+		$reject_reason = (isset($_REQUEST['reject_reason']))?$_REQUEST['reject_reason']:'';
+		$Onboardingrequest = Onboardingrequest::find($id);
+		$Onboardingrequest->reject_reason = $reject_reason;
+		$Onboardingrequest->account_status = '2';
+		$Onboardingrequest->save();
 	}
 }

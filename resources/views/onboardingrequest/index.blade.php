@@ -172,5 +172,42 @@
 			});
 			return false;
 		});
+		
+		$(document).on('click', '.rejectrequest', function () {
+			var obj = $(this);
+			var request_id = obj.data('id');
+			swal({
+				title: 'Are you sure want to reject?',
+				type: "input",
+				showCancelButton: true,
+				confirmButtonColor: "#DD6B55",
+				confirmButtonText: 'Yes, reject it!',
+				closeOnConfirm: false,
+				inputPlaceholder: "Write reject reason"
+			}, function (inputValue) {
+				if (inputValue === false) return false;      
+				if (inputValue === "") {     
+					swal.showInputError("You need to write something!");     
+					return false   
+				}    
+				$.ajax({
+					headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+					url: base_url +'/onboardingrequestreject/' + request_id + '?reject_reason='+inputValue,
+					type: "GET",
+					success: function (res) {
+
+						if (res.status_code == '400') {
+							swal('Cancelled',"Something went wrong)", "error");
+						} else {
+							swal('Rejected!', 'Request has been rejected.', "success");
+							obj.parents('tr').fadeOut();
+						}
+					},
+					error: function () {
+					}
+				});
+			});
+			return false;
+		});
 	</script>
 @endsection

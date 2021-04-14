@@ -314,6 +314,8 @@ Route::get('/pharma_external_delivery_report_test_direct', array('as' => 'pharma
 Route::get('/pharma_external_delivery_report', array('as' => 'pharma_external_delivery_report.index', 'uses' => 'PharmaExternalDeliveryReportController@index'));
 Route::post('/getExternalDeliveryReport', array('as' => 'pharma_external_delivery_report.getExternalDeliveryReport', 'uses' => 'PharmaExternalDeliveryReportController@getExternalDeliveryReport'));
 
+Route::get('/external_delivery_detail', array('as' => 'pharma_external_delivery_report.index', 'uses' => 'PharmaExternalDeliveryReportController@external_delivery_detail'));
+
 //Pharmacy Order Report
 Route::get('/pharma_order_report', array('as' => 'pharma_order_report.index', 'uses' => 'PharmaOrderReportController@index'));
 Route::post('/getPharmaOrderReport', array('as' => 'pharma_order_report.getPharmaOrderReport', 'uses' => 'PharmaOrderReportController@getPharmaOrderReport'));
@@ -448,6 +450,7 @@ Route::get('getlogisticpendingamount/{id}', 'DeliveryChargesController@getlogist
 Route::get('/onboardingrequest', 'OnboardingrequestController@index');
 Route::get('onboardingrequest_list', 'OnboardingrequestController@list');
 Route::get('/onboardingrequestapprove/{id}', 'OnboardingrequestController@approve');
+Route::get('/onboardingrequestreject/{id}', 'OnboardingrequestController@reject');
 
 //Terms and condition
 Route::get('/termscondition', array('as' => 'termscondition.index', 'uses' => 'TermsconditionController@index'));
