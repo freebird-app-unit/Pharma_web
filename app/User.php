@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+	protected $table = 'admin_panel_creds';
     use Notifiable;
 
     /**

@@ -41,7 +41,7 @@ class PasswordController
 			'email_mobile' => 'required',
 		]);
 		if($validatedData){
-			$users = DB::table('users')->where('email', $request->email_mobile)->orWhere('mobile_number', $request->email_mobile)->first();
+			$users = DB::table('admin_panel_creds')->where('email', $request->email_mobile)->orWhere('mobile_number', $request->email_mobile)->first();
 			if($users){
 				$otp = rand(111111,999999);
 				$user = User::find($users->id);
@@ -74,7 +74,7 @@ class PasswordController
 			'otp' => 'required',
 		]);
 		if($validatedData){
-			$users = DB::table('users')->where('id', $request->id)->Where('otp', $request->otp)->first();
+			$users = DB::table('admin_panel_creds')->where('id', $request->id)->Where('otp', $request->otp)->first();
 			if($users){
 				return redirect('/passwordreset/'.base64_encode($users->id));
 			}else{

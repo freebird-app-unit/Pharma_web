@@ -139,14 +139,14 @@ class HomeController extends Controller
 			//customer
 
 			//admin
-			$total_res = DB::table('users')
+			$total_res = DB::table('admin_panel_creds')
 			->where('user_type','admin');
 			$total= $total_res->count();
 			$data['total_admin'] = $total;
 			//admin
 			
 			//users
-			$total_res = DB::table('users');
+			$total_res = DB::table('admin_panel_creds');
 			$total= $total_res->count();
 			$data['total_users'] = $total;
 			//users

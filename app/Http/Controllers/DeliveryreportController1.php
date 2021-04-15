@@ -44,7 +44,7 @@ class DeliveryreportController extends Controller
 		$filter_start_date=(isset($_POST['filter_start_date']) && $_POST['filter_start_date']!='')?date('Y-m-d',strtotime(str_replace('/','-',$_POST['filter_start_date']))):'';
 		$filter_end_date=(isset($_POST['filter_end_date']) && $_POST['filter_end_date']!='')?date('Y-m-d',strtotime(str_replace('/','-',$_POST['filter_end_date']))):'';
 		//count total
-		$total_res = DB::table('users')->where('user_type','delivery_boy')->where('parentuser_id',$user_id);
+		$total_res = DB::table('admin_panel_creds')->where('user_type','delivery_boy')->where('parentuser_id',$user_id);
 		if($searchtxt!=''){
 			$total_res= $total_res->where(function ($query) use($searchtxt) {
                 $query->where('name', 'like', $searchtxt.'%')
@@ -58,7 +58,7 @@ class DeliveryreportController extends Controller
 		//count total
 		
 		//get list
-		$user_detail = DB::table('users')->select('users.*')->where('user_type','delivery_boy')->where('parentuser_id',$user_id);
+		$user_detail = DB::table('admin_panel_creds')->select('admin_panel_creds.*')->where('user_type','delivery_boy')->where('parentuser_id',$user_id);
 		if($searchtxt!=''){
 			$user_detail= $user_detail->where(function ($query) use($searchtxt) {
                 $query->where('name', 'like', $searchtxt.'%')
