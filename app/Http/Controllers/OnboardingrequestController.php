@@ -47,7 +47,8 @@ class OnboardingrequestController extends Controller
         return Datatables::of($data)
             ->addIndexColumn()
 			->addColumn('action', function ($row) {
-                $btn = '<a class="action-icon approverequest" href="javascript:void(0)" data-id="'.$row->id.'"><i class="fa fa-check text-success"></i></a> ';
+                $btn = '<a class="action-icon" href="'.url('/onboardingrequest/view/'.$row->id).'"><i class="fa fa-eye text-success"></i></a> ';
+				$btn .= '<a class="action-icon approverequest" href="javascript:void(0)" data-id="'.$row->id.'"><i class="fa fa-check text-success"></i></a> ';
 				$btn .= '<a class="action-icon rejectrequest" href="javascript:void(0)" data-id="'.$row->id.'"><i class="fa fa-ban text-danger"></i></a> ';
                 return $btn;
             })
@@ -94,5 +95,17 @@ class OnboardingrequestController extends Controller
 		$Onboardingrequest->reject_reason = $reject_reason;
 		$Onboardingrequest->account_status = '2';
 		$Onboardingrequest->save();
+	}
+	public function view($id){
+		if(Auth::user()->user_type!='admin'){
+			return redirect(route('home'));
+		}
+		$Onboardingrequest = Onboardingrequest::find($id);
+		$data = array();
+		$data['onboardingrequest'] = $Onboardingrequest;
+		$data['page_title'] = 'Onboarding Request detail';
+		$data['page_condition'] = 'page_onboarfingrequestdetail';
+		$data['site_title'] = 'Onboarding Request detail | ' . $this->data['site_title'];
+        return view('onboardingrequest.detail', $data);
 	}
 }

@@ -451,6 +451,7 @@ Route::get('/onboardingrequest', 'OnboardingrequestController@index');
 Route::get('onboardingrequest_list', 'OnboardingrequestController@list');
 Route::get('/onboardingrequestapprove/{id}', 'OnboardingrequestController@approve');
 Route::get('/onboardingrequestreject/{id}', 'OnboardingrequestController@reject');
+Route::get('/onboardingrequest/view/{id}', 'OnboardingrequestController@view');
 
 //Terms and condition
 Route::get('/termscondition', array('as' => 'termscondition.index', 'uses' => 'TermsconditionController@index'));
