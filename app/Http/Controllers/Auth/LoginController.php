@@ -36,6 +36,10 @@ class LoginController extends Controller
      *
      * @return void
      */
+	public function username()
+	{
+		return 'mobile_number';
+	}
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
@@ -83,20 +87,35 @@ class LoginController extends Controller
 
     // }
 
-    // protected function authenticated(Request $request, $user)
-    // {
-    //     switch ($request->user_type) {
-    //         case 'new_pharmacies':
-    //             $request->session()->push('user_type', 'pharmacy');
-    //             Session::put('user_type', 'pharmacy');
-    //             break;
-            
-    //         default:
-    //             $request->session()->push('user_type', 'admin');
-    //             Session::put('user_type', 'admin');
-    //             break;
-    //     }
-    // }
+     protected function authenticated(Request $request, $user)
+     {
+		 if(isset($request->otp)){
+			 if($request->otp == $request->mobile_otp){
+				 redirect('/dashboard');
+			 }else{
+				Auth::logout();
+				$data = array();
+				$data['mobile_number'] = $request->mobile_number;
+				$data['password'] = $request->password;
+				$data['mobile_otp'] = $request->mobile_otp;
+				$data['mobile_otp_msg'] = 'Invalid otp';
+				return view('auth.otp', $data);
+			 }
+		 }else{
+			$mobile_otp = rand(111111,999999);
+			$message = "Login OTP " . $mobile_otp;
+			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$request->mobile_number."'&message=" . urlencode($message);
+			$sms = file_get_contents($api);
+			
+			Auth::logout();
+			$data = array();
+			$data['mobile_number'] = $request->mobile_number;
+			$data['password'] = $request->password;
+			$data['mobile_otp'] = $mobile_otp;
+			$data['mobile_otp_msg'] = '';
+			return view('auth.otp', $data);
+		 }
+     }
 
     // protected function authUserPass(CreateLoginRequest $request)
     // {

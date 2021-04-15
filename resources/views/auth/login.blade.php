@@ -17,8 +17,8 @@
 					<!-- <input id="user_type" type="hidden" name="user_type" value="admin"> -->
 					<div class="form-group">
 						<div class="col-xs-12">
-							<input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" autocomplete="email" autofocus placeholder="Email">
-							@error('email')
+							<input id="mobile_number" type="text" class="form-control @error('mobile_number') is-invalid @enderror" name="mobile_number" value="{{ old('mobile_number') }}" autocomplete="mobile_number" autofocus placeholder="Mobile number">
+							@error('mobile_number')
 								<span class="invalid-feedback errors_msg" role="alert">
 									<strong>{{ $message }}</strong>
 								</span>
