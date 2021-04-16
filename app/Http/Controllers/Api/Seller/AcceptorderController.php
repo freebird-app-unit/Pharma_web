@@ -1150,7 +1150,36 @@ class AcceptorderController extends Controller
                         $invoice_path= new_orders::select('id','order_amount')->where('id',$order_id)->first();
                         $invoice_path->order_amount = $order_amount;
                         $invoice_path->save();
+                        if($orders->logistic_user_id!='' || $orders->logistic_user_id!=-1){
+                                $assignOrderEmit = (object)[];
+                                        $assignOrderEmit->pharmacy_id = $orders->pharmacy_id;
+                                        $assignOrderEmit->logistic_id = $orders->logistic_user_id;
+                                        $invoice = invoice::where('order_id',$orders->id)->first();
+                                        $image_url = '';
+                                        if($invoice->invoice!=''){
+                                            $destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
+                                            if(file_exists($destinationPath)){
+                                                $image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
+                                            }else{
+                                                $image_url = url('/').'/uploads/placeholder.png';
+                                            }
+                                        }else{
+                                            $image_url = url('/').'/uploads/placeholder.png';
+                                        }
 
+                                        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$orders->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$orders->id.'</span>';
+                                        $assignOrderEmit->id = '<a href="'.url('/logisticupcoming/order_details/'.$orders->id).'"><img src="'.$image_url.'" width="50"/><span>'.$orders->order_number.'</span></a>';
+                                        $assignOrderEmit->order_number = $orders->order_number;
+                                        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $orders->delivery_charges_id)->value('delivery_type');
+                                        $assignOrderEmit->delivery_address = new_address::where('id', $orders->address_id)->value('address');
+                                        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$orders->pharmacy_id)->value('address');
+                                        $assignOrderEmit->sellername = new_pharma_logistic_employee::where('id',$orders->process_user_id)->value('name');
+                                        $assignOrderEmit->order_amount = $order_amount;
+                                        $assignOrderEmit->assign_datetime = $orders->assign_datetime;
+                                        $assignOrderEmit->action = '<a onclick="assign_order('.$orders->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$orders->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
+
+                                        event(new AssignOrderLogistic($assignOrderEmit));
+                        }
                        //send sms to user
                          $mobile_data = new_users::select('id','name','mobile_number','email')->where('id',$orders->customer_id)->first();
                         $pharmacy_data = new_pharmacies::select('id','name')->where('id',$orders->pharmacy_id)->first();
@@ -1515,28 +1544,6 @@ class AcceptorderController extends Controller
         $order->assign_datetime = date('Y-m-d H:i:s');
         $order->order_status = 'assign';
        
-        $assignOrderEmit = (object)[];
-        $assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-        $assignOrderEmit->logistic_id = $order->logistic_user_id;
-
-        $image_url = url('/').'/uploads/placeholder.png';
-
-        if (!empty($order->prescription_image)) {
-            if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-                $image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-            }
-        }
-
-        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-        $assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-        $assignOrderEmit->order_number = $order->order_number;
-        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-        $assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-        $assignOrderEmit->order_amount = $order->order_amount;
-        $assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-        event(new AssignOrderLogistic($assignOrderEmit));
 
          //order pass to external logistic
                /* $elt_response = [];
@@ -2126,27 +2133,6 @@ class AcceptorderController extends Controller
                                         $order->order_status = 'assign';
                                         $order->logistic_user_id = $intersected[0]->id;
 
-                                        $assignOrderEmit = (object)[];
-                                        $assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-                                        $assignOrderEmit->logistic_id = $order->logistic_user_id;
-                                        $image_url = url('/').'/uploads/placeholder.png';
-
-                                        if (!empty($order->prescription_image)) {
-                                            if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-                                                $image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-                                            }
-                                        }
-
-                                        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-                                        $assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-                                        $assignOrderEmit->order_number = $order->order_number;
-                                        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-                                        $assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-                                        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-                                        $assignOrderEmit->order_amount = $order->order_amount; 
-                                        $assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-                                        event(new AssignOrderLogistic($assignOrderEmit));
 
                                          //order process with external logistic
                                         /* $elt_response = [];
@@ -2220,27 +2206,7 @@ class AcceptorderController extends Controller
                                         $order->order_status = 'assign';
                                         $order->logistic_user_id = $intersected[0]->id;
 
-                                        $assignOrderEmit = (object)[];
-                                        $assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-                                        $assignOrderEmit->logistic_id = $order->logistic_user_id;
-                                        $image_url = url('/').'/uploads/placeholder.png';
-
-                                        if (!empty($order->prescription_image)) {
-                                            if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-                                                $image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-                                            }
-                                        }
-
-                                        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-                                        $assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-                                        $assignOrderEmit->order_number = $order->order_number;
-                                        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-                                        $assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-                                        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-                                        $assignOrderEmit->order_amount = $order->order_amount;
-                                        $assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-                                        event(new AssignOrderLogistic($assignOrderEmit));
+                                        
                                         $logistic_data[] = [
                                             'logistic_current_status' => true,
                                             'next_logistic_working_day' => ''
@@ -2283,27 +2249,7 @@ class AcceptorderController extends Controller
                                         $order->order_status = 'assign';
                                         $order->logistic_user_id = $value->id;
 
-                                        $assignOrderEmit = (object)[];
-                                        $assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-                                        $assignOrderEmit->logistic_id = $order->logistic_user_id;
-                                        $image_url = url('/').'/uploads/placeholder.png';
-
-                                        if (!empty($order->prescription_image)) {
-                                            if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-                                                $image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-                                            }
-                                        }
-
-                                        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-                                        $assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-                                        $assignOrderEmit->order_number = $order->order_number;
-                                        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-                                        $assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-                                        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-                                        $assignOrderEmit->order_amount = $order->order_amount;
-                                        $assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-                                        event(new AssignOrderLogistic($assignOrderEmit));
+                                       
                                 }
                                 $logistic_data[] = [
                                     'logistic_current_status' => false,
@@ -2391,28 +2337,6 @@ class AcceptorderController extends Controller
                                     $order->order_status = 'assign';
                                     $order->logistic_user_id = $intersected[0]->id;
 
-                                    $assignOrderEmit = (object)[];
-                                    $assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-                                    $assignOrderEmit->logistic_id = $order->logistic_user_id;
-                                    $image_url = url('/').'/uploads/placeholder.png';
-
-                                    if (!empty($order->prescription_image)) {
-                                        if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-                                            $image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-                                        }
-                                    }
-
-                                    $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-                                    $assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-                                    $assignOrderEmit->order_number = $order->order_number;
-                                    $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-                                    $assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-                                    $assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-                                    $assignOrderEmit->order_amount = $order->order_amount; 
-                                    $assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-                                    event(new AssignOrderLogistic($assignOrderEmit));
-
                                     //order process with external logistic
                                         /* $elt_response = [];
                                         if(count($orders)>0){
@@ -2485,27 +2409,7 @@ class AcceptorderController extends Controller
                                         $order->order_status = 'assign';
                                         $order->logistic_user_id = $intersected[0]->id;
 
-                                        $assignOrderEmit = (object)[];
-                                        $assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-                                        $assignOrderEmit->logistic_id = $order->logistic_user_id;
-                                        $image_url = url('/').'/uploads/placeholder.png';
-
-                                        if (!empty($order->prescription_image)) {
-                                            if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-                                                $image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-                                            }
-                                        }
-
-                                        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-                                        $assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-                                        $assignOrderEmit->order_number = $order->order_number;
-                                        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-                                        $assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-                                        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-                                        $assignOrderEmit->order_amount = $order->order_amount;
-                                        $assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-                                        event(new AssignOrderLogistic($assignOrderEmit));
+                                       
                                         $logistic_data[] = [
                                             'logistic_current_status' => true,
                                             'next_logistic_working_day' => ''
@@ -2548,27 +2452,7 @@ class AcceptorderController extends Controller
                                         $order->order_status = 'assign';
                                         $order->logistic_user_id = $value->id;
 
-                                        $assignOrderEmit = (object)[];
-                                        $assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-                                        $assignOrderEmit->logistic_id = $order->logistic_user_id;
-                                        $image_url = url('/').'/uploads/placeholder.png';
-
-                                        if (!empty($order->prescription_image)) {
-                                            if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-                                                $image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-                                            }
-                                        }
-
-                                        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-                                        $assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-                                        $assignOrderEmit->order_number = $order->order_number;
-                                        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-                                        $assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-                                        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-                                        $assignOrderEmit->order_amount = $order->order_amount;
-                                        $assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-                                        event(new AssignOrderLogistic($assignOrderEmit));
+                                        
                                 }
                                 $logistic_data[] = [
                                     'logistic_current_status' => false,
