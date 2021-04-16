@@ -78,6 +78,8 @@ class SellerReportController extends Controller
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $number_of_complete_new_order = $number_of_complete_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -107,6 +109,8 @@ class SellerReportController extends Controller
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $number_of_complete_count = $number_of_complete_count->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -128,7 +132,7 @@ class SellerReportController extends Controller
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
 		          $end_date = date('Y-12-31');
-		          $reject_new_order = $reject_new_order->whereYear('accept_datetime','=',$record_yearly); 
+		          $reject_new_order = $reject_new_order->whereYear('reject_datetime','=',$record_yearly); 
 		        }elseif($record_display == 'monthly'){
 		            $query_date = date('Y-m-d');
 		            $start_date = date('Y-m-01', strtotime($query_date));
@@ -137,7 +141,9 @@ class SellerReportController extends Controller
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
-		            $reject_new_order = $reject_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
+		            $reject_new_order = $reject_new_order->whereDate('reject_datetime','>=',$start_date)->whereDate('reject_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
 		                $start_date = date('Y-m-d',strtotime('last Monday'));    
@@ -149,14 +155,14 @@ class SellerReportController extends Controller
 		            }else{
 		                $end_date = date('Y-m-d');
 		            }
-		            $reject_new_order = $reject_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
+		            $reject_new_order = $reject_new_order->whereDate('reject_datetime','>=',$start_date)->whereDate('reject_datetime','<=',$end_date); 
 		        }
                 $reject_count = new_order_history::select('id')->where('reject_user_id','=',$data->id)->where('rejectby_user','=','seller')->where('order_status','=','reject');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
 		          $end_date = date('Y-12-31');
-		          $reject_count = $reject_count->whereYear('accept_datetime','=',$record_yearly); 
+		          $reject_count = $reject_count->whereYear('reject_datetime','=',$record_yearly); 
 		        }elseif($record_display == 'monthly'){
 		            $query_date = date('Y-m-d');
 		            $start_date = date('Y-m-01', strtotime($query_date));
@@ -165,7 +171,9 @@ class SellerReportController extends Controller
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
-		            $reject_count = $reject_count->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
+		            $reject_count = $reject_count->whereDate('reject_datetime','>=',$start_date)->whereDate('reject_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
 		                $start_date = date('Y-m-d',strtotime('last Monday'));    
@@ -177,7 +185,7 @@ class SellerReportController extends Controller
 		            }else{
 		                $end_date = date('Y-m-d');
 		            }
-		            $reject_count = $reject_count->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
+		            $reject_count = $reject_count->whereDate('reject_datetime','>=',$start_date)->whereDate('reject_datetime','<=',$end_date); 
 		        }
                 $reject_count= $reject_count->union($reject_new_order)->count();
 				/////////////////////////////////////////
@@ -195,6 +203,8 @@ class SellerReportController extends Controller
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $total_amount_new_order = $total_amount_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -224,6 +234,8 @@ class SellerReportController extends Controller
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $total_amount_new_order_history = $total_amount_new_order_history->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
