@@ -16,7 +16,7 @@ function getorderslist(pageno){
 	$.ajax({
 			type: "post",
 			url: base_url+'/getorderslist',
-			data: 'pageno='+pageno+"&perpage="+perpage+"&_token="+token+"&searchtxt="+searchtxt+"&ord_field="+ord_field+"&sortord="+sortord+"&pharmacy_seller_id="+pharmacy_seller_id+"&order_status="+order_status+"&order_delivery_type="+order_delivery_type+"&filter_start_date="+filter_start_date+"&filter_end_date="+filter_end_date,
+			data: 'pageno='+pageno+"&perpage="+perpage+"&_token="+token+"&searchtxt="+searchtxt+"&ord_field="+ord_field+"&sortord="+sortord+"&pharmacy_seller_id="+pharmacy_seller_id+"&order_status="+order_status+"&order_delivery_type="+order_delivery_type+"&filter_start_date="+filter_start_date+"&filter_end_date="+filter_end_date+"&ord_st=1",
 			success: function (responce) {	
 				var data = responce.split('##');
 				$('#admin_order_list tbody').html(data[0]);

@@ -97,7 +97,7 @@
 								<th data-priority="6" width="20%">Address</th>	
 								<th data-priority="4">Delivery Name</th>
 								<th data-priority="4">Order Date</th>
-								<th data-priority="8">Action</th>
+								<th data-priority="8">Status</th>
 							</tr>
 						</thead>
 						<tbody>
