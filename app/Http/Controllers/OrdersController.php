@@ -144,7 +144,7 @@ class OrdersController extends Controller
 				$deliveryboy_name = "";
 				$logistic_name = "";
 				if($deliveryboy_details){
-					$deliveryboy_name = $deliveryboy_details->name;
+					$logistic_name = $deliveryboy_details->name;
 					$logistics = new_logistics::find($deliveryboy_details->pharma_logistic_id);
 					if($logistics){
 						$logistic_name = $logistics->code;
