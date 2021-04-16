@@ -89,7 +89,7 @@
 					<table id="admin_report_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th width="20%" data-priority="1">Name Of Delivery Guy</th>
+								<!--<th width="20%" data-priority="1">Name Of Delivery Guy</th>-->
 								<th width="20%" data-priority="2">Code</th>
 								<th width="20%" data-priority="3">Number Of Delivery  </th>
 								<th width="20%" data-priority="4">Total Amount Of Order Delivered</th>

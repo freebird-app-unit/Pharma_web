@@ -288,10 +288,12 @@ class PharmaExternalDeliveryReportController extends Controller{
 				
 				$pharma_logistic_id = get_name('new_pharma_logistic_employee','pharma_logistic_id',$data->id);
 				$delivery_code = get_name('new_logistics','code',$pharma_logistic_id);
+				if($delivery_code==''){
+					$delivery_code = $delivery_boy_name;
+				}
                 //////////////////////////////////////////////////////////////////////////////////////////////////
 				$url = url('/external_delivery_detail?delivery_id='.$data->id.'&record_display='.$record_display.'&record_yearly='.$_REQUEST['record_yearly'].'&record_monthly='.$_REQUEST['record_monthly'].'&filter_start_date='.$filter_start_date.'&filter_end_date='.$filter_end_date);
 				$html.='<tr>
-					<td>'.$delivery_boy_name.'</td>
 					<td>'.$delivery_code.'</td>
 					<td><a href="'.$url.'">'.$number_of_delivery_count.'</a></td>
                     <td>'.$delivered_return_count.'</td>
