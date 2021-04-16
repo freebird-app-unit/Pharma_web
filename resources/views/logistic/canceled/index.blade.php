@@ -33,13 +33,14 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th width="10%" data-priority="1">Prescription</th>
-								<th width="10%" data-priority="2">Order type</th>
+								<th width="10%" data-priority="1"  style="text-align:center;">Prescription</th>
+								<th width="10%" data-priority="2"  style="text-align:center;">Order type</th>
 								<!-- <th width="10%" data-priority="3">Order note</th> -->
-								<th width="10%" data-priority="4">Customer name</th>
-								<th width="10%" data-priority="5">Customer contact number</th>
-								<th width="10%" data-priority="6">Address</th>
-								<th width="10%" data-priority="7">Cancel Reason</th>
+								<th width="10%" data-priority="3"  style="text-align:center;">Customer name</th>
+								<th width="10%" data-priority="4"  style="text-align:center;">Customer number</th>
+								<th width="10%" data-priority="5"  style="text-align:center;">Address</th>
+								<th width="10%" data-priority="6"  style="text-align:center;">Cancel Reason</th>
+								<th width="10%" data-priority="6"  style="text-align:center;">Cancel Date</th>
 							</tr>
 						</thead>
 						<tbody>

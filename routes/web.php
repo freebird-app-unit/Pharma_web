@@ -223,8 +223,8 @@ Route::post('logistic/deliveryboy/edit/{id}', array('as' => 'logistic.deliverybo
 Route::get('logistic/deliveryboy/delete/{id}', array('as' => 'logistic.deliveryboy.delete', 'uses' => 'logistic\DeliveryboyController@delete'));
 
 //logistic complete order
-Route::get('logistic/complete', array('as' => 'logistic.complete.index', 'uses' => 'CompleteController@logistic_index'));
-Route::post('/getcompletelistlogistic', array('as' => 'logistic.complete.getlist', 'uses' => 'CompleteController@logistic_getlist'));
+Route::get('/logistic/complete', array('as' => 'logistic.complete.index', 'uses' => 'CompleteController@logistic_index'));
+Route::post('/getcompletelistlogistic', array('as' => 'logistic.complete.logistic_getlist', 'uses' => 'CompleteController@logistic_getlist'));
 Route::get('logistic/order_feedback/{id}', array('as' => 'logistic.complete.order_feedback', 'uses' => 'CompleteController@logistic_order_feedback'));
 Route::post('getuserfeedbacklist', 'CompleteController@logistic_getuserfeedbacklist');
 Route::get('logistic/complete/order_details/{id}', array('as' => 'logistic.complete.order_details', 'uses' => 'CompleteController@logistic_order_details'));
@@ -247,13 +247,20 @@ Route::get('/logistic/pickup/order_details/{id}', array('as' => 'logistic.pickup
 
 //logistic upcoming
 Route::get('logisticupcoming', array('as' => 'logisticupcoming.index', 'uses' => 'LogisticupcomingController@index'));
-Route::get('logisticpickup', array('as' => 'logisticpickup.index', 'uses' => 'LogisticpickupController@index'));
+Route::post('/getupcominglist', array('as' => 'logisticupcoming.logistic_upcoming_getlist', 'uses' => 'LogisticupcomingController@logistic_upcoming_getlist'));
+Route::post('logisticupcoming/assign', array('as' => 'logisticupcoming.assign', 'uses' => 'LogisticupcomingController@assign'));
+Route::post('logisticupcoming/reject', array('as' => 'logisticupcoming.reject', 'uses' => 'LogisticupcomingController@reject'));
+Route::get('/logisticupcoming/order_details/{id}', array('as' => 'logisticupcoming.order_details', 'uses' => 'LogisticupcomingController@order_details'));
 
-Route::get('logistic/upcoming', array('as' => 'logistic.upcoming.index', 'uses' => 'upcomingController@index'));
-Route::post('/getupcominglist', array('as' => 'logistic.upcoming.getlist', 'uses' => 'upcomingController@getlist'));
-Route::get('/logistic/upcoming/order_details/{id}', array('as' => 'logistic.upcoming.order_details', 'uses' => 'upcomingController@order_details'));
-Route::post('logistic/upcoming/assign', array('as' => 'logistic.upcoming.assign', 'uses' => 'upcomingController@assign'));
-Route::post('logistic/upcoming/reject', array('as' => 'logistic.upcoming.reject', 'uses' => 'upcomingController@reject'));
+//logistic pickup
+Route::get('logisticpickup', array('as' => 'logisticpickup.index', 'uses' => 'LogisticpickupController@index'));
+Route::post('/logistic/getpickuplist', array('as' => 'logisticpickup.logistic_pickup_getlist', 'uses' => 'LogisticpickupController@logistic_pickup_getlist'));
+Route::get('/logisticpickup/order_details/{id}', array('as' => 'logisticpickup.order_details', 'uses' => 'LogisticpickupController@order_details'));
+
+//logistic out for delivery
+Route::get('logisticassign', array('as' => 'logisticassign.index', 'uses' => 'LogisticassignController@index'));
+Route::post('/logistic/getassignlist', array('as' => 'logisticassign.logistic_assign_getlist', 'uses' => 'LogisticassignController@logistic_assign_getlist'));
+Route::get('/logisticassign/order_details/{id}', array('as' => 'logisticassign.order_details', 'uses' => 'LogisticassignController@order_details'));
 
 //logistic reports
 Route::get('logistic/reports', array('as' => 'logistic.reports.index', 'uses' => 'logistic\ReportController@index'));
@@ -266,11 +273,11 @@ Route::post('/logistic/acceptedorders/assign', array('as' => 'logistic.acceptedo
 Route::get('/logistic/acceptedorders/order_details/{id}', array('as' => 'logistic.acceptedorders.order_details', 'uses' => 'logistic\AcceptedordersController@order_details'));
 
 //logistic incomplete order
-Route::get('logistic/incomplete', array('as' => 'logistic.incomplete.index', 'uses' => 'IncompleteController@logistic_index'));
-Route::post('/getincompletelistlogistic', array('as' => 'logistic.incomplete.getlist', 'uses' => 'IncompleteController@logistic_getlist'));
-Route::get('/logistic/incomplete/order_details/{id}', array('as' => 'logistic.incomplete.order_details', 'uses' => 'IncompleteController@logistic_order_details'));
-Route::post('logistic/incomplete/assign', array('as' => 'logistic.incomplete.assign', 'uses' => 'IncompleteController@logistic_assign'));
-Route::post('logistic/incomplete/reject', array('as' => 'logistic.incomplete.reject', 'uses' => 'IncompleteController@logistic_reject'));
+Route::get('/logistic/incomplete', array('as' => 'logistic.incomplete.index', 'uses' => 'LogisticincompleteController@logistic_index'));
+Route::post('/getincompletelistlogistic', array('as' => 'logistic.incomplete.logistic_getlist', 'uses' => 'LogisticincompleteController@logistic_getlist'));
+Route::get('/logistic/incomplete/order_details/{id}', array('as' => 'logistic.incomplete.order_details', 'uses' => 'LogisticincompleteController@logistic_order_details'));
+Route::post('logistic/incomplete/assign', array('as' => 'logistic.incomplete.assign', 'uses' => 'LogisticincompleteController@logistic_assign'));
+Route::post('logistic/incomplete/reject', array('as' => 'logistic.incomplete.reject', 'uses' => 'LogisticincompleteController@logistic_reject'));
 
 // order report
 Route::get('/logistic/order_report', array('as' => 'logistic.order_report.index', 'uses' => 'OrderReportController@logistic_index'));
@@ -306,6 +313,8 @@ Route::post('/getsellerreport', array('as' => 'sellerreport.getsellerreport', 'u
 Route::get('/pharma_delivery_report', array('as' => 'pharma_delivery_report.index', 'uses' => 'PharmaDeliveryReportController@index'));
 Route::post('/getDeliveryReport', array('as' => 'pharma_delivery_report.getDeliveryReport', 'uses' => 'PharmaDeliveryReportController@getDeliveryReport'));
 
+Route::get('/external_delivery_detail', array('as' => 'pharma_external_delivery_report.index', 'uses' => 'PharmaExternalDeliveryReportController@external_delivery_detail'));
+
 //Pharmacy External Delivery Report
 Route::get('/pharma_external_delivery_report_test', array('as' => 'pharma_external_delivery_test.index', 'uses' => 'PharmaExternalDeliveryReportTestController@index'));
 
@@ -313,8 +322,6 @@ Route::get('/pharma_external_delivery_report_test_direct', array('as' => 'pharma
 
 Route::get('/pharma_external_delivery_report', array('as' => 'pharma_external_delivery_report.index', 'uses' => 'PharmaExternalDeliveryReportController@index'));
 Route::post('/getExternalDeliveryReport', array('as' => 'pharma_external_delivery_report.getExternalDeliveryReport', 'uses' => 'PharmaExternalDeliveryReportController@getExternalDeliveryReport'));
-
-Route::get('/external_delivery_detail', array('as' => 'pharma_external_delivery_report.index', 'uses' => 'PharmaExternalDeliveryReportController@external_delivery_detail'));
 
 //Pharmacy Order Report
 Route::get('/pharma_order_report', array('as' => 'pharma_order_report.index', 'uses' => 'PharmaOrderReportController@index'));

@@ -33,12 +33,14 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th width="10%" data-priority="1">Invoice</th>
-								<th width="10%" data-priority="2">Delivery type</th>
-								<th width="20%" data-priority="3">Pickup Locaton</th>
-								<th width="20%" data-priority="4">Delivery location</th>
-								<th width="20%" data-priority="5">Order Amount</th>
-								<th width="20%" data-priority="6">Delivery Boy</th>
+								<th width="10%" data-priority="1" style="text-align:center;">Invoice</th>
+								<th width="10%" data-priority="2" style="text-align:center;">Delivery type</th>
+								<th width="10%" data-priority="3" style="text-align:center;">Pickup Locaton</th>
+								<th width="10%" data-priority="4" style="text-align:center;">Delivery location</th>
+								<th width="10%" data-priority="5" style="text-align:center;">Order Amount</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Return By</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Return Date</th>
+								<th width="10%" data-priority="7" style="text-align:center;">Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -96,7 +98,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="mySmallModalLabel">Reject reason</h4>
+				<h4 class="modal-title" id="mySmallModalLabel">Cancel reason</h4>
 			</div>
 			<div class="modal-body">
 				<form method="post" action="{{ route('logistic.incomplete.reject') }}">

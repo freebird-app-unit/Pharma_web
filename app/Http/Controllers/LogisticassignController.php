@@ -9,23 +9,23 @@ use Illuminate\Http\RedirectResponse;
 use App\User;
 use App\Orders;
 use App\Rejectreason;
+use App\SellerModel\Prescription;
 use App\Orderassign;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
-
+use File;
+use Image;
+use Storage;
 use App\new_pharma_logistic_employee;
 use App\new_users;
 use App\new_pharmacies;
 use App\new_logistics;
 use App\new_orders;
-use App\new_delivery_charges;
-use File;
-use Image;
-use Storage;
 use App\SellerModel\invoice;
+use App\new_delivery_charges;
 
-class LogisticupcomingController extends Controller
+class LogisticassignController extends Controller
 {
     public function __construct()
     {
@@ -39,17 +39,14 @@ class LogisticupcomingController extends Controller
 		// }
 		$user_id = Auth::user()->user_id;
 		$data = array();
-		$data['page_title'] = 'Upcoming Orders';
-		$data['page_condition'] = 'page_upcomingorders';
-		$data['site_title'] = 'Upcoming Orders | ' . $this->data['site_title'];
-		if(Auth::user()->user_type='logistic'){
-			$data['deliveryboy_list'] = new_pharma_logistic_employee::where(['pharma_logistic_id'=> $user_id, 'is_active'=> 1])->where('user_type','delivery_boy')->where('parent_type','logistic')->get();
-		}
-		$data['reject_reason'] = Rejectreason::where('type', 'logistic')->get();
-        return view('logisticupcoming.index', $data);
+		$data['page_title'] = 'Out For Delivery';
+		$data['page_condition'] = 'page_logistic_assign';
+		$data['site_title'] = 'out for delivery | ' . $this->data['site_title'];
+		$data['deliveryboy_list'] = new_pharma_logistic_employee::where(['pharma_logistic_id'=> $user_id, 'is_active'=> 1])->where('user_type','delivery_boy')->where('parent_type','logistic')->get();
+        return view('logisticassign.index', $data);
 	}
 
-	public function logistic_upcoming_getlist()
+	public function logistic_assign_getlist()
     {
 		$user_id = Auth::user()->user_id;
 		$user_type = Auth::user()->user_type;
@@ -66,15 +63,14 @@ class LogisticupcomingController extends Controller
 		
 
 		//get list
-		$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type', 'address_new.address as delivery_address','new_pharma_logistic_employee.name as sellername','new_pharmacies.address as pickup_address')
-		->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_orders.process_user_id')
+		$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type', 'address_new.address as delivery_address','new_pharma_logistic_employee.name as deliveryboyname','new_pharmacies.address as pickup_address')
+		->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_orders.deliveryboy_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_orders.pharmacy_id')
 		->leftJoin('order_assign', 'order_assign.order_id', '=', 'new_orders.id')
-		->where(['new_orders.order_status'=>'assign','order_assign.order_status'=>'new'])
-		->where('order_assign.logistic_id','<>',NULL)
-		->where('order_assign.logistic_id','<>',-1);
+		->where(['new_orders.order_status'=>'assign','order_assign.order_status'=>'assign'])
+		->where('order_assign.logistic_id','<>',NULL);
 
 		if($user_type == 'pharmacy'){
 			$order_detail = $order_detail->where('new_orders.pharmacy_id',$user_id);
@@ -112,14 +108,12 @@ class LogisticupcomingController extends Controller
 					$image_url = url('/').'/uploads/placeholder.png';
 				}
 				$html.='<tr>
-					<td style="text-align:center;"><a href="'.url('/logisticupcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="40"/><span>'.$order->order_number.'</span></a></td>
+					<td style="text-align:center;"><a href="'.url('/logisticassign/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
 					<td style="text-align:center;">'.$order->delivery_type.'</td>
 					<td style="text-align:center;">'.$order->pickup_address.'</td>
 					<td style="text-align:center;">'.$order->delivery_address.'</td>
-					<td style="text-align:center;">'.$order->sellername.'</td>
-					<td style="text-align:center;">'.$order->order_amount.'</td>
+					<td style="text-align:center;">'.$order->deliveryboyname.'</td>
 					<td style="text-align:center;">'.$order->assign_datetime.'</td>';
-				$html.='<td style="text-align:center;"><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a><a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a></td>';
 				$html.='</tr>';
 			}
 			if($page==1){
@@ -133,10 +127,10 @@ class LogisticupcomingController extends Controller
 				$next='';
 			}
 			$pagination.='<li class="page-item '.$prev.'">
-						<a class="page-link" onclick="getupcominglist('.($page-1).')" href="javascript:;" tabindex="-1"> <i class="fa fa-angle-left"></i></a>
+						<a class="page-link" onclick="getassignlist('.($page-1).')" href="javascript:;" tabindex="-1"> <i class="fa fa-angle-left"></i></a>
 					</li>
 					<li class="page-item '.$next.'">
-						<a class="page-link" onclick="getupcominglist('.($page+1).')" href="javascript:;"><i class="fa fa-angle-right"></i></a>
+						<a class="page-link" onclick="getassignlist('.($page+1).')" href="javascript:;"><i class="fa fa-angle-right"></i></a>
 					</li>';
 					$from = ($per_page*($page-1));
 					if($from<=0){$from=1;}
@@ -148,79 +142,6 @@ class LogisticupcomingController extends Controller
 		}
 		
 		echo $html."##".$pagination."##".$total_summary;
-	}
-
-	public function assign(Request $request)
-    {
-		$user_id = Auth::user()->id;
-		$order = new_orders::find($request->assign_id);
-		$delivery_boy = new_pharma_logistic_employee::find($request->delivery_boy);
-		$order->deliveryboy_id = $request->delivery_boy;
-		$order->order_status = 'assign';
-		$order->assign_datetime = date('Y-m-d H:i:s');
-		$order->save();
-		DB::connection()->enableQueryLog();
-
-		$orderAssignCount = Orderassign::where('order_status', 'new')->Where('order_id', $request->assign_id)->count();
-		if($orderAssignCount > 0){
-			$orderAssignId = Orderassign::where('order_status', 'new')->Where('order_id', $request->assign_id)->first();
-			
-			$orderAssign = Orderassign::find($orderAssignId->id);
-			$orderAssign->deliveryboy_id = $delivery_boy->id;
-			$orderAssign->order_id = $request->assign_id;
-			$orderAssign->order_status = 'assign';
-			$orderAssign->assign_date = date('Y-m-d H:i:s');
-			$orderAssign->updated_at = date('Y-m-d H:i:s');
-			$orderAssign->save();
-		} else {
-			$orderAssign = new Orderassign();
-			$orderAssign->deliveryboy_id = $request->delivery_boy;
-			$orderAssign->logistic_id = $delivery_boy->parentuser_id;
-			$orderAssign->created_at = date('Y-m-d H:i:s');
-			$orderAssign->order_id = $request->assign_id;
-			$orderAssign->order_status = 'assign';
-			$orderAssign->assign_date = date('Y-m-d H:i:s');
-			$orderAssign->updated_at = date('Y-m-d H:i:s');
-			$orderAssign->save();
-		}
-	
-		return redirect(route('logisticupcoming.index'))->with('success_message', trans('Order Successfully assign'));
-	}
-
-	public function reject(Request $request)
-    {
-		$user_id = Auth::user()->id;
-
-		$order = new_orders::find($request->reject_id);
-		$order->process_user_id = $user_id;
-		$order->logistic_id = null;
-		$order->deliveryboy_id = 0;
-		$order->reject_datetime = null;
-		$order->order_status = 'reject';
-		// $order->save();
-
-		$orderAssignCount = Orderassign::whereNull('deliveryboy_id')->Where('order_id', $request->reject_id)->count();
-		if($orderAssignCount > 0){
-			$orderAssign = Orderassign::where('order_id',$request->reject_id)->first();
-			$orderAssign->order_status = 'reject';
-			$orderAssign->reject_date = date('Y-m-d H:i:s');
-			$orderAssign->updated_at = date('Y-m-d H:i:s');
-		} else {
-			$orderAssign = new Orderassign();
-			$orderAssign->logistic_id = $user_id;
-			$orderAssign->order_id = $request->reject_id;
-			$orderAssign->order_status = 'reject';
-			$orderAssign->logistic_reject_reason = $request->reject_reason;
-			$orderAssign->reject_date = date('Y-m-d H:i:s');
-			$orderAssign->updated_at = date('Y-m-d H:i:s');
-		}
-		$orderAssign->save();
-
-		if(isset($_REQUEST['home'])){
-			return redirect(route('home'))->with('success_message', trans('Order Successfully rejected'));
-		}else{
-			return redirect(route('logisticupcoming.index'))->with('success_message', trans('Order Successfully rejected'));
-		}
 	}
 
 	public function order_details($id)
@@ -242,8 +163,7 @@ class LogisticupcomingController extends Controller
 		$data['page_title'] = 'Order Details';
 		$data['page_condition'] = 'page_prescription';
 		$data['site_title'] = 'order detail | ' . $this->data['site_title'];
-        return view('logisticupcoming.order_details', $data);
+        return view('logisticassign.order_details', $data);
 		
 	}
-
 }

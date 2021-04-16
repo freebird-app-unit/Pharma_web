@@ -14,11 +14,15 @@
 <div class="row">
 	<div class="col-sm-12">
 	<?php 
-	$image_url = url('/').'/uploads/placeholder.png';
-	if (!empty($order->prescription_image)) {
-		if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-			$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
+	if($order_detail->preimage!=''){
+		$destinationPath = base_path() . '/storage/app/public/uploads/prescription/'.$order_detail->preimage;
+		if(file_exists($destinationPath)){
+			$image_url = url('/').'/storage/app/public/uploads/prescription/'.$order_detail->preimage;
+		}else{
+			$image_url = url('/').'/uploads/placeholder.png';
 		}
+	}else{
+		$image_url = url('/').'/uploads/placeholder.png';
 	}
 	?>
 		<div class="card-box">
@@ -26,6 +30,11 @@
 				<div class="col-sm-6">
 					<div class="gallery"> 
 						<a href="{{ $image_url }}" class="big"><img src="{{ $image_url }}" style="width:150px;"></a>
+						<br><br><br>
+						<div class="prescription" style="padding: 10px 20px;background:#333333;opacity:0.9;text-align:center;">
+						<strong style="color: white">Prescription Name</strong><br>
+						<div style="color: white"><?php echo $order_detail->prename; ?></div>
+						</div>
 						<div class="clear"></div>
 					</div>
 					<!-- <img src="{{ $image_url }}" style="width:150px;">
@@ -53,8 +62,8 @@
 					<br><br>
 					<div>
 						<strong>Pharmacy details</strong><br><br>
-						Name:&nbsp;&nbsp;<?php echo $customer->name; ?><br><br>
-						Contact Number:&nbsp;&nbsp;<?php echo $customer->mobile_number; ?><br><br>
+						Name:&nbsp;&nbsp;<?php echo $order_detail->pharmacyname; ?><br><br>
+						Contact Number:&nbsp;&nbsp;<?php echo $order_detail->pharmacymobile_number; ?><br><br>
 						Location:&nbsp;&nbsp; <?php echo $order_detail->pharmacyaddress; ?>
 					</div>
 					<br><br>
@@ -67,13 +76,13 @@
 					<br><br>
 					<div>
 						<strong>Order Process</strong><br><br>
-						Order Recevied:&nbsp;&nbsp;<?php echo $order_detail->created_at; ?><br><br>
+						Order Recevied:&nbsp;&nbsp;<?php echo $order_detail->create_datetime; ?><br><br>
 						Order Accept at:&nbsp;&nbsp;<?php echo $order_detail->accept_datetime; ?><br><br>
 						Order Assign to:&nbsp;&nbsp; <?php echo $order_detail->assign_datetime; ?><br><br>
 						Order Pickup at:&nbsp;&nbsp; <?php echo $order_detail->pickup_datetime; ?><br><br>
 						Pickup by:&nbsp;&nbsp; <?php echo $customer->name; ?><br><br>
 						Order Return at:&nbsp;&nbsp; <?php echo $order_detail->reject_datetime; ?><br><br>
-						Reason:&nbsp;&nbsp; <?php echo $order_detail->logistic_reject_reason; ?><br><br>
+						Reason:&nbsp;&nbsp; <?php echo $order_detail->reject_cancel_reason; ?><br><br>
 					</div>
 				</div>
 			</div>
