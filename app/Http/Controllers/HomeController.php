@@ -165,22 +165,43 @@ class HomeController extends Controller
 			//accepted
 			
 			//out for delivery
-			$total_res = DB::table('new_orders')->select('new_orders.*')
-			->where('order_status','assign')->where('logistic_user_id', $user->user_id);
+			$total_res = DB::table('new_orders')->select('new_orders.*')->leftJoin('order_assign','order_assign.order_id','=','new_orders.id')
+			->where(['new_orders.order_status'=>'assign','order_assign.order_status'=>'assign'])->where('logistic_user_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_outfordelivery'] = $total;
 			//out for delivery
+
+			//Ready For pickup
+			$total_res = DB::table('new_orders')->select('new_orders.*')->leftJoin('order_assign','order_assign.order_id','=','new_orders.id')
+			->where(['new_orders.order_status'=>'pickup','order_assign.order_status'=>'accept'])->where('logistic_user_id', $user->user_id);
+			$total= $total_res->count();
+			$data['total_readyforpickup'] = $total;
+			//Ready For pickup
 			
 			//completed
-			$total_res = DB::table('new_order_history')->select('new_orders.*')
+			$total_res = DB::table('new_order_history')->select('new_order_history.*')
 			->where('order_status','complete')->where('logistic_user_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_complete'] = $total;
 			//completed
 
-			//upcoming
+			//incompleted
 			$total_res = DB::table('new_orders')->select('new_orders.*')
-			->where('order_status','new')->where('logistic_user_id', $user->user_id);
+			->where('order_status','incomplete')->where('logistic_user_id', $user->user_id);
+			$total= $total_res->count();
+			$data['total_incomplete'] = $total;
+			//incompleted
+
+			//cancelled
+			$total_res = DB::table('new_order_history')->select('new_order_history.*')
+			->where('order_status','cancel')->where('logistic_user_id', $user->user_id);
+			$total= $total_res->count();
+			$data['total_canceled'] = $total;
+			//cancelled
+
+			//upcoming
+			$total_res = DB::table('new_orders')->select('new_orders.*')->leftJoin('order_assign','order_assign.order_id','=','new_orders.id')
+			->where(['new_orders.order_status'=>'assign','order_assign.order_status'=>'new'])->where('logistic_user_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_upcoming'] = $total;
 			//upcoming

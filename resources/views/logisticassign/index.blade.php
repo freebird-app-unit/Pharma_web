@@ -15,10 +15,10 @@
 		<a href="{{ route('logisticupcoming.index') }}" class="nav-link">Upcoming Orders</a>
 	</li>
 	<li class="nav-item">
-		<a href="{{ route('logisticassign.index') }}" class="nav-link">Out For Delivery</a>
+		<a href="{{ route('logisticassign.index') }}" class="nav-link active">Out For Delivery</a>
 	</li>
 	<li class="nav-item">
-		<a href="{{ route('logisticpickup.index') }}" class="nav-link active">Ready For Pickup</a>
+		<a href="{{ route('logisticpickup.index') }}" class="nav-link">Ready For Pickup</a>
 	</li>
 </ul>
 <div class="row">
@@ -42,7 +42,7 @@
 					</div>
 					<div class="col-sm-4">
 						<div class="input-group">
-							<!-- <button class="btn btn-info" onclick="return getpickuplist(1);">Filter</button> -->
+							<!-- <button class="btn btn-info" onclick="return getassignlist(1);">Filter</button> -->
 						</div><!-- input-group -->
 					</div>
 					<div class="col-sm-7"></div>
@@ -56,8 +56,8 @@
 								<th width="10%" data-priority="2" style="text-align:center;">Delivery type</th>
 								<th width="10%" data-priority="3" style="text-align:center;">Pickup Location</th>
 								<th width="10%" data-priority="4" style="text-align:center;">Delivery Location</th>
-								<th width="10%" data-priority="5" style="text-align:center;">Pickup By</th>
-								<th width="10%" data-priority="6" style="text-align:center;">Pickup Date</th>
+								<th width="10%" data-priority="5" style="text-align:center;">Assign To</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Assign Date</th>
 							</tr>
 						</thead>
 						<tbody>

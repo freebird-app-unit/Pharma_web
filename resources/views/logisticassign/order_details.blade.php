@@ -37,6 +37,7 @@
 						</div>
 						<div class="clear"></div>
 					</div>
+					
 					<!-- <img src="{{ $image_url }}" style="width:150px;">
 					<div class="order_description order_note" style="padding: 10px 20px;background:#333333;opacity:0.9;text-align:center;">
 						<strong>Order Note</strong><br>
@@ -46,13 +47,11 @@
 				<div class="col-sm-6">
 					<div style="text-align:center;">
 						<h3 align="center">Order status</h3>
-						<a href="javascript:;" class="btn btn-info">Cancel...</a>
+						<a href="javascript:;" class="btn btn-info">Out For Delivery...</a>
 					</div>
 					<br><br>
 					<div>
 						<strong>Order details</strong><br><br>
-						<!-- Order Action:&nbsp;&nbsp;<a onclick="assign_order(<?php echo $order->id; ?>)" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#assign_modal">Assign</a>
-						<br><br> -->
 						Order Number:&nbsp;&nbsp;<?php echo $order->order_number; ?><br><br>
 						Delivery Type:&nbsp;&nbsp;<?php echo $order_detail->delivery_type; ?><br><br>
 						Order Amount:&nbsp;&nbsp;<?php echo $order_detail->order_amount; ?><br><br>
@@ -63,24 +62,22 @@
 					<div>
 						<strong>Pharmacy details</strong><br><br>
 						Name:&nbsp;&nbsp;<?php echo $order_detail->pharmacyname; ?><br><br>
-						Contact Number:&nbsp;&nbsp;<?php echo $order_detail->pharmacymobilenumber; ?><br><br>
+						Contact Number:&nbsp;&nbsp;<?php echo $order_detail->pharmacymobile_number; ?><br><br>
 						Location:&nbsp;&nbsp; <?php echo $order_detail->pharmacyaddress; ?>
 					</div>
 					<br><br>
 					<div>
 						<strong>Customer details</strong><br><br>
-						Name:&nbsp;&nbsp;<?php echo isset($customer->name)?($customer->name):''; ?><br><br>
-						Contact Number:&nbsp;&nbsp;<?php echo isset($customer->mobile_number)?($customer->mobile_number):''; ?><br><br>
-						Location:&nbsp;&nbsp; <?php echo isset($order_detail->address)?($order_detail->address):''; ?>
+						Name:&nbsp;&nbsp;<?php echo $order_detail->name; ?><br><br>
+						Contact Number:&nbsp;&nbsp;<?php echo $order_detail->mobile_number; ?><br><br>
+						Location:&nbsp;&nbsp; <?php echo $order_detail->delivery_address; ?>
 					</div>
 					<br><br>
 					<div>
 						<strong>Order Process</strong><br><br>
-						Order Received:&nbsp;&nbsp;<?php echo $order_detail->created_at; ?><br><br>
+						Order Recevied:&nbsp;&nbsp;<?php echo $order_detail->created_at; ?><br><br>
 						Order Accept at:&nbsp;&nbsp;<?php echo $order_detail->accept_datetime; ?><br><br>
 						Order Assign to:&nbsp;&nbsp; <?php echo $order_detail->assign_datetime; ?><br><br>
-						Order Cancel:&nbsp;&nbsp; <?php echo $order_detail->cancel_datetime; ?><br><br>
-						Reason:&nbsp;&nbsp; <?php echo $order_detail->reject_cancel_reason; ?><br><br>
 					</div>
 				</div>
 			</div>

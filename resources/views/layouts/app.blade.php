@@ -298,14 +298,8 @@
                                 <a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
                             </li>
 							<li>
-								<a href="{{ route('logisticupcoming.index') }}" class="waves-effect <?php echo ($page_condition=='page_logisticupcoming')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
+								<a href="{{ route('logisticupcoming.index') }}" class="waves-effect <?php echo ($page_condition=='page_upcomingorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
 							</li>
-              				<!--<li>
-                                <a href="{{ route('logistic.upcoming.index') }}" class="waves-effect <?php //echo ($page_condition=='page_upcoming')?'active':''; ?>"><i class="ti-write"></i> <span>{{ __('Upcoming Orders') }}</span></a>
-                            </li>
-                 			<li>
-                                <a href="{{ route('logistic.pickup.index') }}" class="waves-effect <?php //echo ($page_condition=='page_pickup')?'active':''; ?>"><i class="ti-shopping-cart-full"></i> <span>{{ __('Pickup Orders') }}</span></a>
-                            </li>-->
                 			<li>
                                 <a href="{{ route('logistic.complete.index') }}" class="waves-effect <?php echo ($page_condition=='page_complete_logistic')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
                             </li>
@@ -546,7 +540,7 @@
 					<h4 class="modal-title" id="mySmallModalLabel">Assign to</h4>
 				</div>
 				<div class="modal-body">
-					<form method="post" action="{{ route('logistic.upcoming.assign') }}">
+					<form method="post" action="{{ route('logisticupcoming.assign') }}">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<input type="hidden" id="assign_id" name="assign_id" value=""/>
 					<label>Assign</label>
@@ -576,7 +570,7 @@
 					<h4 class="modal-title" id="mySmallModalLabel">Reject reason</h4>
 				</div>
 				<div class="modal-body">
-					<form method="post" action="{{ route('logistic.upcoming.reject') }}">
+					<form method="post" action="{{ route('logisticupcoming.reject') }}">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<input type="hidden" id="reject_id" name="reject_id" value=""/>
 					<label>Select reject reason</label>
@@ -800,24 +794,42 @@
 
 				var NewRow = specific_tbody.insertRow(0);
 				var Newcell0 = NewRow.insertCell(0); 
-				var Newcell1 = NewRow.insertCell(1); 
-				var Newcell2 = NewRow.insertCell(2); 
-				var Newcell3 = NewRow.insertCell(3); 
-				var Newcell4 = NewRow.insertCell(4); 
-				var Newcell5 = NewRow.insertCell(5); 
+				Newcell0.style.textAlign = "center";
+				var Newcell1 = NewRow.insertCell(1);
+				Newcell1.style.textAlign = "center"; 
+				var Newcell2 = NewRow.insertCell(2);
+				Newcell2.style.textAlign = "center"; 
+				var Newcell3 = NewRow.insertCell(3);
+				Newcell3.style.textAlign = "center"; 
+				var Newcell4 = NewRow.insertCell(4);
+				Newcell4.style.textAlign = "center"; 
+				var Newcell5 = NewRow.insertCell(5);
+				Newcell5.style.textAlign = "center"; 
+				var Newcell6 = NewRow.insertCell(6);
+				Newcell6.style.textAlign = "center";
+				var Newcell7 = NewRow.insertCell(7);
+				Newcell7.style.textAlign = "center"; 
 
 				var is_paid = (data.OrderDetail.is_paid)?('<i class="ti-truck" style="color: orange;"></i> '):'';
 				Newcell0.innerHTML = data.OrderDetail.id;
 				Newcell1.innerHTML = data.OrderDetail.delivery_type;
 				Newcell2.innerHTML = data.OrderDetail.pickup_address;
 				Newcell3.innerHTML = data.OrderDetail.delivery_address;
-				Newcell4.innerHTML = data.OrderDetail.order_amount;
-				Newcell5.innerHTML = data.OrderDetail.action;
+				Newcell4.innerHTML = data.OrderDetail.sellername;
+				Newcell5.innerHTML = data.OrderDetail.order_amount;
+				Newcell6.innerHTML = data.OrderDetail.assign_datetime;
+				Newcell7.innerHTML = data.OrderDetail.action;
 			})
 		</script>
 	@endif
 	@if($page_condition=='page_logistic_pickup')
 		<script src="{{ asset('public/admin/js/logistic/pickup.js') }}"></script>
+	@endif
+	@if($page_condition=='page_logistic_assign')
+		<script src="{{ asset('public/admin/js/logistic/assign.js') }}"></script>
+	@endif
+	@if($page_condition=='page_incomplete_logistic')
+		<script src="{{ asset('public/admin/js/logistic/logisticincomplete.js') }}"></script>
 	@endif
 	@if($page_condition=='page_logistic_create' || $page_condition=='page_logistic_edit')
 		<script src="{{ asset('public/admin/js/logistics.js') }}"></script>
@@ -1017,7 +1029,7 @@
 		</script>
 	@endif
 	@if($page_condition=='page_upcomingorders')
-		<script src="{{ asset('public/admin/js/logistic/upcomingorders.js') }}"></script>
+		<script src="{{ asset('public/admin/js/logistic/logisticupcoming.js') }}"></script>
 	@endif
 	@if($page_condition=='page_createorder')
 		<script src="{{ asset('public/admin/js/createorder.js') }}"></script>
@@ -1079,11 +1091,8 @@
 	@if($page_condition=='page_acceptedorders_logistic')
 		<script src="{{ asset('public/admin/js/logistic/acceptedorders.js') }}"></script>
 	@endif
-	@if($page_condition=='page_incomplete_logistic')
-		<script src="{{ asset('public/admin/js/logistic/incomplete.js') }}"></script>
-	@endif
 	@if($page_condition=='page_canceled_logistic')
-		<script src="{{ asset('public/admin/js/logistic/canceled.js') }}"></script>
+		<script src="{{ asset('public/admin/js/logistic/logisticcancel.js') }}"></script>
 	@endif
 	@if($page_condition=='page_adminpickup')
 		<script src="{{ asset('public/admin/js/adminpickup.js') }}"></script>
@@ -1116,7 +1125,7 @@
 		<script src="{{ asset('public/admin/js/complete.js') }}"></script>
 	@endif
 	@if($page_condition=='page_complete_logistic')
-		<script src="{{ asset('public/admin/js/logistic/complete.js') }}"></script>
+		<script src="{{ asset('public/admin/js/logistic/logisticcomplete.js') }}"></script>
 	@endif
 	@if($page_condition=='page_myorder')
 		<script src="{{ asset('public/admin/js/myorder.js') }}"></script>

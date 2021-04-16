@@ -1,11 +1,11 @@
 if(search_text_global!=''){
 	$('#search_text').val(search_text_global);
 }
-if(action=='page_logistic_pickup'){
-	getpickuplist(1);
+if(action=='page_canceled_logistic'){
+	getcanceledlistlogistic(1);
 }
 
-function getpickuplist(pageno){
+function getcanceledlistlogistic(pageno){
 	var token = document.getElementsByName("_token")[0].value;
 	var searchtxt = $('#search_text').val();
 	var perpage = $('#perpage').val();
@@ -13,7 +13,7 @@ function getpickuplist(pageno){
 	var sortord=$('#sortord').val();
 	$.ajax({
 			type: "post",
-			url: base_url+'/logistic/getpickuplist',
+			url: base_url+'/getcanceledlistlogistic',
 			data: 'pageno='+pageno+"&perpage="+perpage+"&_token="+token+"&searchtxt="+searchtxt+"&ord_field="+ord_field+"&sortord="+sortord,
 			success: function (responce) {	
 				var data = responce.split('##');
@@ -25,9 +25,9 @@ function getpickuplist(pageno){
 }
 
 $("#search_text").keyup(function() {
-	getpickuplist(1);
+	getcanceledlistlogistic(1);
 });
 
 $("#perpage").change(function() {
-	getpickuplist(1);
+	getcanceledlistlogistic(1);
 });

@@ -15,6 +15,9 @@
 		<a href="{{ route('logisticupcoming.index') }}" class="nav-link active">Upcoming Orders</a>
 	</li>
 	<li class="nav-item">
+		<a href="{{ route('logisticassign.index') }}" class="nav-link">Out For Delivery</a>
+	</li>
+	<li class="nav-item">
 		<a href="{{ route('logisticpickup.index') }}" class="nav-link">Ready For Pickup</a>
 	</li>
 </ul>
@@ -39,7 +42,7 @@
 					</div>
 					<div class="col-sm-4">
 						<div class="input-group">
-							<button class="btn btn-info" onclick="return getorderslist(1);">Filter</button>
+							<!-- <button class="btn btn-info" onclick="return getorderslist(1);">Filter</button> -->
 						</div><!-- input-group -->
 					</div>
 					<div class="col-sm-7"></div>
@@ -49,17 +52,14 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<!-- <th width="10%" data-priority="1">Prescription</th> -->
-								<th width="10%" data-priority="1">Order number</th>
-								<!-- <th width="10%" data-priority="2">Order type</th> -->
-								<!-- <th width="10%" data-priority="3">Prescription Name</th> -->
-								<!-- <th width="10%" data-priority="4">Order note</th> -->
-								<th width="15%" data-priority="5">Customer name</th>
-								<th width="15%" data-priority="6">Customer contact number</th>
-								<th width="20%" data-priority="6">Address</th>
-								<th width="15%" data-priority="7">Accept By</th>
-								<th width="15%" data-priority="7">Order Type</th>
-								<th width="10%" data-priority="8">Order date</th>
+								<th width="10%" data-priority="1" style="text-align:center;">Invoice</th>
+								<th width="10%" data-priority="2" style="text-align:center;">Delivery type</th>
+								<th width="10%" data-priority="3" style="text-align:center;">Pickup Location</th>
+								<th width="10%" data-priority="4" style="text-align:center;">Delivery Location</th>
+								<th width="10%" data-priority="5" style="text-align:center;">Accept By</th>
+								<th width="10%" data-priority="5" style="text-align:center;">Order Amount</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Date</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Action</th>
 							</tr>
 						</thead>
 						<tbody>
