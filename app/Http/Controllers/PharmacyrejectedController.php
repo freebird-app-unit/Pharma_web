@@ -82,6 +82,13 @@ class PharmacyrejectedController extends Controller
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
 				$reject_by = $order->rejectby_user;
+				if($order->rejectby_user == 'pharmacy'){
+					$pharmacy = new_pharmacies::find($order->reject_user_id);
+					$reject_by = $pharmacy->name;
+				}else if($order->rejectby_user == 'seller'){
+					$seller = new_pharma_logistic_employee::find($order->reject_user_id);
+					$reject_by = $seller->name;
+				}
 				$html.='<tr>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->customer_name.'</td>
