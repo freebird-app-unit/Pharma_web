@@ -103,8 +103,8 @@ class LoginController extends Controller
 			 }
 		 }else{
 			$mobile_otp = rand(111111,999999);
-			$message = "Login OTP " . $mobile_otp;
-			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$request->mobile_number."'&message=" . urlencode($message);
+			$message = "OTP to verify your account is " . $mobile_otp ." Team My Health Chart";
+			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HLTCHT&mobileNos='".$request->mobile_number."'&message=" . urlencode($message);
 			$sms = file_get_contents($api);
 			
 			Auth::logout();
