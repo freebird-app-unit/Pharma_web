@@ -159,7 +159,7 @@ class OrdersController extends Controller
 				$html.='</td><td>'.ucwords(strtolower($order->customer_name)).'</td>
 				<td>'.$order->customer_number.'</td>
 				<td>'.$order->address.'</td>
-				<td>'.$logistic_name.'</td>
+				
 				<td>'.$accept_date.'</td>
 				'; 
 				
