@@ -47,6 +47,7 @@ class PharmaDeliveryReportController extends Controller{
 		 $record_display = (isset($_REQUEST['record_display']))?$_REQUEST['record_display']:'';
 		 
         //getlist
+		 
 		 $detail = new_pharma_logistic_employee::select('id','name','pharma_logistic_id')->where(['user_type'=> 'delivery_boy','is_active'=> 1])->where(['parent_type'=> 'pharmacy', 'pharma_logistic_id'=> $user_id]);
 		 $total = $detail->count();
 		 $total_page = ceil($total/$per_page);

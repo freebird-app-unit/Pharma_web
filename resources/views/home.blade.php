@@ -278,36 +278,47 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 ?>
 <h5 class="page-title">Today's Orders</h5>
 <div class="row">
+	<a href="{{ route('upcomingorders.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_incomplete; ?></h2>
 			<div class="text-muted m-t-5"><a href="{{ url('/upcomingorders') }}">Pending</a></div>
 		</div>
 	</div>
+</a>
+<a href="{{ route('acceptedorders.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_accepted; ?></h2>
 			<div class="text-muted m-t-5"><a href="{{ url('/acceptedorders') }}">Accepted</a></div>
 		</div>
 	</div>
+</a>
+<a href="{{ route('complete.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_complete; ?></h2>
 			<div class="text-muted m-t-5"><a href="{{ url('/complete') }}">Completed</a></div>
 		</div>
 	</div>
+</a>
+<a href="{{ route('outfordelivery.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_outfordelivery; ?></h2>
 			<div class="text-muted m-t-5"><a href="{{ url('/outfordelivery') }}">Delivery</a></div>
 		</div>
 	</div>
+</a>
+<a href="{{ route('canceled.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_canceled; ?></h2>
 			<div class="text-muted m-t-5"><a href="{{ url('/canceled') }}">Cancelled</a></div>
 		</div>
 	</div>
+</a>
+<a href="{{ route('pharmacyrejected.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_rejected; ?></h2>
@@ -315,7 +326,7 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 		</div>
 	</div>
 </div>
-
+</a>
 <br />
 <div class="row">
 	<div class="col-sm-12">
