@@ -14,6 +14,20 @@ if(!function_exists('get_settings')) {
     }
 }
 
+if(!function_exists('get_image')) {
+ 
+    function get_image($table,$field,$id) {
+        $data = \DB::table($table)
+            ->select($field)
+            ->where('id',$id)
+            ->first();
+		if($data){
+			return $data->$field;
+		}else{
+			return '';
+		}
+    }
+}
 if(!function_exists('get_name')) {
  
     function get_name($table,$field,$id) {
@@ -28,7 +42,6 @@ if(!function_exists('get_name')) {
 		}
     }
 }
-
 if(!function_exists('get_order_time')) {
  
     function get_order_time($order_id,$deliveryboy_id) {
