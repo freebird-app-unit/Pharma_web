@@ -38,6 +38,10 @@ class SearchordersController extends Controller
 		$data['search_text'] = (isset($_REQUEST['search_text']))?$_REQUEST['search_text']:'';
 		
 		$order = new_orders::select('new_orders.*')->where('new_orders.order_number',$data['search_text'])->first();
+		if(!empty($order)){
+			$order_assign = Orderassign::select('order_assign.*')->where('order_assign.order_id',$order->id)->first();	
+		}
+		
 		$new_order_history = new_order_history::select('new_order_history.*')->where('new_order_history.order_number',$data['search_text'])->first();
 		if($user_type=='admin'){
 			if(isset($order->order_status) && ($order->order_status == 'new' || $order->order_status == 'payment_pending')){
@@ -83,12 +87,18 @@ class SearchordersController extends Controller
 				return redirect('/complete?search_text='.$data['search_text']);
 			}
 		}else if($user_type=='logistic'){
-			if(isset($order->order_status) && $order->order_status == 'assign' && $order->logistic_user_id == $user_id){
-				return redirect('/logistic/upcoming?search_text='.$data['search_text']);
-			}else if(isset($order->order_status) && $order->order_status == 'pickup'){
-				return redirect('/logistic/pickup?search_text='.$data['search_text']);
-			}else if(isset($order->order_status) && $order->order_status == 'complete' && $order->logistic_user_id == $user_id){
+			if(isset($order->order_status) && $order->order_status == 'assign' && $order_assign->order_status == 'assign' && $order->logistic_user_id == $user_id){
+				return redirect('/logisticassign?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'assign'  && $order_assign->order_status == 'new' && $order->logistic_user_id == $user_id){
+				return redirect('/logisticupcoming?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'pickup' && $order->logistic_user_id == $user_id){
+				return redirect('/logisticpickup?search_text='.$data['search_text']);
+			}else if(isset($new_order_history->order_status) && $new_order_history->order_status == 'complete' && $new_order_history->logistic_user_id == $user_id){
 				return redirect('/logistic/complete?search_text='.$data['search_text']);
+			}else if(isset($order->order_status) && $order->order_status == 'incomplete' && $order->logistic_user_id == $user_id){
+				return redirect('/logistic/incomplete?search_text='.$data['search_text']);
+			}else if(isset($new_order_history->order_status) && $new_order_history->order_status == 'cancel' && $new_order_history->logistic_user_id == $user_id){
+				return redirect('/logistic/canceled?search_text='.$data['search_text']);
 			}
 		}
 		$data['page_title'] = 'Search Orders';
@@ -117,7 +127,8 @@ class SearchordersController extends Controller
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
-		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_orders.pharmacy_id');
+		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_orders.pharmacy_id')
+		->leftJoin('new_logistics', 'new_logistics.id', '=', 'new_orders.logistic_user_id');
 		//->where('new_orders.order_status','new');
 		
 
