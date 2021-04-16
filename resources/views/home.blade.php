@@ -6,10 +6,10 @@ $user = auth()->user();
 <div class="row">
 	<div class="col-sm-12">
 		<h4 class="page-title">Dashboard</h4>
-		<p class="text-muted page-title-alt">Welcome to admin panel !</p>
 		<?php 
 		if($user->user_type=='pharmacy'){
 		?>
+		<p class="text-muted page-title-alt">Welcome to pharmacy panel !</p>
         <div class="row wel-panel">
         	<div class="col-sm-6">
             	<div class="widget-panel bg-green">
@@ -46,6 +46,7 @@ $user = auth()->user();
 <?php 
 if($user->user_type=='admin'){
 ?>
+<p class="text-muted page-title-alt">Welcome to admin panel !</p>
 <div class="row">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
@@ -105,35 +106,56 @@ if($user->user_type=='admin'){
 }
 if($user->user_type=='logistic'){
 ?>
+<p class="text-muted page-title-alt">Welcome to logistic panel !</p>
 <div class="row">
-	<div class="col-lg-3 col-sm-6">
-		<div class="widget-panel widget-style-2 bg-white">
-			<h2 class="m-0 text-dark counter font-600"><?php echo $total_accepted; ?></h2>
-			<div class="text-muted m-t-5">Accepted order</div>
-		</div>
-	</div>
-	<div class="col-lg-3 col-sm-6">
-		<div class="widget-panel widget-style-2 bg-white">
-			<h2 class="m-0 text-dark counter font-600"><?php echo $total_outfordelivery; ?></h2>
-			<div class="text-muted m-t-5">Out for delivery</div>
-		</div>
-	</div>
-	<div class="col-lg-3 col-sm-6">
-		<div class="widget-panel widget-style-2 bg-white">
-			<h2 class="m-0 text-dark counter font-600"><?php echo $total_complete; ?></h2>
-			<div class="text-muted m-t-5">Completed order</div>
-		</div>
-	</div>
+	<a href="{{ route('logisticupcoming.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_upcoming; ?></h2>
 			<div class="text-muted m-t-5">Upcoming order</div>
 		</div>
 	</div>
-	
-</div>
-
-<div class="row">
+	</a>
+	<a href="{{ route('logisticassign.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_outfordelivery; ?></h2>
+			<div class="text-muted m-t-5">Out for delivery</div>
+		</div>
+	</div>
+	</a>
+	<a href="{{ route('logisticpickup.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_readyforpickup; ?></h2>
+			<div class="text-muted m-t-5">Ready For Pickup</div>
+		</div>
+	</div>
+</a>
+<a href="{{ route('logistic.complete.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_complete; ?></h2>
+			<div class="text-muted m-t-5">Completed order</div>
+		</div>
+	</div>
+	</a>
+	<a href="{{ route('logistic.incomplete.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_incomplete; ?></h2>
+			<div class="text-muted m-t-5">Incompleted order</div>
+		</div>
+	</div>
+	</a>
+	<a href="{{ route('logistic.canceled.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_canceled; ?></h2>
+			<div class="text-muted m-t-5">Cancelled order</div>
+		</div>
+	</div>
+	</a>
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<?php echo '&#8377;'; ?><h2 class="m-0 text-dark counter font-600"><?php echo $total_deposit; ?></h2>
@@ -159,12 +181,14 @@ if($user->user_type=='logistic'){
 					<table id="admin_dashboardorder_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th width="10%" data-priority="1">Invoice</th>
-								<th width="10%" data-priority="2">Delivery type</th>
-								<th width="20%" data-priority="3">Pickup Location</th>
-								<th width="20%" data-priority="4">Delivery Location</th>
-								<th width="20%" data-priority="5">Order Amount</th>
-								<th width="20%" data-priority="6">Action</th>
+								<th width="10%" data-priority="1" style="text-align:center;">Invoice</th>
+								<th width="10%" data-priority="2" style="text-align:center;">Delivery type</th>
+								<th width="10%" data-priority="3" style="text-align:center;">Pickup Location</th>
+								<th width="10%" data-priority="4" style="text-align:center;">Delivery Location</th>
+								<th width="10%" data-priority="5" style="text-align:center;">Accept By</th>
+								<th width="10%" data-priority="5" style="text-align:center;">Order Amount</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Date</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Action</th>
 							</tr>
 						</thead>
 						<tbody id="admin_dashboardorder_body">
@@ -196,7 +220,7 @@ if($user->user_type=='logistic'){
 				<h4 class="modal-title" id="mySmallModalLabel">Assign to</h4>
 			</div>
 			<div class="modal-body">
-				<form method="post" action="{{ route('logistic.upcoming.assign') }}">
+				<form method="post" action="{{ route('logisticupcoming.assign') }}">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<input type="hidden" id="assign_id" name="assign_id" value=""/>
 				<label>Assign</label>
@@ -226,7 +250,7 @@ if($user->user_type=='logistic'){
 				<h4 class="modal-title" id="mySmallModalLabel">Reject reason</h4>
 			</div>
 			<div class="modal-body">
-				<form method="post" action="{{ route('logistic.upcoming.reject') }}">
+				<form method="post" action="{{ route('logisticupcoming.reject') }}">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<input type="hidden" id="reject_id" name="reject_id" value=""/>
 				<label>Select reject reason</label>
