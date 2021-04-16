@@ -273,7 +273,7 @@ class UpcomingordersController extends Controller
 					$seller_name = $order->process_employee_name;;
 				}
 				$html.='<tr>
-					<td>'.$order->customer_name.'</td>
+					<td>'.ucwords(strtolower($order->customer_name)).'</td>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->myaddress.'</td>
 					<td>'.$accept_date.'</td>';

@@ -97,7 +97,7 @@ class OutfordeliveryController extends Controller
 				//$assign_to = ($order->assign_to !== null)?($order->assign_to):($order->logistic_code);
 				$assign_to = $order->logistic_code;
 				$html.='<tr>
-					<td>'.$order->customer_name.'</td>
+					<td>'.ucwords(strtolower($order->customer_name)).'</td>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td class="text-warning">'.$assign_to.'</td>
 					<td><span class="label label-warning">'.$created_at.'</span></td>';

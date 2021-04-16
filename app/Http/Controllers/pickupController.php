@@ -204,7 +204,7 @@ class pickupController extends Controller
 				$assign_to = get_name('new_logistics','name',$order->logistic_user_id);
 				$time = get_order_time($order->id,$order->deliveryboy_id);
 				$html.='<tr>
-					<td>'.$order->customer_name.'</td>
+					<td>'.ucwords(strtolower($order->customer_name)).'</td>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->pickup_datetime.'</td>
 					

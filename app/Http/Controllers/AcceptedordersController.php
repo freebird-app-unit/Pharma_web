@@ -268,7 +268,7 @@ class AcceptedordersController extends Controller
 				}
 
 				$html.='<tr>
-					<td>'.$order->customer_name.'</td>
+					<td>'.ucwords(strtolower($order->customer_name)).'</td>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->myaddress.'</td>
 					<td>'.$process_user_name.'</td>

@@ -156,7 +156,7 @@ class OrdersController extends Controller
 					$seller_name = $seller_details->name;
 				}
 				$accept_date = ($order->created_at!='')?date('d-M-Y h:i a', strtotime($order->created_at)):'';
-				$html.='</td><td>'.$order->customer_name.'</td>
+				$html.='</td><td>'.ucwords(strtolower($order->customer_name)).'</td>
 				<td>'.$order->customer_number.'</td>
 				<td>'.$order->address.'</td>
 				<td>'.$logistic_name.'</td>
