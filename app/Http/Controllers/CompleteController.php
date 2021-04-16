@@ -58,7 +58,7 @@ class CompleteController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_order_history::select('new_order_history.id','deliver_datetime','deliveryboy_id','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid','address_new.address as address','new_delivery_charges.delivery_type as delivery_type', 'prescription.name as prescription_name', 'prescription.image as prescription_image','new_order_history.logistic_user_id')
+		$order_detail = new_order_history::select('new_order_history.id','new_order_history.order_id','deliver_datetime','deliveryboy_id','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid','address_new.address as address','new_delivery_charges.delivery_type as delivery_type', 'prescription.name as prescription_name', 'prescription.image as prescription_image','new_order_history.logistic_user_id')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_order_history.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
@@ -100,7 +100,7 @@ class CompleteController extends Controller
 				$assign_to = get_name('new_logistics','code',$order->logistic_user_id);
 				$time = get_order_delivered_time($order->id,$order->deliveryboy_id);
 				
-				$order_feedback = Orderfeedback::where('order_id',$order->id)->avg('rating');
+				$order_feedback = Orderfeedback::where('order_id',$order->order_id)->avg('rating');
 
 				/*<img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span><td>'.$order->prescription_name.'</td>
 					<td>'.$order->order_note.'</td>*/
