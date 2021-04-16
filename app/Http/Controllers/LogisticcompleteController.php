@@ -15,7 +15,10 @@ use App\new_address;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
-
+use File;
+use Image;
+use Storage;
+use App\SellerModel\invoice;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
@@ -86,27 +89,26 @@ class LogisticcompleteController extends Controller
 		//get list
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
-				$created_at = ($order->created_at!='')?date('d-M-Y',strtotime($order->created_at)):'';
-				$updated_at = ($order->updated_at!='')?date('d-M-Y',strtotime($order->updated_at)):'';
-				$image_url = url('/').'/uploads/placeholder.png';
-				$image_url = url('/').'/uploads/placeholder.png';
-				if (!empty($order->invoice)) {
-					if (file_exists(storage_path('app/public/uploads/invoice/'.$order->invoice))){
-						$image_url = asset('storage/app/public/uploads/invoice/' . $order->invoice);
+				$invoice = invoice::where('order_id',$order->order_id)->first();
+                $image_url = '';
+				if($invoice->invoice!=''){
+					$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
+					if(file_exists($destinationPath)){
+						$image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
+					}else{
+						$image_url = url('/').'/uploads/placeholder.png';
 					}
+				}else{
+					$image_url = url('/').'/uploads/placeholder.png';
 				}
-				/*$assign_to = get_name('users','name',$order->deliveryboy_id);
-				$time = get_order_delivered_time($order->id,$order->deliveryboy_id);
-				
-				$order_feedback = Orderfeedback::where('order_id',$order->id)->avg('rating');*/
-				
 				$html.='<tr>
 					<td><a href="'.url('/logistic/complete/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->delivery_type.'</td>
 					<td>'.$order->pharmacyaddress.'</td>
 					<td>'.$order->address.'</td>
 					<td>'.$order->order_amount.'</td>
-					<td>'.$order->deliveryboyname.'</td>';
+					<td>'.$order->deliveryboyname.'</td>
+					<td>'.$order->deliver_datetime.'</td>';
 				$html.='</tr>';
 			}
 			if($page==1){

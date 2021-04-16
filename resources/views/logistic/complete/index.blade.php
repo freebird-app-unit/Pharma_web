@@ -39,6 +39,7 @@
 								<th width="20%" data-priority="4">Delivery Location</th>
 								<th width="20%" data-priority="5">Order Amount</th>
 								<th width="20%" data-priority="6">Delivery Boy</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Delivered Date</th>
 							</tr>
 						</thead>
 						<tbody> 
