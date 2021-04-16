@@ -39,7 +39,7 @@ class UpcomingordersController extends Controller
 		$data = array();
 		$data['page_title'] = 'Live Orders';
 		$data['page_condition'] = 'page_upcomingorder';
-		$data['site_title'] = 'Accepted Orders | ' . $this->data['site_title'];
+		$data['site_title'] = 'Upcoming Orders | ' . $this->data['site_title'];
 		
 		if(Auth::user()->user_type=='seller'){
 			$data['deliveryboy_list'] = User::where('parentuser_id', $user_id)->where('user_type', 'delivery_boy')->get();
