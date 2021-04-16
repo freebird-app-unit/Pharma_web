@@ -201,7 +201,7 @@ class pickupController extends Controller
 						$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
 					}
 				}
-				$assign_to = get_name('new_logistics','code',$order->logistic_user_id);
+				$assign_to = get_name('new_logistics','code',$order->logistic_user_id); 
 				$time = get_order_time($order->id,$order->deliveryboy_id);
 				$html.='<tr>
 					<td>'.ucwords(strtolower($order->customer_name)).'</td>
