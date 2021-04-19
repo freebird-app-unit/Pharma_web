@@ -62,6 +62,8 @@ class PharmaOrderReportController extends Controller
             $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
             $start_date = $record_yearly.'-'.$record_monthly.'-01';
             $end_date = $record_yearly.'-'.$record_monthly.'-31';
+			$start_date = date('Y-m-d',strtotime($start_date));
+			$end_date = date('Y-m-d',strtotime($end_date));
             $detail = $detail->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
         }else{
             if(date('D')!='Mon'){    
@@ -104,7 +106,7 @@ class PharmaOrderReportController extends Controller
                 $delievry_name = $delivery_details->name;
             }
                    $html.='<tr>
-                   <td>'.$data->order_number.'</td>
+                   <td><a href="'.url('/orders/order_details/'.$data->id).'"><span>'.$data->order_number.'</span></a></td>
                    <td>'.$customer_name.'</td>
                    <td>'.$customer_address.'</td>
                    <td>'.$seller_name.'</td>
