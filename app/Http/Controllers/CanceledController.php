@@ -13,10 +13,7 @@ use App\Orderassign;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
-use File;
-use Image;
-use Storage;
-use App\SellerModel\invoice;
+
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
@@ -57,7 +54,7 @@ class CanceledController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_order_history::select('new_order_history.id','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress', 'prescription.name as prescription_name', 'prescription.image as prescription_image')//'cancelreason_id',
+		$order_detail = new_order_history::select('new_order_history.id','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress', 'prescription.name as prescription_name', 'prescription.image as prescription_image','new_order_history.rejectby_user','new_order_history.reject_user_id')//'cancelreason_id',
 		->leftJoin('new_users', 'new_users.id', '=', 'new_order_history.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_order_history.prescription_id')
@@ -95,7 +92,14 @@ class CanceledController extends Controller
 					}
 				}
 				$reason = get_cancel_reason($order->cancelreason_id);
-
+				
+				$cancelled_by = "";
+				if($order->rejectby_user == 'seller'){
+					$cancelled_by = get_name('new_pharma_logistic_employee','name',$order->reject_user_id);
+				}else if($order->rejectby_user == 'customer'){
+					$cancelled_by = get_name('new_users','name',$order->reject_user_id);
+				}
+				
 				/*<a href="'.url('/orders/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a><td>'.$order->prescription_name.'</td>
 					<td>'.$order->order_note.'</td>*/
 				$html.='<tr>
@@ -103,7 +107,8 @@ class CanceledController extends Controller
 					<td>'.$order->customer_name.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order->myaddress.'</td>
-					<td class="text-danger">'.$order->reject_cancel_reason.'</td>';
+					<td class="text-danger">'.$order->reject_cancel_reason.'</td>
+					<td class="text-danger">'.$cancelled_by.'</td>';
 					
 				$html.='</tr>';
 			}
@@ -198,27 +203,22 @@ class CanceledController extends Controller
 		//get list
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
-				$invoice = invoice::where('order_id',$order->order_id)->first();
-                $image_url = '';
-				if($invoice->invoice!=''){
-					$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
-					if(file_exists($destinationPath)){
-						$image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
-					}else{
-						$image_url = url('/').'/uploads/placeholder.png';
+				$created_at = ($order->created_at!='')?date('d-M-Y',strtotime($order->created_at)):'';
+				$updated_at = ($order->updated_at!='')?date('d-M-Y',strtotime($order->updated_at)):'';
+				$image_url = url('/').'/uploads/placeholder.png';
+				if (!empty($order->prescription_image)) {
+					if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
+						$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
 					}
-				}else{
-					$image_url = url('/').'/uploads/placeholder.png';
 				}
 
 				$html.='<tr>
-					<td style="text-align:center;"><a href="'.url('/logistic/canceled/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
-					<td style="text-align:center;">'.str_replace('_',' ',$order->order_type).'</td>
-					<td style="text-align:center;">'.$order->customer_name.'</td>
-					<td style="text-align:center;">'.$order->customer_number.'</td>
-					<td style="text-align:center;">'.$order->address.'</td>
-					<td style="text-align:center;" class="text-danger">'.$order->reject_cancel_reason.'</td>
-					<td style="text-align:center;">'.$order->cancel_datetime.'</td>';
+					<td><a href="'.url('/logistic/canceled/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
+					<td>'.str_replace('_',' ',$order->order_type).'</td>
+					<td>'.$order->customer_name.'</td>
+					<td>'.$order->customer_number.'</td>
+					<td>'.$order->myaddress.'</td>
+					<td class="text-danger">'.$order->logistic_reject_reason.'</td>';
 				$html.='</tr>';
 			}
 			if($page==1){
@@ -253,12 +253,11 @@ class CanceledController extends Controller
 		$user_id = Auth::user()->user_id;
 		$order = new_order_history::select('new_order_history.*')->where('new_order_history.id', $id)->first();
 		$order_detail = DB::table('new_order_history')->select('new_order_history.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','new_pharmacies.address as pharmacyaddress',
-		'new_pharmacies.name as pharmacyname','new_pharmacies.mobile_number as pharmacymobilenumber','new_pharma_logistic_employee.name as deliveryboyname','prescription.image as preimage','prescription.name as prename')
+		'new_pharmacies.name as pharmacyname','new_pharmacies.mobile_number as pharmacymobilenumber','new_pharma_logistic_employee.name as deliveryboyname')
 		->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_order_history.deliveryboy_id')
 		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_order_history.pharmacy_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
-		->leftJoin('prescription', 'prescription.id', '=', 'new_order_history.prescription_id')
 		->where('new_order_history.order_status','cancel')
 		->where('new_order_history.id',$id)->first();
 
