@@ -30,7 +30,8 @@
 					<?php if(Auth::user()->user_type=='logistic'){ ?>
 					<input type="hidden" name="search_parent_type" id="search_parent_type" value="logistic"/>
 					<?php }else{ ?>
-					<div class="col-sm-4">
+					<input type="hidden" name="search_parent_type" id="search_parent_type" value="pharmacy"/>
+					<!--<div class="col-sm-4">
 						<label>Parent Type</label>
 						<div class="form-group">
 						<select class="form-control" name="search_parent_type" id="search_parent_type">
@@ -39,7 +40,7 @@
 							<option value="pharmacy">Pharmacy</option>
 						</select>
 						</div>
-					</div>
+					</div>-->
 					<?php } ?>
 					<div class="col-sm-11"></div>
 					<div class="col-sm-1">
