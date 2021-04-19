@@ -223,11 +223,11 @@ Route::post('logistic/deliveryboy/edit/{id}', array('as' => 'logistic.deliverybo
 Route::get('logistic/deliveryboy/delete/{id}', array('as' => 'logistic.deliveryboy.delete', 'uses' => 'logistic\DeliveryboyController@delete'));
 
 //logistic complete order
-Route::get('/logistic/complete', array('as' => 'logistic.complete.index', 'uses' => 'CompleteController@logistic_index'));
-Route::post('/getcompletelistlogistic', array('as' => 'logistic.complete.logistic_getlist', 'uses' => 'CompleteController@logistic_getlist'));
-Route::get('logistic/order_feedback/{id}', array('as' => 'logistic.complete.order_feedback', 'uses' => 'CompleteController@logistic_order_feedback'));
-Route::post('getuserfeedbacklist', 'CompleteController@logistic_getuserfeedbacklist');
-Route::get('logistic/complete/order_details/{id}', array('as' => 'logistic.complete.order_details', 'uses' => 'CompleteController@logistic_order_details'));
+Route::get('/logistic/complete', array('as' => 'logistic.complete.index', 'uses' => 'LogisticcompleteController@logistic_index'));
+Route::post('/getcompletelistlogistic', array('as' => 'logistic.complete.logistic_getlist', 'uses' => 'LogisticcompleteController@logistic_getlist'));
+Route::get('logistic/order_feedback/{id}', array('as' => 'logistic.complete.order_feedback', 'uses' => 'LogisticcompleteController@logistic_order_feedback'));
+Route::post('getuserfeedbacklist', 'LogisticcompleteController@logistic_getuserfeedbacklist');
+Route::get('logistic/complete/order_details/{id}', array('as' => 'logistic.complete.order_details', 'uses' => 'LogisticcompleteController@logistic_order_details'));
 
 
 //logistic canceled order

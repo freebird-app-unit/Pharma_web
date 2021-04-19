@@ -213,11 +213,10 @@
 								<li class="hidden-xs">
 								<?php 
 								if(auth()->user()->user_type == 'pharmacy'){
-									$profile_image = get_image('new_pharmacies','profile_image',auth()->user()->user_id);
-									$name = get_name('new_pharmacies','name',auth()->user()->user_id);
-									if(file_exists(storage_path('app/public/uploads/new_users/'.$profile_image))){
-										$profile_image_url = asset('storage/app/public/uploads/new_users/' . $profile_image);
-										echo '<a href="javascript:;" class="right-bar-toggle waves-effect waves-light"><img src="'.$profile_image_url.'" width="80"/></a>'.$name;
+									$profile_image = get_name('new_pharmacies','profile_image',auth()->user()->user_id);
+									if(file_exists(storage_path('app/public/uploads/users/'.$profile_image))){
+										$profile_image_url = asset('storage/app/public/uploads/users/' . $profile_image);
+										echo '<a href="javascript:;" class="right-bar-toggle waves-effect waves-light"><img src="'.$profile_image_url.'" width="30"/></a>';
 									}else{
 								?>
 									<a href="javascript:;" class="right-bar-toggle waves-effect waves-light">{{ Auth::user()->name }}</a>
@@ -698,8 +697,6 @@
 
 					var NewRow = specific_tbody.insertRow(0);
 					var Newcell0 = NewRow.insertCell(0); 
-					// var Newcell1 = NewRow.insertCell(1); 
-					// var Newcell2 = NewRow.insertCell(2); 
 					var Newcell1 = NewRow.insertCell(1); 
 					var Newcell2 = NewRow.insertCell(2); 
 					var Newcell3 = NewRow.insertCell(3); 
@@ -708,8 +705,6 @@
 
 					var is_paid = (data.OrderDetail.is_external_delivery)?('<i class="ti-truck" style="color: orange;"></i> '):'';
 					Newcell0.innerHTML = data.OrderDetail.number;
-					// Newcell1.innerHTML = ''+ is_paid + data.OrderDetail.order_type;
-					// Newcell2.innerHTML = data.OrderDetail.order_note;
 					Newcell1.innerHTML = data.OrderDetail.customer_name;
 					Newcell2.innerHTML = data.OrderDetail.customer_number;
 					Newcell3.innerHTML = data.OrderDetail.address;

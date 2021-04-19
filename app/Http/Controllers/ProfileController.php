@@ -31,7 +31,7 @@ class ProfileController extends Controller
     public function index()
     {
 		$user = auth()->user();
-		$user = User::find($user->id);
+		$user = new_users::find($user->id);
 		$data = array();
 		$data['page_title'] = 'My profile';
 		$data['page_condition'] = 'page_myprofile';
@@ -83,7 +83,7 @@ class ProfileController extends Controller
 				Storage::disk('public')->put('uploads/users/'.$image_name, $img, 'public');
 			}
 		
-			$user = User::find($user->id);
+			$user = new_users::find($user->id);
 			$user->name = $request->name;
 			$user->email = $request->email;
 			if($user->user_type == 'pharmacy'){
@@ -110,7 +110,7 @@ class ProfileController extends Controller
 	public function changeemail()
     {
 		$user = auth()->user();
-		$user = User::find($user->id);
+		$user = new_users::find($user->id);
 		$data = array();
 		$data['page_title'] = 'Change Email';
 		$data['page_condition'] = 'page_myprofile';
@@ -124,13 +124,13 @@ class ProfileController extends Controller
 			'email' => 'required',
 			'password' => 'required',
 		]);
-		$user_data = User::find($user->id);
+		$user_data = new_users::find($user->id);
 		if(!Hash::check($request->password, $user_data->password)){
 			$request->session()->flash('error', 'Current password does not match');
 			return redirect()->route('changeemail');
 		}
 		if($validate){
-			$user = User::find($user->id);
+			$user = new_users::find($user->id);
 			$user->email = $request->email;
 			$user->updated_at = date('Y-m-d H:i:s');
 			if($user->save()){
@@ -147,7 +147,7 @@ class ProfileController extends Controller
 	public function changepassword()
     {
 		$user = auth()->user();
-		$user = User::find($user->id);
+		$user = new_users::find($user->id);
 		$data = array();
 		$data['page_title'] = 'Change password';
 		$data['page_condition'] = 'page_profile';
@@ -157,42 +157,42 @@ class ProfileController extends Controller
 	}
 	
 	public function updatepassword(Request $request){
-		$user = auth()->user();
-
+		
 		$validate = $request->validate([
 			'current_password' => 'required',
 			'new_password' => 'required',
 			'confirm_new_password' => 'required|same:new_password',
 		]);
 
-		switch ($user->user_type) {
-			case 'pharmacy':
-				$user = new_pharmacies::find($user->id);
-				break;
-
-			case 'logistic':
-				$user = new_logistics::find($user->id);
-				break;
-			
-			default:
-				$user = User::find($user->id);
-				break;
-		}
-		
-		
-		if(!Hash::check($request->current_password, $user->password)){
+		if(!Hash::check($request->current_password,auth()->user()->password)){
 			$request->session()->flash('error', 'Current password does not match');
 			return redirect()->route('changepassword');
 		}
 
 		if($validate){
-			// $user = User::find($user->id);
-			$hashed_random_password = Hash::make($request->new_password);
-			$user->password = $hashed_random_password;
-			$user->updated_at = date('Y-m-d H:i:s');
-			if($user->save()){
-				return redirect(route('changepassword'))->with('success_message', trans('Password Successfully changed'));
-			}
+			if(auth()->user()->user_type == "pharmacy"){
+				$pharmacy = User::where('id',auth()->user()->id)->first();
+				$pharmacy_data = new_pharmacies::where('id',$pharmacy->user_id)->first();
+				$hashed_random_password = Hash::make($request->new_password);
+				$pharmacy->password = $hashed_random_password;
+				$pharmacy->updated_at = date('Y-m-d H:i:s');
+				$pharmacy_data->password=$hashed_random_password;
+				$pharmacy_data->save();
+				if($pharmacy->save()){
+					return redirect(route('changepassword'))->with('success_message', trans('Password Successfully changed'));
+				}
+			}elseif (auth()->user()->user_type == "logistic") {
+				$logistic = User::where('id',auth()->user()->id)->first();
+				$logistic_data = new_logistics::where('id',$logistic->user_id)->first();
+				$hashed_random_password = Hash::make($request->new_password);
+				$logistic->password = $hashed_random_password;
+				$logistic->updated_at = date('Y-m-d H:i:s');
+				$logistic_data->password=$hashed_random_password;
+				$logistic_data->save();
+				if($logistic->save()){
+					return redirect(route('changepassword'))->with('success_message', trans('Password Successfully changed'));
+				}
+			}	
 		}
 	}
 	
