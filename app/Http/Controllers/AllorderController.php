@@ -37,7 +37,7 @@ class AllorderController extends Controller
     }
 	public function getlist()
     {
-		$user_id = Auth::user()->id;
+		$user_id = Auth::user()->user_id;
 		$html='';
 		$pagination='';
 		$total_summary='';
