@@ -47,7 +47,6 @@ class PharmaDeliveryReportController extends Controller{
 		 $record_display = (isset($_REQUEST['record_display']))?$_REQUEST['record_display']:'';
 		 
         //getlist
-		 
 		 $detail = new_pharma_logistic_employee::select('id','name','pharma_logistic_id')->where(['user_type'=> 'delivery_boy','is_active'=> 1])->where(['parent_type'=> 'pharmacy', 'pharma_logistic_id'=> $user_id]);
 		 $total = $detail->count();
 		 $total_page = ceil($total/$per_page);
@@ -73,6 +72,8 @@ class PharmaDeliveryReportController extends Controller{
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $number_of_delivery_new_order = $number_of_delivery_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -101,6 +102,8 @@ class PharmaDeliveryReportController extends Controller{
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $number_of_delivery_count = $number_of_delivery_count->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -131,6 +134,8 @@ class PharmaDeliveryReportController extends Controller{
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $delivered_return_new_order = $delivered_return_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -159,6 +164,8 @@ class PharmaDeliveryReportController extends Controller{
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $delivered_return_count = $delivered_return_count->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -189,6 +196,8 @@ class PharmaDeliveryReportController extends Controller{
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $total_amount_new_order = $total_amount_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    
@@ -218,6 +227,8 @@ class PharmaDeliveryReportController extends Controller{
 		            $record_monthly = (isset($_REQUEST['record_monthly']))?$_REQUEST['record_monthly']:'1';
 		            $start_date = $record_yearly.'-'.$record_monthly.'-01';
 		            $end_date = $record_yearly.'-'.$record_monthly.'-31';
+					$start_date = date('Y-m-d',strtotime($start_date));
+					$end_date = date('Y-m-d',strtotime($end_date));
 		            $total_amount_new_order_history = $total_amount_new_order_history->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }else{
 		            if(date('D')!='Mon'){    

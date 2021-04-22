@@ -77,7 +77,8 @@ class OrdersController extends Controller
 		$order_detail = new_orders::select('new_orders.id','order_status','new_orders.created_at','order_number','is_external_delivery','deliveryboy_id','process_user_id','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as address', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
-		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id');//->where('new_orders.order_status','new')
+		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id');
+		//->where('new_orders.order_status','new');
 
 		if($user_type=='pharmacy'){
 			$order_detail = $order_detail->where('new_orders.pharmacy_id',$user_id);
@@ -158,9 +159,11 @@ class OrdersController extends Controller
 				$accept_date = ($order->created_at!='')?date('d-M-Y h:i a', strtotime($order->created_at)):'';
 				$html.='</td><td>'.ucwords(strtolower($order->customer_name)).'</td>
 				<td>'.$order->customer_number.'</td>
-				<td>'.$order->address.'</td>
-				
-				<td>'.$accept_date.'</td>
+				<td>'.$order->address.'</td>';
+				if(isset($_REQUEST['ord_st'])){
+					//$html.='<td>'.$logistic_name.'</td>'; 
+				}
+				$html.='<td>'.$accept_date.'</td>
 				'; 
 				
 				if(isset($_REQUEST['ord_st'])){
@@ -238,7 +241,7 @@ class OrdersController extends Controller
 		$receiver_id = array();
 		$receiver_id[] = $customer->id;
 		if (count($ids) > 0) {					
-			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $receiver_id, 'user', $ids);
+			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
 		}
 		if(isset($order->external_delivery_initiatedby) && ($order->external_delivery_initiatedby !== 0) && ($order->external_delivery_initiatedby !== null)){
 			$assignOrderEmit = (object)[];
@@ -268,7 +271,7 @@ class OrdersController extends Controller
 		if(isset($_REQUEST['home'])){
 			return redirect(route('home'))->with('success_message', trans('Order Successfully accepted'));
 		}else{
-			return redirect(route('orders.index'))->with('success_message', trans('Order Successfully accepted'));
+			return redirect(route('upcomingorders.index'))->with('success_message', trans('Order Successfully accepted'));
 		}
 	}
 	public function reject(Request $request)
@@ -342,7 +345,7 @@ class OrdersController extends Controller
 		$receiver_id = array();
 		$receiver_id[] = $customer->id;
 		if (count($ids) > 0) {					
-			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Rejected', $user_id, 'pharmacy', $receiver_id, 'user', $ids);
+			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Rejected', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
 		}
 		
 		if(isset($_REQUEST['home'])){
