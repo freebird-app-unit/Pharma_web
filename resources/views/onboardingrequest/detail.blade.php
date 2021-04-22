@@ -63,20 +63,22 @@
 						<strong>Adhar of the registering person</strong><br><br>
 						<?php
 							$adhar_card_url = '';
-							$adhar_card_path = storage_path('app/public/uploads/new_pharmacy/'.$onboardingrequest->adhar_card);
-							$adhar_card_path = str_replace('\pharma\\','\\',$adhar_card_path);
 							if($onboardingrequest->adhar_card!=''){
-								if (file_exists($adhar_card_path)){
-									$adhar_card_url = asset('storage/app/public/uploads/new_pharmacy/' . $onboardingrequest->adhar_card);
-									$adhar_card_url = str_replace('/pharma/','/',$adhar_card_url);
-								}else{
-									$adhar_card_url = url('/').'/uploads/placeholder.png';
-								}
+								$adhar_card_url = $onboardingrequest->adhar_card;
 							}else{
 								$adhar_card_url = url('/').'/uploads/placeholder.png';
 							}
+						$arr = explode('.',$adhar_card_url);
+						$ext = end($arr);
+						if($ext=='pdf'){
+							$arr2 = explode('/',$adhar_card_url);
+							echo '<a href="'.$adhar_card_url.'">'.end($arr2).'</a>';	
+						}else{
 						?>
 						<img src="<?php echo $adhar_card_url; ?>" width=""/>
+						<?php 
+						}
+						?>
 					</div>
 				</div>
 				<div class="col-sm-6">
@@ -84,20 +86,22 @@
 						<strong>Pan card of the registering person</strong><br><br>
 						<?php
 							$pan_card_url = '';
-							$pan_card_path = storage_path('app/public/uploads/new_pharmacy/'.$onboardingrequest->pan_card);
-							$pan_card_path = str_replace('\pharma\\','\\',$pan_card_path);
 							if($onboardingrequest->pan_card!=''){
-								if (file_exists($pan_card_path)){
-									$pan_card_url = asset('storage/app/public/uploads/new_pharmacy/' . $onboardingrequest->pan_card);
-									$pan_card_url = str_replace('/pharma/','/',$pan_card_url);
-								}else{
-									$pan_card_url = url('/').'/uploads/placeholder.png';
-								}
+								$pan_card_url = $onboardingrequest->pan_card;
 							}else{
 								$pan_card_url = url('/').'/uploads/placeholder.png';
 							}
+						$arr = explode('.',$pan_card_url);
+						$ext = end($arr);
+						if($ext=='pdf'){
+							$arr2 = explode('/',$pan_card_url);
+							echo '<a href="'.$pan_card_url.'">'.end($arr2).'</a>';	
+						}else{
 						?>
 						<img src="<?php echo $pan_card_url; ?>"/>
+						<?php 
+						}
+						?>
 					</div>
 				</div>
 				<div class="col-sm-6">
@@ -105,20 +109,22 @@
 						<strong>Photo</strong><br><br>
 						<?php
 							$photo_url = '';
-							$photo_path = storage_path('app/public/uploads/new_pharmacy/'.$onboardingrequest->photo);
-							$photo_path = str_replace('\pharma\\','\\',$photo_path);
 							if($onboardingrequest->photo!=''){
-								if (file_exists($photo_path)){
-									$photo_url = asset('storage/app/public/uploads/new_pharmacy/' . $onboardingrequest->photo);
-									$photo_url = str_replace('/pharma/','/',$photo_url);
-								}else{
-									$photo_url = url('/').'/uploads/placeholder.png';
-								}
+								$photo_url = $onboardingrequest->photo;
 							}else{
 								$photo_url = url('/').'/uploads/placeholder.png';
 							}
+						$arr = explode('.',$photo_url);
+						$ext = end($arr);
+						if($ext=='pdf'){
+							$arr2 = explode('/',$photo_url);
+							echo '<a href="'.$photo_url.'">'.end($arr2).'</a>';	
+						}else{
 						?>
 						<img src="<?php echo $photo_url; ?>"/>
+						<?php
+						}
+						?>
 					</div>
 				</div>
 				<div class="col-sm-6">
@@ -126,20 +132,22 @@
 						<strong>Drug License</strong><br><br>
 						<?php
 							$drug_license_url = '';
-							$drug_license_path = storage_path('app/public/uploads/new_pharmacy/'.$onboardingrequest->drug_license);
-							$drug_license_path = str_replace('\pharma\\','\\',$drug_license_path);
 							if($onboardingrequest->drug_license!=''){
-								if (file_exists($drug_license_path)){
-									$drug_license_url = asset('storage/app/public/uploads/new_pharmacy/' . $onboardingrequest->drug_license);
-									$drug_license_url = str_replace('/pharma/','/',$drug_license_url);
-								}else{
-									$drug_license_url = url('/').'/uploads/placeholder.png';
-								}
+								$drug_license_url = $onboardingrequest->drug_license;
 							}else{
 								$drug_license_url = url('/').'/uploads/placeholder.png';
 							}
+						$arr = explode('.',$drug_license_url);
+						$ext = end($arr);
+						if($ext=='pdf'){
+							$arr2 = explode('/',$drug_license_url);
+							echo '<a href="'.$drug_license_url.'">'.end($arr2).'</a>';	
+						}else{
 						?>
 						<img src="<?php echo $drug_license_url; ?>"/>
+						<?php
+						}
+						?>
 					</div>
 				</div>
 				<?php 
@@ -150,20 +158,22 @@
 						<strong>Partnership deed</strong><br><br>
 						<?php
 							$partnership_deed_url = '';
-							$partnership_deed_path = storage_path('app/public/uploads/new_pharmacy/'.$onboardingrequest->partnership_deed);
-							$partnership_deed_path = str_replace('\pharma\\','\\',$partnership_deed_path);
 							if($onboardingrequest->partnership_deed!=''){
-								if (file_exists($partnership_deed_path)){
-									$partnership_deed_url = asset('storage/app/public/uploads/new_pharmacy/' . $onboardingrequest->partnership_deed);
-									$partnership_deed_url = str_replace('/pharma/','/',$partnership_deed_url);
-								}else{
-									$partnership_deed_url = url('/').'/uploads/placeholder.png';
-								}
+								$partnership_deed_url = $onboardingrequest->partnership_deed;
 							}else{
 								$partnership_deed_url = url('/').'/uploads/placeholder.png';
 							}
+						$arr = explode('.',$partnership_deed_url);
+						$ext = end($arr);
+						if($ext=='pdf'){
+							$arr2 = explode('/',$partnership_deed_url);
+							echo '<a href="'.$partnership_deed_url.'">'.end($arr2).'</a>';	
+						}else{
 						?>
 						<img src="<?php echo $partnership_deed_url; ?>"/>
+						<?php
+						}
+						?>
 					</div>
 				</div>
 				<?php
