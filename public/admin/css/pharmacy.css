@@ -66,11 +66,13 @@ body{ background-color:#f8f8f8;font-family: 'Stem-Regular'; font-weight:400; let
 h2.counter{ font-size:24px; }
 .text-muted{color: #4d4d4d;font-family: 'Stem-Light'; }
 .bg-green{ background-color:#08c5aa; color:#ffffff;font-family: 'Stem-Light'; }
-.bg-green h2, .bg-blue h2{   font-family: 'Stem-Medium'; }
+.bg-green h2, .bg-blue h2, .bg-orange h2{   font-family: 'Stem-Medium'; }
 .bg-green h2{ color:#328579;}
 .bg-blue h2{ color:#76dcf6;}
-.bg-green span, .bg-blue span{ font-size:20px; }
+.bg-orange h2{ color:#ffffff;}
+.bg-green span, .bg-blue span, .bg-orange span{ font-size:20px; }
 .bg-blue{ background-color:#009ffd; color:#ffffff; font-family: 'Stem-Light';}
+.bg-orange{ background-color:#FFA500; color:#ffffff; font-family: 'Stem-Light';}
 .content-page > .content{ padding:20px 20px 15px 10px; }
 .wel-panel{ margin-bottom:30px; }
 .wel-panel .widget-panel{padding:25px 30px;}  
