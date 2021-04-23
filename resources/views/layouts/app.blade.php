@@ -70,7 +70,12 @@
 					<?php
 							}else{
 					?>
-						<span>Pharma</span>	
+					<?php if(Auth::user()->user_type=='pharmacy'){ ?>
+						<span><img src="{{ asset('public/uploads/pharmacy.png') }}" width="75"/></span>	
+					<?php } ?>
+					<?php if(Auth::user()->user_type=='logistic'){ ?>
+						<span><img src="{{ asset('public/uploads/logistic.png') }}" width="75"/></span>	
+					<?php } ?>
 					<?php
 							}
 						}else{
@@ -272,6 +277,9 @@
 								<li>
 									<a href="{{ route('pharmacyrejected.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharmacyrejected')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Rejected Orders') }}</span></a>
 								</li>
+								<li>
+									<a href="{{ route('cancelled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Cancelled Orders') }}</span></a>
+								</li>
 								<?php } ?>
 								<li class="has_sub">
 	                                <a href="javascript:void(0);" class="waves-effect"><img src="{{ asset('public/images/report.png') }}"/><span>{{ __('Reports') }} </span> <span class="menu-arrow"></span> </a>
@@ -287,7 +295,7 @@
 	                                </ul>
 	                            </li>
 	                            <li>
-									<a href="{{ route('myorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_myorder')?'active':''; ?>"><img src="{{ asset('public/images/my_team.png') }}"/><span>{{ __('My Team') }}</span></a>
+									<a href="{{ route('myteam.index') }}" class="waves-effect <?php echo ($page_condition=='page_myteam')?'active':''; ?>"><img src="{{ asset('public/images/my_team.png') }}"/><span>{{ __('My Team') }}</span></a>
 								</li>
 								<li>
 									<a href="{{ route('pharma_order_report.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharma_order_report')?'active':''; ?>"><img src="{{ asset('public/images/order_report.png') }}"/><span>{{ __('Orders Report') }}</span></a>
@@ -308,7 +316,7 @@
                                 <a href="{{ route('logistic.incomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_incomplete_logistic')?'active':''; ?>"><img src="{{ asset('public/images/incomplete_order.png') }}"/><span>{{ __('Incomplete Orders') }}</span></a>
                             </li>
                  			<li>
-                                <a href="{{ route('logistic.canceled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled_logistic')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Canceled Orders') }}</span></a>
+                                <a href="{{ route('logistic.cancelled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled_logistic')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Cancelled Orders') }}</span></a>
                             </li>
                				<li>
                                 <a href="{{ route('logistic.deliveryboy.index') }}" class="waves-effect <?php echo ($page_condition=='page_deliveryboy_logistic')?'active':''; ?>"><img src="{{ asset('public/images/delivery_boy.png') }}"/><span>{{ __('Delivery boy') }}</span></a>
@@ -328,9 +336,7 @@
 							<li>
                                 <a href="{{ route('allorder.index') }}" class="waves-effect <?php echo ($page_condition=='page_allorder')?'active':''; ?>"><img src="{{ asset('public/images/all_order.png') }}"/><span>{{ __('All Orders') }}</span></a>
                             </li>
-							<li>
-                                <a href="{{ route('canceled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Canceled Orders') }}</span></a>
-                            </li>
+							
 
              <!--  <li>
                                 <a href="{{ route('custom_notification.create') }}" class="waves-effect <?php echo ($page_condition=='page_notification')?'active':''; ?>"><i class="ion-navicon-round"></i> <span>{{ __('Notification') }}</span></a>
@@ -698,8 +704,6 @@
 
 					var NewRow = specific_tbody.insertRow(0);
 					var Newcell0 = NewRow.insertCell(0); 
-					// var Newcell1 = NewRow.insertCell(1); 
-					// var Newcell2 = NewRow.insertCell(2); 
 					var Newcell1 = NewRow.insertCell(1); 
 					var Newcell2 = NewRow.insertCell(2); 
 					var Newcell3 = NewRow.insertCell(3); 
@@ -708,8 +712,6 @@
 
 					var is_paid = (data.OrderDetail.is_external_delivery)?('<i class="ti-truck" style="color: orange;"></i> '):'';
 					Newcell0.innerHTML = data.OrderDetail.number;
-					// Newcell1.innerHTML = ''+ is_paid + data.OrderDetail.order_type;
-					// Newcell2.innerHTML = data.OrderDetail.order_note;
 					Newcell1.innerHTML = data.OrderDetail.customer_name;
 					Newcell2.innerHTML = data.OrderDetail.customer_number;
 					Newcell3.innerHTML = data.OrderDetail.address;
@@ -736,6 +738,9 @@
 	@endif
 	@if($page_condition=='page_voucher_detail')
 		<script src="{{ asset('public/admin/js/voucher_detail.js') }}"></script>
+	@endif
+	@if($page_condition=='page_myteam')
+		<script src="{{ asset('public/admin/js/myteam.js') }}"></script>
 	@endif
 	@if($page_condition=='page_users' || $page_condition=='page_user_create' || $page_condition=='page_client_create')
 		<script src="{{ asset('public/admin/js/users.js') }}"></script>
