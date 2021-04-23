@@ -46,7 +46,7 @@ class OrdersController extends Controller
 		}
 
 		$data = array();
-		$data['sellers'] = new_pharma_logistic_employee::where(['pharma_logistic_id'=> $user_id, 'parent_type'=> 'pharmacy', 'user_type'=> 'seller'])->get();
+		$data['sellers'] = new_pharma_logistic_employee::where(['pharma_logistic_id'=> $user_id, 'parent_type'=> 'pharmacy', 'user_type'=> 'seller','is_active'=> '1','is_available'=> '1','is_approve'=> '1'])->get();
 		$data['page_title'] = 'Orders';
 		$data['page_condition'] = 'page_orders';
 		$data['site_title'] = 'Orders | ' . $this->data['site_title'];
