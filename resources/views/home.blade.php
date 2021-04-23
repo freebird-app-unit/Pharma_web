@@ -11,7 +11,7 @@ $user = auth()->user();
 		?>
 		<p class="text-muted page-title-alt">Welcome to pharmacy panel !</p>
         <div class="row wel-panel">
-        	<div class="col-sm-6">
+        	<div class="col-sm-4">
             	<div class="widget-panel bg-green">
                 	<div class="row">
                     	<div class="col-lg-6 col-md-12 col-sm-12">
@@ -25,7 +25,7 @@ $user = auth()->user();
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
             	<div class="widget-panel bg-blue">
                 	<div class="row">
                     	<div class="col-lg-6 col-md-12 col-sm-12">
@@ -35,6 +35,20 @@ $user = auth()->user();
                         <div class="col-lg-6 col-md-12 col-sm-12">
                         	<h2>{{$total_delivery}}</h2>
                             <span>Total Delivery</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div class="col-sm-4">
+            	<div class="widget-panel bg-orange">
+                	<div class="row">
+						<div class="col-lg-6 col-md-12 col-sm-12">
+                        	<h2>{{$total_delivery}}</h2>
+                            <span>Used Delivery</span>
+                        </div>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                        	<h2>{{$available_delivery}}</h2>
+                            <span>Available Delivery</span>
                         </div>
                     </div>
                 </div>
@@ -148,7 +162,7 @@ if($user->user_type=='logistic'){
 		</div>
 	</div>
 	</a>
-	<a href="{{ route('logistic.canceled.index') }}">
+	<a href="{{ route('logistic.cancelled.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_canceled; ?></h2>
@@ -278,7 +292,7 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 ?>
 <h5 class="page-title">Today's Orders</h5>
 <div class="row">
-	<a href="{{ route('upcomingorders.index') }}">
+<a href="{{ route('upcomingorders.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_incomplete; ?></h2>
@@ -294,14 +308,6 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 		</div>
 	</div>
 </a>
-<a href="{{ route('complete.index') }}">
-	<div class="col-lg-2 col-sm-12">
-		<div class="widget-panel widget-style-2 bg-white">
-			<h2 class="m-0 text-dark counter font-600"><?php echo $total_complete; ?></h2>
-			<div class="text-muted m-t-5"><a href="{{ url('/complete') }}">Completed</a></div>
-		</div>
-	</div>
-</a>
 <a href="{{ route('outfordelivery.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
@@ -310,7 +316,15 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 		</div>
 	</div>
 </a>
-<a href="{{ route('canceled.index') }}">
+<a href="{{ route('complete.index') }}">
+	<div class="col-lg-2 col-sm-12">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_complete; ?></h2>
+			<div class="text-muted m-t-5"><a href="{{ url('/complete') }}">Completed</a></div>
+		</div>
+	</div>
+</a>
+<a href="{{ route('cancelled.index') }}">
 	<div class="col-lg-2 col-sm-12">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_canceled; ?></h2>
@@ -325,8 +339,9 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 			<div class="text-muted m-t-5"><a href="{{ url('/pharmacyrejected') }}">Rejected</a></div>
 		</div>
 	</div>
-</div>
 </a>
+</div>
+
 <br />
 <div class="row">
 	<div class="col-sm-12">

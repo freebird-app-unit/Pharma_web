@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\User;
+use App\new_pharmacies;
 use App\Incompletereason;
 use App\Rejectreason;
 use App\new_logistics;
@@ -38,6 +39,9 @@ class HomeController extends Controller
 		$data['page_condition'] = 'page_dashboard';
 		if($user->user_type=='pharmacy'){
 			array_push($data['all_pharmacy_ids'], $user->user_id);
+			
+			$new_pharmacies = new_pharmacies::find($user->user_id);
+			$data['available_delivery'] = $new_pharmacies->remining_standard_paid_deliveries;
 			//Today Earning
 			$current_date = date('Y-m-d');
 			$today_earning = DB::table('new_order_history')->where('order_status','complete')->where('pharmacy_id', $user->user_id)->whereDate('accept_datetime','=',$current_date)->sum('order_amount');
@@ -96,7 +100,7 @@ class HomeController extends Controller
 			//canceled
 			
 			//rejected
-			$total_res = DB::table('new_order_history')->select('new_orders.*')->whereDate('reject_datetime','=',$current_date)
+			$total_res = DB::table('new_orders')->select('new_orders.*')->whereDate('reject_datetime','=',$current_date)
 			->where('order_status','reject')->where('pharmacy_id', $user->user_id);
 			$total= $total_res->count();
 			$data['total_rejected'] = $total;
