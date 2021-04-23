@@ -44,7 +44,7 @@ class AcceptedordersController extends Controller
 		if(Auth::user()->user_type=='seller'){
 			$data['deliveryboy_list'] = User::where('parentuser_id', $user_id)->where('user_type', 'delivery_boy')->get();
 		}else if(Auth::user()->user_type=='pharmacy'){
-			$data['deliveryboy_list'] = new_pharma_logistic_employee::where(['parent_type'=> 'pharmacy', 'is_active'=> 1])->where('user_type','delivery_boy')->where('pharma_logistic_id', $user_id)->get();
+			$data['deliveryboy_list'] = new_pharma_logistic_employee::where(['parent_type'=> 'pharmacy', 'is_active'=> 1, 'is_available'=> '1', 'is_approve'=> '1'])->where('user_type','delivery_boy')->where('pharma_logistic_id', $user_id)->get();
 		}
 
 		$pharmacy = new_pharmacies::select('lat', 'lon', 'city')->where(['id'=> Auth::user()->user_id, 'is_active'=> 1])->first();
