@@ -91,11 +91,11 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th data-priority="1">Order Id</th>
+								<th data-priority="1">Order Number</th>
 								<th data-priority="1">Full Name</th>
 								<th data-priority="1">Customer contact Number</th>
 								<th data-priority="6" width="20%">Address</th>	
-								<th data-priority="4">Delivery Name</th>
+								<!--<th data-priority="4">Delivery boy Name</th>-->
 								<th data-priority="4">Order Date</th>
 								<th data-priority="8">Status</th>
 							</tr>
