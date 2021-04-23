@@ -200,8 +200,8 @@ Route::get('/rejected', array('as' => 'rejected.index', 'uses' => 'RejectedContr
 Route::post('/getrejectedlist', array('as' => 'rejected.getlist', 'uses' => 'RejectedController@getlist'));
 
 // canceled order
-Route::get('/canceled', array('as' => 'canceled.index', 'uses' => 'CanceledController@index'));
-Route::post('/getcanceledlist', array('as' => 'canceled.getlist', 'uses' => 'CanceledController@getlist'));
+Route::get('/cancelled', array('as' => 'cancelled.index', 'uses' => 'CanceledController@index'));
+Route::post('/getcanceledlist', array('as' => 'cancelled.getlist', 'uses' => 'CanceledController@getlist'));
 
 // complete order
 Route::get('/complete', array('as' => 'complete.index', 'uses' => 'CompleteController@index'));
@@ -212,6 +212,10 @@ Route::post('getuserfeedbacklist', 'CompleteController@getuserfeedbacklist');
 
 Route::get('/myorder', array('as' => 'myorder.index', 'uses' => 'MyorderController@index'));
 Route::post('/getmyorderlist', array('as' => 'myorder.getlist', 'uses' => 'MyorderController@getlist'));
+
+//my team
+Route::get('/myteam', array('as' => 'myteam.index', 'uses' => 'MyteamController@index'));
+Route::post('/getmyteamlist', array('as' => 'myteam.getlist', 'uses' => 'MyteamController@getlist'));
 
 //Delivery boy for logistic
 Route::get('logistic/deliveryboy', array('as' => 'logistic.deliveryboy.index', 'uses' => 'DeliveryboyController@index'));
@@ -231,9 +235,9 @@ Route::get('logistic/complete/order_details/{id}', array('as' => 'logistic.compl
 
 
 //logistic canceled order
-Route::get('logistic/canceled', array('as' => 'logistic.canceled.index', 'uses' => 'CanceledController@logistic_index'));
-Route::post('/getcanceledlistlogistic', array('as' => 'logistic.canceled.getlist', 'uses' => 'CanceledController@logistic_getlist'));
-Route::get('/logistic/canceled/order_details/{id}', array('as' => 'logistic.canceled.order_details', 'uses' => 'CanceledController@logistic_order_details'));
+Route::get('logistic/cancelled', array('as' => 'logistic.cancelled.index', 'uses' => 'CanceledController@logistic_index'));
+Route::post('/getcanceledlistlogistic', array('as' => 'logistic.cancelled.getlist', 'uses' => 'CanceledController@logistic_getlist'));
+Route::get('/logistic/cancelled/order_details/{id}', array('as' => 'logistic.cancelled.order_details', 'uses' => 'CanceledController@logistic_order_details'));
 
 //logistic out for delivery
 Route::get('logistic/outfordelivery', array('as' => 'logistic.outfordelivery.index', 'uses' => 'logistic\OutfordeliveryController@index'));
