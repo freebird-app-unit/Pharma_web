@@ -38,6 +38,7 @@ class PackagesController extends Controller
 	public function list()
     {
 		$html = '';
+		$user_id = Auth::user()->id;
 		$packages = Packages::where('is_delete',0)->get();
 	    if(isset($packages) && count($packages)>0){
 			foreach($packages as $package){
@@ -57,7 +58,7 @@ class PackagesController extends Controller
 							$html.='<h2 class="package_name">'.$package->name.'</h2>';
 							$html.='<h1 class="package_price"><span>&#8377;</span>'.$package->price.'</h1>';
 							$html.='<div class="package_delivery"><div class="row"><div class="col-sm-6">Delivery</div><div class="col-sm-6">'.$package->total_delivery.'</div></div></div>';
-							$html.='<div class="payment_btn"><a href="'.url('packages/payment/'.$package->id).'" class="payment_btn_link">Pay</a></div>';
+							$html.='<div class="payment_btn"><a href="http://myhealthchart.in/'.'packages/payment/'.$package->id.'/'.$user_id.'" class="payment_btn_link">Pay</a></div>';
 						$html.='</div>';
 					$html.='</div>';
 				}
@@ -168,13 +169,13 @@ class PackagesController extends Controller
 	}
 	
 	public function success(){
-		$payment_id = $_REQUEST['payment-id'];
+		/* $payment_id = $_REQUEST['payment-id'];
 		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
 		$transactionData = $obj->getTransactionInfo($payment_id);
 		if ($transactionData['status'])
         {
             $arr_transaction = $transactionData['data']['transaction'];
-            // Check if payment_id already exists in the database
+            
             $isPaymentExist = Packagetransaction::where('payment_id', $arr_transaction['payment_id'])->first();
             if(!$isPaymentExist)
             {
@@ -196,15 +197,16 @@ class PackagesController extends Controller
 				$payment->updated_at = date('Y-m-d H:i:s');
 				$payment->save();
             }
-			//return "Payment is successful. Your transaction id is: ". $arr_transaction['payment_id'];
-        }
-		return redirect('/packages')->with('success_msg', 'Your Payment successfully completed');
+        } */
+		$package_id = $_REQUEST['package_id'];
+		$package = Packages::find($package_id);
+		return redirect('/packages')->with('success_msg', 'Your Purchase is successful, you have '.$package->total_delivery.' number of deliveries available');
 	}
 	
 	public function fail(){
-		$payment_id = $_REQUEST['payment-id'];
+		/* $payment_id = $_REQUEST['payment-id'];
 		$obj = new Payment('675253164797390', '90581EA5C3C3089E0A031BD7385A8F44', '85E8069EB99C0284467190FB26C28276');
-		$transactionData = $obj->getTransactionInfo($payment_id);
+		$transactionData = $obj->getTransactionInfo($payment_id); */
 		return redirect('/packages')->with('fail_msg', 'Payment failed');
 	}
 }
