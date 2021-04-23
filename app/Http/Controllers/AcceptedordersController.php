@@ -14,7 +14,7 @@ use App\delivery_charges;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Helper;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
