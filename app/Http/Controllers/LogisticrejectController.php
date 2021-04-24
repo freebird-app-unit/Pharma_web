@@ -54,12 +54,12 @@ class LogisticrejectController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 
-		$order_detail = new_order_history::select('new_order_history.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','new_pharmacies.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname')
-		->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_order_history.deliveryboy_id')
-		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_order_history.pharmacy_id')
-		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
-		->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
-		->where('new_order_history.order_status','reject');
+		$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','new_pharmacies.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname')
+		->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_orders.deliveryboy_id')
+		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_orders.pharmacy_id')
+		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
+		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
+		->where('new_orders.order_status','reject');
 
 		if($user_type=='pharmacy'){
 			$order_detail = $order_detail->where('pharmacy_id',$user_id);
@@ -74,14 +74,14 @@ class LogisticrejectController extends Controller
 		if($searchtxt!=''){
 			$order_detail= $order_detail->where(function ($query) use($searchtxt) {
                 $query->Where('new_delivery_charges.delivery_type', 'like', '%'.$searchtxt.'%')
-						->orWhere('new_order_history.order_number', 'like', '%'.$searchtxt.'%');
+						->orWhere('new_orders.order_number', 'like', '%'.$searchtxt.'%');
             });
 		}
 
 		$total = $order_detail->count();
 		$total_page = ceil($total/$per_page);
 
-		$order_detail = $order_detail->orderby('new_order_history.id','desc');
+		$order_detail = $order_detail->orderby('new_orders.id','desc');
 		$order_detail = $order_detail->paginate($per_page,'','',$page);
 		
 		//get list
