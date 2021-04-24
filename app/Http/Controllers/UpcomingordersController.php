@@ -278,7 +278,7 @@ class UpcomingordersController extends Controller
 					<td>'.$order->myaddress.'</td>
 					<td>'.$accept_date.'</td>';
 					//$html.='<td><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#assign_modal">Assign</a>';
-					$html.='<td><a href="'.url('/orders/accept/'.$order->id).'" class="btn btn-warning btn-custom waves-effect waves-light" title="Accept order">Accept</a>';
+					$html.='<td><a href="'.url('/orders/accept/'.$order->id).'" class="btn btn-success waves-effect waves-light" title="Accept order">Accept</a>';
 					$html.='<a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
 					$html.='</td></tr>';
 			}
