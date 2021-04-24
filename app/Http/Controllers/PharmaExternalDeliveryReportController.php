@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\new_pharma_logistic_employee;
 use App\new_order_history;
 use App\new_orders;
+use App\new_logistics;
 use DB;
 use Auth;
 
@@ -61,17 +62,17 @@ class PharmaExternalDeliveryReportController extends Controller{
 		 }
 
         //getlist
-		 $detail = new_pharma_logistic_employee::select('id','name','pharma_logistic_id')->where(['user_type'=> 'delivery_boy','is_active'=> 1])->where(['parent_type'=> 'pharmacy', 'pharma_logistic_id'=> $user_id]);
+		 $detail = new_logistics::select('id','name','is_active','priority')->where(['is_active'=>'1','priority'=>'1']);
 		 $total = $detail->count();
 		 $total_page = ceil($total/$per_page);
 
-	     $detail = $detail->orderby('new_pharma_logistic_employee.id','desc');
+	    
          $detail = $detail->paginate($per_page,'','',$page);
          if(count($detail)>0){
 			foreach($detail as $data){
 				$created_at = ($data->created_at!='')?date('d-M-Y',strtotime($data->created_at)):'';
                 ///////////////////////////////////////////////////////////////////
-                $number_of_delivery_new_order = new_orders::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
+                $number_of_delivery_new_order = new_orders::select('id')->where('logistic_user_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -106,7 +107,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 		            }
 		            $number_of_delivery_new_order = $number_of_delivery_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }
-                $number_of_delivery_count = new_order_history::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
+                $number_of_delivery_count = new_order_history::select('id')->where('logistic_user_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -142,7 +143,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 		        }
                 $number_of_delivery_count = $number_of_delivery_count->union($number_of_delivery_new_order)->count();
                 /////////////////////////////////////////////////////
-                $delivered_return_new_order = new_orders::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
+                $delivered_return_new_order = new_orders::select('id')->where('logistic_user_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -176,7 +177,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 		            }
 		            $delivered_return_new_order = $delivered_return_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }
-                $delivered_return_count = new_order_history::select('id')->where('deliveryboy_id','=',$data->id)->where('order_status','=','reject');
+                $delivered_return_count = new_order_history::select('id')->where('logistic_user_id','=',$data->id)->where('order_status','=','reject');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -247,7 +248,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 		            $total_amount_new_order = $total_amount_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		        }
                 $total_amount_new_order = $total_amount_new_order->sum('order_amount');
-                $total_amount_new_order_history = new_order_history::where('deliveryboy_id','=',$data->id)->where('order_status','=','complete');
+                $total_amount_new_order_history = new_order_history::where('logistic_user_id','=',$data->id)->where('order_status','=','complete');
                 if($record_display == 'yearly'){
 		          $record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		          $start_date = date('Y-01-01');
@@ -287,7 +288,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 				$delivery_boy_name = get_name('new_pharma_logistic_employee','name',$data->id);
 				
 				$pharma_logistic_id = get_name('new_pharma_logistic_employee','pharma_logistic_id',$data->id);
-				$delivery_code = get_name('new_logistics','code',$pharma_logistic_id);
+				$delivery_code = get_name('new_logistics','code',$data->id);
 				/* if($delivery_code==''){
 					$delivery_code = $delivery_boy_name;
 				} */
