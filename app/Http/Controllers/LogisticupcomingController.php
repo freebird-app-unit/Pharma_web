@@ -163,6 +163,14 @@ class LogisticupcomingController extends Controller
 		$order->save();
 		DB::connection()->enableQueryLog();
 
+		$ids = array();
+		$ids[] = $delivery_boy->fcm_token;
+		$receiver_id = array();
+		$receiver_id[] = $delivery_boy->id;
+		if (count($ids) > 0) {				
+			Helper::sendNotificationDeliveryboy($ids, 'Order Number '.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $delivery_boy->id, 'delivery_boy', $delivery_boy->fcm_token);
+		}
+
 		$orderAssignCount = Orderassign::where('order_status', 'new')->Where('order_id', $request->assign_id)->count();
 		if($orderAssignCount > 0){
 			$orderAssignId = Orderassign::where('order_status', 'new')->Where('order_id', $request->assign_id)->first();
