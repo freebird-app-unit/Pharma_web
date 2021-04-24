@@ -58,9 +58,10 @@ class HomeController extends Controller
 			$data['today_delivery'] = $today_delivery;
 
 			//Total Delivery
-			$total_delivery = DB::table('new_order_history')->where('pharmacy_id', $user->user_id)->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id');
+			/*$total_delivery = DB::table('new_order_history')->where('pharmacy_id', $user->user_id)->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id');
 			$total_delivery = $total_delivery->Where('new_order_history.is_external_delivery','=',1)->WhereIN('new_order_history.is_admin_delivery_charge_collect',array(0,1));
-			$total_delivery = $total_delivery->sum('new_delivery_charges.delivery_price');
+			$total_delivery = $total_delivery->sum('new_delivery_charges.delivery_price');*/
+			$total_delivery = new_order_history::where(['order_status'=>'complete','pharmacy_id'=>$user->user_id,'is_external_delivery'=>'1'])->get()->count();
 			$data['total_delivery'] = $total_delivery;
 
 			//Pending
