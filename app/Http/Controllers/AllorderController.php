@@ -83,13 +83,16 @@ class AllorderController extends Controller
 					$image_url = url('/').'/uploads/placeholder.png';
 				}
 				
-				$order_completed = get_completed_order($user->id,$filter_start_date,$filter_end_date);
-				$order_incomplete = get_incomplete_order($user->id,$filter_start_date,$filter_end_date);
-				$order_rejected = get_rejected_order($user->id,$filter_start_date,$filter_end_date);
-				$total_order = get_total_order($user->id,$filter_start_date,$filter_end_date);
+				$order_completed = get_completed_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
+				$order_incomplete = get_incomplete_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
+				$order_rejected = get_rejected_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
+				$total_order = get_total_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
+				
+				$user_type = ($user->user_type == 'delivery_boy')?'Delivery boy':'Seller';
 				$html.='<tr>
 					<td><img class="img-responsive img-circle" src="'.$image_url.'" width="50"/></td>
 					<td>'.$user->name.'</td>
+					<td>'.$user_type.'</td>
 					<td>'.$order_completed.'</td>
 					<td>'.$order_incomplete.'</td>
 					<td>'.$order_rejected.'</td>
