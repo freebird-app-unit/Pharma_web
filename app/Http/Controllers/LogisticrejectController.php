@@ -102,7 +102,7 @@ class LogisticrejectController extends Controller
 				}
                 }	
 				$html.='<tr>
-					<td><a href="'.url('/logistic/complete/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
+					<td><a href="'.url('/logistic/reject/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->delivery_type.'</td>
 					<td>'.$order->pharmacyaddress.'</td>
 					<td>'.$order->address.'</td>
@@ -123,10 +123,10 @@ class LogisticrejectController extends Controller
 				$next='';
 			}
 			$pagination.='<li class="page-item '.$prev.'">
-						<a class="page-link" onclick="getcompletelistlogistic('.($page-1).')" href="javascript:;" tabindex="-1"> <i class="fa fa-angle-left"></i></a>
+						<a class="page-link" onclick="getrejectlistlogistic('.($page-1).')" href="javascript:;" tabindex="-1"> <i class="fa fa-angle-left"></i></a>
 					</li>
 					<li class="page-item '.$next.'">
-						<a class="page-link" onclick="getcompletelistlogistic('.($page+1).')" href="javascript:;"><i class="fa fa-angle-right"></i></a>
+						<a class="page-link" onclick="getrejectlistlogistic('.($page+1).')" href="javascript:;"><i class="fa fa-angle-right"></i></a>
 					</li>';
 					$from = ($per_page*($page-1));
 					if($from<=0){$from=1;}
@@ -138,5 +138,53 @@ class LogisticrejectController extends Controller
 		}
 		
 		echo $html."##".$pagination."##".$total_summary;
+	}
+
+	public function logistic_order_details($id)
+    {
+		$user_id = Auth::user()->id;
+		$order = new_orders::select('new_orders.*')->where('new_orders.id', $id)->first();
+		$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','new_pharmacies.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname')
+		->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_orders.deliveryboy_id')
+		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_orders.pharmacy_id')
+		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
+		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
+		->where('new_orders.order_status','reject')
+		->where('new_orders.id',$id)->first();
+
+		$customer = new_users::where('id',$order->customer_id)->first();
+
+		$address = '';
+		if(get_name('address','address',$order->address_id)!=''){
+			$address.= get_name('address','address',$order->address_id).', ';
+		}
+		if(get_name('address','address2',$order->address_id)!=''){
+			$address.= get_name('address','address2',$order->address_id).', ';
+		}
+		if(get_name('address','city',$order->address_id)!=''){
+			$address.= get_name('address','city',$order->address_id).', ';
+		}
+		if(get_name('address','state',$order->address_id)!=''){
+			$address.= get_name('address','state',$order->address_id).', ';
+		}
+		if(get_name('address','country',$order->address_id)!=''){
+			$address.= get_name('address','country',$order->address_id).', ';
+		}
+		if(get_name('address','pincode',$order->address_id)!=''){
+			$address.= get_name('address','pincode',$order->address_id).', ';
+		}
+
+		$address = rtrim($address,', ');
+		$data = array();
+		$data['order'] = $order;
+		$data['order_detail'] = $order_detail;
+		$data['customer'] = $customer;
+		$data['address'] = $address;
+		$data['page_title'] = 'Order Detail';
+		$data['page_condition'] = 'page_prescription';
+		$data['site_title'] = 'Order Detail | ' . $this->data['site_title'];
+		$data['reject_reason'] = Rejectreason::get();
+        return view('logistic.reject.order_details', $data);
+		
 	}
 }
