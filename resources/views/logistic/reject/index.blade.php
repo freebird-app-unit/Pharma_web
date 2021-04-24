@@ -10,17 +10,7 @@
 			</ol>
 	</div>
 </div>
-<ul class="nav nav-tabs">
-	<li class="nav-item">
-		<a href="{{ route('logisticupcoming.index') }}" class="nav-link">Upcoming Orders</a>
-	</li>
-	<li class="nav-item">
-		<a href="{{ route('logisticassign.index') }}" class="nav-link">Ready For Pickup</a>
-	</li>
-	<li class="nav-item">
-		<a href="{{ route('logisticpickup.index') }}" class="nav-link active">Out For Delivery</a>
-	</li>
-</ul>
+
 <div class="row">
 	<div class="col-sm-12">
 	
@@ -34,16 +24,7 @@
 			<div class="table-rep-plugin">
 				<div class="table-responsive" data-pattern="priority-columns">
 					<div class="col-sm-4">
-						<label>Search</label>
-						<input type="text" class="form-control" name="search_text" tabindex="1" placeholder="Search" id="search_text"/>
-					</div>
-					
-					<div class="col-sm-4">
-					</div>
-					<div class="col-sm-4">
-						<div class="input-group">
-							<!-- <button class="btn btn-info" onclick="return getpickuplist(1);">Filter</button> -->
-						</div><!-- input-group -->
+						<input type="text" class="form-control" name="search_text" placeholder="Search" id="search_text"/>
 					</div>
 					<div class="col-sm-7"></div>
 					<div class="col-sm-1">
@@ -54,10 +35,12 @@
 							<tr>
 								<th width="10%" data-priority="1" style="text-align:center;">Invoice</th>
 								<th width="10%" data-priority="2" style="text-align:center;">Delivery type</th>
-								<th width="10%" data-priority="3" style="text-align:center;">Pickup Location</th>
-								<th width="10%" data-priority="4" style="text-align:center;">Delivery Location</th>
-								<th width="10%" data-priority="5" style="text-align:center;">Pickup By</th>
-								<th width="10%" data-priority="6" style="text-align:center;">Pickup Date</th>
+								<th width="10%" data-priority="3" style="text-align:center;">Pickup Locaton</th>
+								<th width="10%" data-priority="4" style="text-align:center;">Delivery location</th>
+								<th width="10%" data-priority="5" style="text-align:center;">Order Amount</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Reject By</th>
+								<th width="10%" data-priority="6" style="text-align:center;">Reject Date</th>
+								<th width="10%" data-priority="8" style="text-align:center;">Reject Date</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -79,5 +62,9 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div>							
+
+
+									
 @endsection
+

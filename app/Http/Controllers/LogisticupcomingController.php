@@ -101,16 +101,18 @@ class LogisticupcomingController extends Controller
 			foreach($order_detail as $order){
 				$invoice = invoice::where('order_id',$order->id)->first();
                 $image_url = '';
-				if($invoice->invoice!=''){
-					$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
-					if(file_exists($destinationPath)){
-						$image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
+                if(!empty($invoice)){
+	                	if($invoice->invoice!=''){
+						$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
+						if(file_exists($destinationPath)){
+							$image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
+						}else{
+							$image_url = url('/').'/uploads/placeholder.png';
+						}
 					}else{
 						$image_url = url('/').'/uploads/placeholder.png';
 					}
-				}else{
-					$image_url = url('/').'/uploads/placeholder.png';
-				}
+                }
 				$html.='<tr>
 					<td style="text-align:center;"><a href="'.url('/logisticupcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="40"/><span>'.$order->order_number.'</span></a></td>
 					<td style="text-align:center;">'.$order->delivery_type.'</td>
@@ -161,6 +163,14 @@ class LogisticupcomingController extends Controller
 		$order->save();
 		DB::connection()->enableQueryLog();
 
+		$ids = array();
+		$ids[] = $delivery_boy->fcm_token;
+		$receiver_id = array();
+		$receiver_id[] = $delivery_boy->id;
+		if (count($ids) > 0) {				
+			Helper::sendNotificationDeliveryboy($ids, 'Order Number '.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $delivery_boy->id, 'delivery_boy', $delivery_boy->fcm_token);
+		}
+
 		$orderAssignCount = Orderassign::where('order_status', 'new')->Where('order_id', $request->assign_id)->count();
 		if($orderAssignCount > 0){
 			$orderAssignId = Orderassign::where('order_status', 'new')->Where('order_id', $request->assign_id)->first();
@@ -192,13 +202,20 @@ class LogisticupcomingController extends Controller
 		$user_id = Auth::user()->id;
 
 		$order = new_orders::find($request->reject_id);
+		$customer = new_users::find($order->customer_id);
 		$order->process_user_id = $user_id;
 		$order->logistic_id = null;
 		$order->deliveryboy_id = 0;
 		$order->reject_datetime = null;
 		$order->order_status = 'reject';
 		// $order->save();
-
+		$ids = array();
+		$ids[] = $customer->fcm_token;
+		$receiver_id = array();
+		$receiver_id[] = $customer->id;
+		if (count($ids) > 0) {					
+			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Rejected', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
+		}
 		$orderAssignCount = Orderassign::whereNull('deliveryboy_id')->Where('order_id', $request->reject_id)->count();
 		if($orderAssignCount > 0){
 			$orderAssign = Orderassign::where('order_id',$request->reject_id)->first();

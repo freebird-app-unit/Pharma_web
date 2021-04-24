@@ -233,6 +233,11 @@ Route::get('logistic/order_feedback/{id}', array('as' => 'logistic.complete.orde
 Route::post('getuserfeedbacklist', 'LogisticcompleteController@logistic_getuserfeedbacklist');
 Route::get('logistic/complete/order_details/{id}', array('as' => 'logistic.complete.order_details', 'uses' => 'LogisticcompleteController@logistic_order_details'));
 
+//logistic reject order
+Route::get('/logistic/reject', array('as' => 'logistic.reject.index', 'uses' => 'LogisticrejectController@logistic_index'));
+Route::post('/getrejectlistlogistic', array('as' => 'logistic.reject.logistic_getlist', 'uses' => 'LogisticrejectController@logistic_getlist'));
+Route::get('logistic/reject/order_details/{id}', array('as' => 'logistic.reject.order_details', 'uses' => 'LogisticrejectController@logistic_order_details'));
+
 
 //logistic canceled order
 Route::get('logistic/cancelled', array('as' => 'logistic.cancelled.index', 'uses' => 'CanceledController@logistic_index'));

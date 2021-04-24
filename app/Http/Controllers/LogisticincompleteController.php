@@ -93,7 +93,8 @@ class LogisticincompleteController extends Controller
 			foreach($order_detail as $order){
 				$invoice = invoice::where('order_id',$order->id)->first();
                 $image_url = '';
-				if($invoice->invoice!=''){
+                if(!empty($invoice)){
+                	if($invoice->invoice!=''){
 					$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
 					if(file_exists($destinationPath)){
 						$image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
@@ -103,6 +104,7 @@ class LogisticincompleteController extends Controller
 				}else{
 					$image_url = url('/').'/uploads/placeholder.png';
 				}
+                }
 				$html.='<tr>
 					<td style="text-align:center;"><a href="'.url('/logistic/incomplete/order_details/'.$order->id).'"><img src="'.$image_url.'" width="40"/><span>'.$order->order_number.'</span></a></td>
 					<td style="text-align:center;">'.$order->delivery_type.'</td>
