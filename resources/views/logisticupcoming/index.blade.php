@@ -15,10 +15,10 @@
 		<a href="{{ route('logisticupcoming.index') }}" class="nav-link active">Upcoming Orders</a>
 	</li>
 	<li class="nav-item">
-		<a href="{{ route('logisticassign.index') }}" class="nav-link">Out For Delivery</a>
+		<a href="{{ route('logisticassign.index') }}" class="nav-link">Ready For Pickup</a>
 	</li>
 	<li class="nav-item">
-		<a href="{{ route('logisticpickup.index') }}" class="nav-link">Ready For Pickup</a>
+		<a href="{{ route('logisticpickup.index') }}" class="nav-link">Out For Delivery</a>
 	</li>
 </ul>
 <div class="row">
