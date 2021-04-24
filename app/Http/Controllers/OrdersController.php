@@ -78,7 +78,9 @@ class OrdersController extends Controller
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id');
-		//->where('new_orders.order_status','new');
+		if(isset($_REQUEST['ord_st'])){}else{
+			$order_detail = $order_detail->where('new_orders.order_status','new');
+		}
 
 		if($user_type=='pharmacy'){
 			$order_detail = $order_detail->where('new_orders.pharmacy_id',$user_id);
