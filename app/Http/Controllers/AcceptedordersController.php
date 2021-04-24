@@ -368,8 +368,8 @@ class AcceptedordersController extends Controller
 		$ids[] = $delivery->fcm_token;
 		$receiver_id = array();
 		$receiver_id[] = $delivery->id;
-		if (count($ids) > 0) {					
-			Helper::sendNotification($ids, 'Order Number :'.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $receiver_id, 'delivery_boy', $ids);
+		if (count($ids) > 0) {				
+			Helper::sendNotificationDeliveryboy($ids, 'Order Number '.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $delivery->id, 'delivery_boy', $delivery->fcm_token);
 		}
 		
 		return redirect(route('acceptedorders.index'))->with('success_message', trans('Order Successfully assign'));
