@@ -97,16 +97,19 @@ class LogisticassignController extends Controller
 			foreach($order_detail as $order){
 				$invoice = invoice::where('order_id',$order->id)->first();
                 $image_url = '';
-				if($invoice->invoice!=''){
-					$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
-					if(file_exists($destinationPath)){
-						$image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
+                if(!empty($invoice)){
+	                	if($invoice->invoice!=''){
+						$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
+						if(file_exists($destinationPath)){
+							$image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
+						}else{
+							$image_url = url('/').'/uploads/placeholder.png';
+						}
 					}else{
 						$image_url = url('/').'/uploads/placeholder.png';
 					}
-				}else{
-					$image_url = url('/').'/uploads/placeholder.png';
-				}
+                }
+				
 				$html.='<tr>
 					<td style="text-align:center;"><a href="'.url('/logisticassign/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
 					<td style="text-align:center;">'.$order->delivery_type.'</td>
