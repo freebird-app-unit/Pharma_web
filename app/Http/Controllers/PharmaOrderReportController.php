@@ -101,7 +101,7 @@ class PharmaOrderReportController extends Controller
                 $seller_name = $seller_details->name;
             }
             $delivery_details = new_pharma_logistic_employee::select('name')->where('user_type','=','delivery_boy')->where('id','=',$data->deliveryboy_id)->first();
-            $delievry_name = "Not Assign";
+            $delievry_name = "Not Assign"; 
             if($delivery_details){
                 $delievry_name = $delivery_details->name;
             }
