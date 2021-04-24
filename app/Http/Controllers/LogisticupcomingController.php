@@ -209,6 +209,10 @@ class LogisticupcomingController extends Controller
 		$order->reject_datetime = null;
 		$order->order_status = 'reject';
 		// $order->save();
+		$ids = array();
+		$ids[] = $customer->fcm_token;
+		$receiver_id = array();
+		$receiver_id[] = $customer->id;
 		if (count($ids) > 0) {					
 			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Assigned', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
 		}
