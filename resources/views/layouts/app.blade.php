@@ -315,6 +315,9 @@
               				<li>
                                 <a href="{{ route('logistic.incomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_incomplete_logistic')?'active':''; ?>"><img src="{{ asset('public/images/incomplete_order.png') }}"/><span>{{ __('Incomplete Orders') }}</span></a>
                             </li>
+                            <li>
+                                <a href="{{ route('logistic.reject.index') }}" class="waves-effect <?php echo ($page_condition=='page_reject_logistic')?'active':''; ?>"><img src="{{ asset('public/images/incomplete_order.png') }}"/><span>{{ __('Reject Orders') }}</span></a>
+                            </li>
                  			<li>
                                 <a href="{{ route('logistic.cancelled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled_logistic')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Cancelled Orders') }}</span></a>
                             </li>
@@ -836,6 +839,9 @@
 	@endif
 	@if($page_condition=='page_incomplete_logistic')
 		<script src="{{ asset('public/admin/js/logistic/logisticincomplete.js') }}"></script>
+	@endif
+	@if($page_condition=='page_reject_logistic')
+		<script src="{{ asset('public/admin/js/logistic/logisticreject.js') }}"></script>
 	@endif
 	@if($page_condition=='page_logistic_create' || $page_condition=='page_logistic_edit')
 		<script src="{{ asset('public/admin/js/logistics.js') }}"></script>
