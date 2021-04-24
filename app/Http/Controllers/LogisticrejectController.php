@@ -40,7 +40,7 @@ class LogisticrejectController extends Controller
         return view('logistic.reject.index', $data);
     }
 
-    public function logistic_getlist()
+ public function logistic_getlist()
     {
 		$user_id = Auth::user()->user_id;
 		$user_type = Auth::user()->user_type;
@@ -108,6 +108,7 @@ class LogisticrejectController extends Controller
 					<td>'.$order->address.'</td>
 					<td>'.$order->order_amount.'</td>
 					<td>'.$order->deliveryboyname.'</td>
+					<td class="text-danger">'.$order->reject_cancel_reason.'</td>
 					<td>'.$order->reject_datetime.'</td>';
 				$html.='</tr>';
 			}

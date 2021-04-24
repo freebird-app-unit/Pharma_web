@@ -40,6 +40,7 @@
 								<th width="10%" data-priority="5" style="text-align:center;">Order Amount</th>
 								<th width="10%" data-priority="6" style="text-align:center;">Reject By</th>
 								<th width="10%" data-priority="6" style="text-align:center;">Reject Date</th>
+								<th width="10%" data-priority="8" style="text-align:center;">Reject Date</th>
 							</tr>
 						</thead>
 						<tbody>
