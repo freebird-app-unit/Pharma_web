@@ -92,8 +92,8 @@
 				<input type="hidden" id="assign_id" name="assign_id" value=""/>
 				<div class="form-group" >
 					<label>Assign</label><br>
-					<input type="radio" name="delivery_assign_type" value="deliveryboy" checked>deliveryboy
-					<input type="radio" name="delivery_assign_type" value="logistic">logistic
+					<input type="radio" name="delivery_assign_type" value="deliveryboy" checked>&nbsp;Deliveryboy
+					<input type="radio" name="delivery_assign_type" value="logistic">&nbsp;Logistic
 				</div>
 				<div  class="form-group">
 					<select id="delivery_boy" name="delivery_boy" class="form-control" required>
