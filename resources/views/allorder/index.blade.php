@@ -61,7 +61,7 @@
 								<th width="20%" data-priority="4">Order completed</th>
 								<th width="20%" data-priority="5">Order incomplete</th>
 								<th width="20%" data-priority="6">Order rejected</th>
-								<th width="20%" data-priority="7">Total order</th>
+								<th width="20%" data-priority="7">Total order</th> 
 							</tr>
 						</thead>
 						<tbody>

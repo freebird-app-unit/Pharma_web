@@ -86,7 +86,7 @@ class AllorderController extends Controller
 				$order_completed = get_completed_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
 				$order_incomplete = get_incomplete_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
 				$order_rejected = get_rejected_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
-				$total_order = get_total_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
+				$total_order = get_total_order($user->id,$filter_start_date,$filter_end_date,$user->user_type); 
 				
 				$user_type = ($user->user_type == 'delivery_boy')?'Delivery boy':'Seller';
 				$html.='<tr>

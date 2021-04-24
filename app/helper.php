@@ -213,7 +213,7 @@ if(!function_exists('get_rejected_order')) {
     }
 }
 
-if(!function_exists('get_total_order')) {
+if(!function_exists('get_total_order')) { 
  
     function get_total_order($id,$filter_start_date,$filter_end_date,$user_type="") {
         $data = \DB::table('new_orders')
