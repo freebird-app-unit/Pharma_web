@@ -353,7 +353,7 @@ class OrdersController extends Controller
 		if(isset($_REQUEST['home'])){
 			return redirect(route('home'))->with('success_message', trans('Order Successfully rejected'));
 		}else{
-			return redirect(route('acceptedorders.index'))->with('success_message', trans('Order Successfully rejected'));
+			return redirect(route('acceptedorders.index'))->with('success_message', trans('Order Successfully rejected')); 
 		}
 	}
 	public function prescription($id)
