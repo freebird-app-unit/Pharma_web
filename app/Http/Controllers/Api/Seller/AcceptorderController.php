@@ -1129,9 +1129,9 @@ class AcceptorderController extends Controller
         $response['message'] = '';
         $response['data'] = (object)array();
 
-        $token =  $request->bearerToken();
+       /* $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
-        if(!empty($user)){
+        if(!empty($user)){*/
                 $orders = new_orders::select('id','customer_id','pharmacy_id','order_number')->where('id',$order_id)->first();
                 if(!empty($orders)){
                         $destinationPath = 'storage/app/public/uploads/invoice/'; 
@@ -1179,6 +1179,7 @@ class AcceptorderController extends Controller
                                         $assignOrderEmit->action = '<a onclick="assign_order('.$orders->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$orders->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
 
                                         event(new AssignOrderLogistic($assignOrderEmit));
+                                        $this->passdata($order_id);
                         }
                        //send sms to user
                          $mobile_data = new_users::select('id','name','mobile_number','email')->where('id',$orders->customer_id)->first();
@@ -1204,13 +1205,37 @@ class AcceptorderController extends Controller
                         $response['status'] = 200;
                         $response['message'] = 'Invoice Uploaded';
                 }
-            }else{
+           /* }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-            }
+            }*/
         return decode_string($response, 200);
     }
-
+     public function passdata($order_id){
+                if(!empty($order_id)){
+                                            $pass_data = array('order_id' => $order_id );
+                                            $get_data = http_build_query($pass_data);
+                                             $curl_url = 'http://159.65.145.98/pharma/api/event?'.$get_data; 
+                                            $curl = curl_init($curl_url);
+                                            curl_setopt_array($curl, array(
+                                                CURLOPT_URL => $curl_url,
+                                                CURLOPT_RETURNTRANSFER => true,
+                                                CURLOPT_ENCODING => "",
+                                                CURLOPT_TIMEOUT => 30000,
+                                                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                                CURLOPT_CUSTOMREQUEST => 'GET',//POST
+                                                //CURLOPT_POSTFIELDS => json_encode($data2),
+                                                CURLOPT_HTTPHEADER => array(
+                                                    // Set Here Your Requesred Headers
+                                                    'Content-Type: application/json',
+                                                ),
+                                            ));
+                                            $response = curl_exec($curl);
+                                            $err = curl_error($curl);
+                                            curl_close($curl);
+                                            return json_decode($response,true);
+                                        }
+    }
     public function call_history(Request $request){
         $response = array();
 		$data = $request->input('data');
