@@ -202,13 +202,16 @@ class LogisticupcomingController extends Controller
 		$user_id = Auth::user()->id;
 
 		$order = new_orders::find($request->reject_id);
+		$customer = new_users::find($order->customer_id);
 		$order->process_user_id = $user_id;
 		$order->logistic_id = null;
 		$order->deliveryboy_id = 0;
 		$order->reject_datetime = null;
 		$order->order_status = 'reject';
 		// $order->save();
-
+		if (count($ids) > 0) {					
+			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Assigned', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
+		}
 		$orderAssignCount = Orderassign::whereNull('deliveryboy_id')->Where('order_id', $request->reject_id)->count();
 		if($orderAssignCount > 0){
 			$orderAssign = Orderassign::where('order_id',$request->reject_id)->first();
