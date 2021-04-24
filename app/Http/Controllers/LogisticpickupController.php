@@ -97,7 +97,7 @@ class LogisticpickupController extends Controller
 			foreach($order_detail as $order){
 				$invoice = invoice::where('order_id',$order->id)->first();
                 $image_url = '';
-                !if(!empty($invoice)){
+                if(!empty($invoice)){
                 	if($invoice->invoice!=''){
 					$destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
 					if(file_exists($destinationPath)){
