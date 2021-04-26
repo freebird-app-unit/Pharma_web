@@ -58,7 +58,7 @@ class SellersController extends Controller
 		if(Auth::user()->user_type=='admin'){
 			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where('user_type','seller');
 		}else{
-			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where('user_type','seller')->where('pharma_logistic_id',$user_id);
+			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=>'seller','is_active'=>'1'])->where('pharma_logistic_id',$user_id);
 		}
 
 		if($searchtxt!=''){
