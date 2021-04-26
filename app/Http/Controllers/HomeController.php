@@ -11,7 +11,7 @@ use DB;
 use Auth;
 use App\Events\CreateNewOrder;
 use Session;
-
+use App\new_order_history;
 use App\new_pharma_logistic_employee;
 
 class HomeController extends Controller
