@@ -33,7 +33,7 @@
 							<button class="btn btn-warning btn-block text-uppercase waves-effect waves-light" type="submit">{{ __('Resend') }}</button>			
 						</div>
 					</div>
-					<div class="form-group text-center m-t-40">
+					<div class="form-group text-center m-t-40" id="verify">
 						<div class="col-xs-12">
 							<button class="btn btn-info btn-block text-uppercase waves-effect waves-light" type="submit">{{ __('Verify') }}</button>			
 						</div>
@@ -64,6 +64,7 @@
 
         if (--timer < 0) {
             timer = duration;
+            $("#verify").hide();
             $("#resend").show();
         }
     }, 1000);
