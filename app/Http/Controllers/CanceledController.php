@@ -98,6 +98,8 @@ class CanceledController extends Controller
 					$cancelled_by = get_name('new_pharma_logistic_employee','name',$order->reject_user_id);
 				}else if($order->rejectby_user == 'customer'){
 					$cancelled_by = get_name('new_users','name',$order->reject_user_id);
+				}elseif ($order->rejectby_user == 'pharmacy') {
+					$cancelled_by = get_name('new_pharmacies','name',$order->reject_user_id);
 				}
 				
 				/*<a href="'.url('/orders/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a><td>'.$order->prescription_name.'</td>
