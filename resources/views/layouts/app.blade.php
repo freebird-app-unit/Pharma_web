@@ -280,6 +280,9 @@
 								<li>
 									<a href="{{ route('cancelled.index') }}" class="waves-effect <?php echo ($page_condition=='page_canceled')?'active':''; ?>"><img src="{{ asset('public/images/cancel.png') }}"/><span>{{ __('Cancelled Orders') }}</span></a>
 								</li>
+								<li>
+                                <a href="{{ route('incomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_incomplete')?'active':''; ?>"><img src="{{ asset('public/images/incomplete_order.png') }}"/><span>{{ __('Incomplete Orders') }}</span></a>
+                            </li>
 								<?php } ?>
 								<li class="has_sub">
 	                                <a href="javascript:void(0);" class="waves-effect"><img src="{{ asset('public/images/report.png') }}"/><span>{{ __('Reports') }} </span> <span class="menu-arrow"></span> </a>

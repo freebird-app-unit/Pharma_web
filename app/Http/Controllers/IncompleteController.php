@@ -223,9 +223,11 @@ class IncompleteController extends Controller
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
 		//get list
-		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','rejectreason','is_paid','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
+		$order_detail = new_orders::select('new_orders.id','deliveryboy_id','order_number','reject_cancel_reason','is_external_delivery','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image','address_new.address as address','new_pharma_logistic_employee.name as deliveryboyname')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')
+		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
+		->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_orders.deliveryboy_id')
 		->where('order_status','incomplete');
 		if($user_type=='pharmacy'){
 			$order_detail = $order_detail->where('new_orders.pharmacy_id',$user_id);
@@ -262,15 +264,16 @@ class IncompleteController extends Controller
 				$assign_to = get_name('new_pharma_logistic_employee','name',$order->deliveryboy_id);
 				$reason = get_incomplete_reason($order->incompletereason_id);
 				$html.='<tr>
-					<td>'.$order->customerid.'</td>
-					<td>'.$order->customer_name.'</td>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
-					<td class="text-danger">'.$order->rejectreason.'</td>';
-					if($order->is_paid == 0){
-						$html.='<td><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#assign_modal">Re Delivery</a>';
+					<td style="text-align:center;"><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
+					<td style="text-align:center;">'.$order->customer_name.'</td>
+					<td style="text-align:center;">'.$order->customer_number.'</td>
+					<td style="text-align:center;">'.$order->address.'</td>
+					<td style="text-align:center;" class="text-danger">'.$order->reject_cancel_reason.'</td>
+					<td style="text-align:center;">'.$order->deliveryboyname.'</td>';
+						$html.='<td style="text-align:center;"><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#assign_modal">Re Delivery</a>';
 						$html.='<a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Cancel</a>';
 						$html.='</td>';
-					}
+					
 				$html.='</tr>';
 			}
 			if($page==1){
@@ -373,7 +376,7 @@ class IncompleteController extends Controller
 		$order->reject_user_id = $user_id;
 		// $order->cancel_date = date('Y-m-d H:i:s');
 		$order->reject_datetime = date('Y-m-d H:i:s');
-		$order->rejectreason = $request->rejectreason;
+		$order->reject_cancel_reason = $request->rejectreason;
 		$order->save();
 
 		return redirect(route('incomplete.index'))->with('success_message', trans('Order Successfully reject'));

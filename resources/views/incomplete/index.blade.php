@@ -33,11 +33,13 @@
 					<table id="admin_order_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th data-priority="1">Customer contact Number</th>
-                                <th data-priority="2">Customer Name</th>
-                                <th data-priority="3">Order number</th>
-                                <th data-priority="4">Reason</th>
-                                <!-- <th width="10%" data-priority="8">Action</th> -->
+								<th width="10%" data-priority="1" style="text-align:center;">Order Number</th>
+                                <th width="10%" data-priority="2" style="text-align:center;">Customer Name</th>
+                                <th width="10%" data-priority="3" style="text-align:center;">Customer contact Number</th>
+                                <th width="10%" data-priority="4" style="text-align:center;">Address</th>
+                                <th width="10%" data-priority="5" style="text-align:center;">Return Reason</th>
+                                <th width="10%" data-priority="6" style="text-align:center;">Return By</th>
+                                <th width="10%" data-priority="7" style="text-align:center;">Action</th>
 							</tr>
 						</thead>
 						<tbody>
