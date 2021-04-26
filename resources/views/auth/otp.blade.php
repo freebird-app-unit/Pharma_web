@@ -27,7 +27,7 @@
 							</span>
 						</div>
 					</div>
-					<div class="text-danger">OTP Experied <span id="time">01:00</span> minutes!</div>
+					<div class="text-danger" id="otp_timer">OTP Experied <span id="time">01:00</span> minutes!</div>
 					<div class="form-group text-center m-t-40" id="resend" style="display: none;">
 						<div class="col-xs-12">
 							<button class="btn btn-warning btn-block text-uppercase waves-effect waves-light" type="submit">{{ __('Resend') }}</button>			
@@ -66,6 +66,7 @@
             timer = duration;
             $("#verify").hide();
             $("#resend").show();
+            $("#otp_timer").hide();
         }
     }, 1000);
 }
