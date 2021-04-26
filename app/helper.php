@@ -42,6 +42,7 @@ if(!function_exists('get_name')) {
 		}
     }
 }
+
 if(!function_exists('get_order_time')) {
  
     function get_order_time($order_id,$deliveryboy_id) {
@@ -129,11 +130,15 @@ if(!function_exists('get_cancel_reason')) {
 
 if(!function_exists('get_completed_order')) {
  
-    function get_completed_order($id,$filter_start_date,$filter_end_date) {
-        $data = \DB::table('new_orders')
+    function get_completed_order($id,$filter_start_date,$filter_end_date,$user_type="") {
+        $data = \DB::table('new_order_history')
 		->select('*')
-		->where('order_status','complete')
-		->where('process_user_id',$id);
+		->where('order_status','complete');
+		if($user_type = 'seller'){
+			$data = $data->where('process_user_id',$id);
+		}else{
+			$data = $data->where('deliveryboy_id',$id);
+		}
 		if($filter_start_date!='' && $filter_end_date!=''){
 			$data= $data->where(function ($query) use($filter_start_date,$filter_end_date) {
 				$query->whereRaw(
@@ -154,11 +159,15 @@ if(!function_exists('get_completed_order')) {
 
 if(!function_exists('get_incomplete_order')) {
  
-    function get_incomplete_order($id,$filter_start_date,$filter_end_date) {
+    function get_incomplete_order($id,$filter_start_date,$filter_end_date,$user_type="") {
         $data = \DB::table('new_orders')
             ->select('*')
-            ->where('order_status','incomplete')
-			->where('process_user_id',$id);
+            ->where('order_status','incomplete');
+			if($user_type = 'seller'){
+				$data = $data->where('process_user_id',$id);
+			}else{
+				$data = $data->where('deliveryboy_id',$id);
+			}
 			if($filter_start_date!='' && $filter_end_date!=''){
 				$data= $data->where(function ($query) use($filter_start_date,$filter_end_date) {
 					$query->whereRaw(
@@ -178,11 +187,15 @@ if(!function_exists('get_incomplete_order')) {
 
 if(!function_exists('get_rejected_order')) {
  
-    function get_rejected_order($id,$filter_start_date,$filter_end_date) {
+    function get_rejected_order($id,$filter_start_date,$filter_end_date,$user_type="") {
         $data = \DB::table('new_orders')
             ->select('*')
-            ->where('order_status','reject')
-			->where('process_user_id',$id);
+            ->where('order_status','reject');
+			if($user_type = 'seller'){
+				$data = $data->where('process_user_id',$id);
+			}else{
+				$data = $data->where('deliveryboy_id',$id);
+			}
 			if($filter_start_date!='' && $filter_end_date!=''){
 				$data= $data->where(function ($query) use($filter_start_date,$filter_end_date) {
 					$query->whereRaw(
@@ -200,12 +213,16 @@ if(!function_exists('get_rejected_order')) {
     }
 }
 
-if(!function_exists('get_total_order')) {
+if(!function_exists('get_total_order')) { 
  
-    function get_total_order($id,$filter_start_date,$filter_end_date) {
+    function get_total_order($id,$filter_start_date,$filter_end_date,$user_type="") {
         $data = \DB::table('new_orders')
-			->select('*')
-			->where('process_user_id',$id);
+			->select('*');
+			if($user_type = 'seller'){
+				$data = $data->where('process_user_id',$id);
+			}else{
+				$data = $data->where('deliveryboy_id',$id);
+			}
 			if($filter_start_date!='' && $filter_end_date!=''){
 				$data= $data->where(function ($query) use($filter_start_date,$filter_end_date) {
 					$query->whereRaw(
@@ -377,7 +394,7 @@ if(!function_exists('encode_string')) {
 			
 			$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
 			
-	        return $data;
+	        return $plainText;
 	    }
 }
 if(!function_exists('decode_string')) {
@@ -393,7 +410,7 @@ if(!function_exists('decode_string')) {
 			$response = json_encode($response);
 			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 			
-	        return response($response, 200);
+	        return response($cipher, 200);
 	    }
 }
 if(!function_exists('validation_error')) {

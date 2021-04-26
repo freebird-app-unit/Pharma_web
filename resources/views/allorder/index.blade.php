@@ -56,11 +56,12 @@
 						<thead>
 							<tr>
 								<th width="10%" data-priority="1">Image</th>
-								<th width="10%" data-priority="1">Name</th>
-								<th width="20%" data-priority="2">Order completed</th>
-								<th width="20%" data-priority="3">Order incomplete</th>
-								<th width="20%" data-priority="4">Order rejected</th>
-								<th width="20%" data-priority="5">Total order</th>
+								<th width="10%" data-priority="2">Name</th>
+								<th width="10%" data-priority="3">User Type</th>
+								<th width="20%" data-priority="4">Order completed</th>
+								<th width="20%" data-priority="5">Order incomplete</th>
+								<th width="20%" data-priority="6">Order rejected</th>
+								<th width="20%" data-priority="7">Total order</th> 
 							</tr>
 						</thead>
 						<tbody>
