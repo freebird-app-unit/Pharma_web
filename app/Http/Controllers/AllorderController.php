@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
+use App\new_order_history;
 use App\new_users;
 use App\new_pharmacies;
 
@@ -83,10 +84,31 @@ class AllorderController extends Controller
 					$image_url = url('/').'/uploads/placeholder.png';
 				}
 				
-				$order_completed = get_completed_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
+				/*$order_completed = get_completed_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
 				$order_incomplete = get_incomplete_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
 				$order_rejected = get_rejected_order($user->id,$filter_start_date,$filter_end_date,$user->user_type);
-				$total_order = get_total_order($user->id,$filter_start_date,$filter_end_date,$user->user_type); 
+				$total_order = get_total_order($user->id,$filter_start_date,$filter_end_date,$user->user_type); */
+
+				$user_type = ($user->user_type == 'delivery_boy')?'Delivery boy':'Seller';
+				if($user_type == "Seller"){
+					$order_completed = new_order_history::where(['process_user_id'=>$user->id,'order_status'=>'complete'])->get()->count();
+					$order_incomplete = new_orders::where(['process_user_id'=>$user->id,'order_status'=>'incomplete'])->get()->count();
+					$order_rejected = new_orders::where(['reject_user_id'=>$user->id,'order_status'=>'reject'])->get()->count();
+					$total_order_ongoing = new_orders::where(['process_user_id'=>$user->id])->get()->count();
+					$total_orders_history = new_order_history::where(['process_user_id'=>$user->id])->get()->count();
+
+					$total_order =  $total_order_ongoing+$total_orders_history;
+
+				}
+				if($user_type == "Delivery boy"){
+					$order_completed = new_order_history::where(['deliveryboy_id'=>$user->id,'order_status'=>'complete'])->get()->count();
+					$order_incomplete = new_orders::where(['deliveryboy_id'=>$user->id,'order_status'=>'incomplete'])->get()->count();
+					$order_rejected = new_orders::where(['reject_user_id'=>$user->id,'order_status'=>'reject'])->get()->count();
+					$total_order_ongoing = new_orders::where(['deliveryboy_id'=>$user->id])->get()->count();
+					$total_orders_history = new_order_history::where(['deliveryboy_id'=>$user->id])->get()->count();
+
+					$total_order =  $total_order_ongoing+$total_orders_history;
+				}
 				
 				$user_type = ($user->user_type == 'delivery_boy')?'Delivery boy':'Seller';
 				$html.='<tr>
