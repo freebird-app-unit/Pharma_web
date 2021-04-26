@@ -27,7 +27,12 @@
 							</span>
 						</div>
 					</div>
-					
+					<div class="text-danger">OTP Experied <span id="time">01:00</span> minutes!</div>
+					<div class="form-group text-center m-t-40" id="resend" style="display: none;">
+						<div class="col-xs-12">
+							<button class="btn btn-warning btn-block text-uppercase waves-effect waves-light" type="submit">{{ __('Resend') }}</button>			
+						</div>
+					</div>
 					<div class="form-group text-center m-t-40">
 						<div class="col-xs-12">
 							<button class="btn btn-info btn-block text-uppercase waves-effect waves-light" type="submit">{{ __('Verify') }}</button>			
@@ -45,4 +50,29 @@
 		<p>{{ __("Don't have an account?") }} <a href="{{ route('register') }}" class="text-primary m-l-5"><b>{{ __('Sign Up') }}</b></a></p>
 	</div>
 </div>-->
+<script type="text/javascript">
+	function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = duration;
+            $("#resend").show();
+        }
+    }, 1000);
+}
+
+window.onload = function () {
+    var oneMinutes = 60 * 1,
+        display = document.querySelector('#time');
+    startTimer(oneMinutes, display);
+};
+</script>
 @endsection
