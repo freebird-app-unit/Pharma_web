@@ -1656,7 +1656,10 @@ class AcceptorderController extends Controller
 				if($assign->deliveryboy_id == 0){
 					$assign->order_status='assign';
 					$assign->assign_datetime=date('Y-m-d H:i:s');
-
+                    $already_order = Orderassign::where('order_id',$order_id)->first();
+                    if(!empty($already_order)){
+                        $already_order->delete();
+                    }
 					$order_assign = new Orderassign();
 					$order_assign->order_id=$order_id;
 					$order_assign->order_status='assign';
