@@ -134,48 +134,33 @@ class OrderController extends Controller
 		$order = new_orders::where('id',$orderid)->first();
 		$order->order_number=$string;
 		$order->save();
-		$neworder=new_orders::where('id',$orderid)->first();
-		if($neworder->is_external_delivery == 0){
-			$prescriptions = Prescription::where('id',$neworder->prescription_id)->first();
-		$customer_name = new_users::where('id',$neworder->customer_id)->first();
-			$address = new_address::where('id',$neworder->address_id)->first();
-			$newOrderEmit = new new_orders();
-			$newOrderEmit->pharmacy_id = $neworder->pharmacy_id;
-			$image_url = url('/').'/uploads/placeholder.png';
-
-			if (!empty($prescriptions->image)) {
-				if (file_exists(storage_path('app/public/uploads/prescription/'.$prescriptions->image))){
-					$image_url = asset('storage/app/public/uploads/prescription/' . $prescriptions->image);
-				}
-			}
-
-			$newOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$neworder->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$neworder->order_number.'</span>';
-			$newOrderEmit->id = $neworder->id;
-			$newOrderEmit->total_days = $neworder->total_days;
-			//$newOrderEmit->checking_by	= '';
-			$newOrderEmit->prescription_img	= $image_url;
-			$newOrderEmit->number = '<a href="'.url('/orders/prescription/'.$neworder->id).'"><span>'.$neworder->order_number.'</span></a>';
-			$newOrderEmit->order_number = $neworder->order_number;
-			$newOrderEmit->order_note = $neworder->order_note;
-			$newOrderEmit->created_at = $neworder->created_at;
-			$newOrderEmit->order_time = $neworder->create_datetime;
-			$newOrderEmit->updated_at = $neworder->updated_at;
-			$newOrderEmit->order_type = $neworder->order_type;
-			$newOrderEmit->is_external_delivery = $neworder->is_external_delivery;
-			$newOrderEmit->delivery_type = new_delivery_charges::where('id', $neworder->delivery_charges_id)->value('delivery_type');
-
-
-			$newOrderEmit->prescription_name = $prescriptions->name;
-			$newOrderEmit->customer_name = $customer_name->name;
-			$newOrderEmit->address = $address->address;
-			$newOrderEmit->customer_number = $customer_name->mobile_number;
-			$newOrderEmit->active = '<a class="btn btn-success waves-effect waves-light" href="'.url('/orders/accept/'.$neworder->id.'?home').'" title="Accept order">Accept</a>';
-
-			$newOrderEmit->reject = '<a onclick="reject_order('.$neworder->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-			
-			event(new CreateNewOrder($newOrderEmit));
-		}		
+		$this->passdata_neworder($orderid);
 	}
+	public function passdata_neworder($orderid){
+                if(!empty($orderid)){
+                                            $pass_data = array('orderid' => $orderid);
+                                            $get_data = http_build_query($pass_data);
+                                             $curl_url = 'http://159.65.145.98/pharma/api/event_neworder?'.$get_data; 
+                                            $curl = curl_init($curl_url);
+                                            curl_setopt_array($curl, array(
+                                                CURLOPT_URL => $curl_url,
+                                                CURLOPT_RETURNTRANSFER => true,
+                                                CURLOPT_ENCODING => "",
+                                                CURLOPT_TIMEOUT => 30000,
+                                                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                                CURLOPT_CUSTOMREQUEST => 'GET',//POST
+                                                //CURLOPT_POSTFIELDS => json_encode($data2),
+                                                CURLOPT_HTTPHEADER => array(
+                                                    // Set Here Your Requesred Headers
+                                                    'Content-Type: application/json',
+                                                ),
+                                            ));
+                                            $response = curl_exec($curl);
+                                            $err = curl_error($curl);
+                                            curl_close($curl);
+                                            return json_decode($response,true);
+                                        }
+    }
 
 	public function reorder(Request $request)
 	{
