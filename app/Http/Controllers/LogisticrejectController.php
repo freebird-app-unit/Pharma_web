@@ -40,7 +40,7 @@ class LogisticrejectController extends Controller
         return view('logistic.reject.index', $data);
     }
 
- public function logistic_getlist()
+ 	public function logistic_getlist()
     {
 		$user_id = Auth::user()->user_id;
 		$user_type = Auth::user()->user_type;
@@ -101,13 +101,18 @@ class LogisticrejectController extends Controller
 					$image_url = url('/').'/uploads/placeholder.png';
 				}
                 }	
+                if($order->rejectby_user == 'deliveryboy'){
+                	$reject_by = get_name('new_pharma_logistic_employee','name',$order->reject_user_id);
+                }else{
+                	$reject_by = get_name('new_logistics','name',$order->reject_user_id);
+                }
 				$html.='<tr>
 					<td><a href="'.url('/logistic/reject/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->delivery_type.'</td>
 					<td>'.$order->pharmacyaddress.'</td>
 					<td>'.$order->address.'</td>
 					<td>'.$order->order_amount.'</td>
-					<td>'.$order->deliveryboyname.'</td>
+					<td>'.$reject_by.'</td>
 					<td class="text-danger">'.$order->reject_cancel_reason.'</td>
 					<td>'.$order->reject_datetime.'</td>';
 				$html.='</tr>';
