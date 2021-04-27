@@ -6,6 +6,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\Prescription;
+use App\multiple_prescription;
 use App\new_users;
 use Validator;
 use Storage;
@@ -131,17 +132,20 @@ class PrescriptionController extends Controller
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$name = isset($content->name) ? $content->name : '';
 		$prescription_date = isset($content->prescription_date) ? $content->prescription_date : '';
+		$prescription_image = isset($content->prescription_image) ? implode(',',$content->prescription_image) : '';
 
 		$params = [
 			'user_id' => $user_id,
 			'name' => $name,
 			'prescription_date' => $prescription_date,
+			'prescription_image' => $prescription_image
 		]; 
 		
 		$validator = Validator::make($params, [
             'user_id' => 'required',
             'name' => 'required',
             'prescription_date' => 'required',
+            'prescription_image' => 'required'
         ]);
  
         if ($validator->fails()) {
@@ -152,7 +156,7 @@ class PrescriptionController extends Controller
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
 		if(count($user)>0){
 		
-		$prescription_image = '';
+		/*$prescription_image = '';
 		if ($request->hasFile('prescription')) {
 			
 			$image         = $request->file('prescription');
@@ -167,7 +171,8 @@ class PrescriptionController extends Controller
 			$response['message'] = 'Please upload prescription';
 			
 			return response($response, 200);
-		}
+		}*/
+
 		$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$name,"is_delete"=>"0"])->get();
 		if(count($find_name)>0){
 			$response['status'] = 404;
@@ -177,7 +182,19 @@ class PrescriptionController extends Controller
 			$prescriptions->user_id = $user_id;
 			$prescriptions->name = $name;
 			$prescriptions->image = $prescription_image;
+			$prescriptions->prescription_date = date('Y-m-d H:i:s');
 			$prescriptions->save();
+
+			$code_data = explode(',',$prescriptions->image);
+			foreach ($code_data as $value) {
+				$abc= new multiple_prescription();
+				$abc->user_id = $prescriptions->user_id;
+				$abc->prescription_id = $prescriptions->id;
+				$abc->prescription_name = $prescriptions->name;
+				$abc->code = $value;
+				$abc->prescription_date = $prescriptions->prescription_date;				
+				$abc->save();
+			}
 			$response['status'] = 200;
 			$response['message'] = 'Prescription saved successfully!';
 			$response['data'] = (object)array();
