@@ -1150,35 +1150,7 @@ class AcceptorderController extends Controller
                         $invoice_path= new_orders::select('id','order_amount')->where('id',$order_id)->first();
                         $invoice_path->order_amount = $order_amount;
                         $invoice_path->save();
-                        if($orders->logistic_user_id!='' || $orders->logistic_user_id!=-1){
-                                $assignOrderEmit = (object)[];
-                                        $assignOrderEmit->pharmacy_id = $orders->pharmacy_id;
-                                        $assignOrderEmit->logistic_id = $orders->logistic_user_id;
-                                        $invoice = invoice::where('order_id',$orders->id)->first();
-                                        $image_url = '';
-                                        if($invoice->invoice!=''){
-                                            $destinationPath = base_path() . '/storage/app/public/uploads/invoice/'.$invoice->invoice;
-                                            if(file_exists($destinationPath)){
-                                                $image_url = url('/').'/storage/app/public/uploads/invoice/'.$invoice->invoice;
-                                            }else{
-                                                $image_url = url('/').'/uploads/placeholder.png';
-                                            }
-                                        }else{
-                                            $image_url = url('/').'/uploads/placeholder.png';
-                                        }
-
-                                        $assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$orders->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$orders->id.'</span>';
-                                        $assignOrderEmit->id = '<a href="'.url('/logisticupcoming/order_details/'.$orders->id).'"><img src="'.$image_url.'" width="50"/><span>'.$orders->order_number.'</span></a>';
-                                        $assignOrderEmit->order_number = $orders->order_number;
-                                        $assignOrderEmit->delivery_type = new_delivery_charges::where('id', $orders->delivery_charges_id)->value('delivery_type');
-                                        $assignOrderEmit->delivery_address = new_address::where('id', $orders->address_id)->value('address');
-                                        $assignOrderEmit->pickup_address = new_pharmacies::where('id',$orders->pharmacy_id)->value('address');
-                                        $assignOrderEmit->sellername = new_pharma_logistic_employee::where('id',$orders->process_user_id)->value('name');
-                                        $assignOrderEmit->order_amount = $order_amount;
-                                        $assignOrderEmit->assign_datetime = $orders->assign_datetime;
-                                        $assignOrderEmit->action = '<a onclick="assign_order('.$orders->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$orders->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-                                        event(new AssignOrderLogistic($assignOrderEmit));
+                         if($orders->logistic_user_id!='' || $orders->logistic_user_id!=-1){
                                         $this->passdata($order_id);
                         }
                        //send sms to user
@@ -1211,9 +1183,9 @@ class AcceptorderController extends Controller
             }*/
         return decode_string($response, 200);
     }
-     public function passdata($order_id){
+      public function passdata($order_id){
                 if(!empty($order_id)){
-                                            $pass_data = array('order_id' => $order_id );
+                                            $pass_data = array('order_id' => $order_id);
                                             $get_data = http_build_query($pass_data);
                                              $curl_url = 'http://159.65.145.98/pharma/api/event?'.$get_data; 
                                             $curl = curl_init($curl_url);
@@ -1236,6 +1208,7 @@ class AcceptorderController extends Controller
                                             return json_decode($response,true);
                                         }
     }
+
     public function call_history(Request $request){
         $response = array();
 		$data = $request->input('data');
