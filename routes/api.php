@@ -80,7 +80,9 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/prescription_list', 'PrescriptionController@prescription_list');
 	Route::post('/new_prescription_list', 'New_prescriptioncontroller@prescription_list');
 	Route::post('/save_prescription', 'PrescriptionController@save_prescription');
+	Route::post('/save_prescription_imagedata', 'PrescriptionController@save_prescription_imagedata');
 	Route::post('/delete_prescription', 'PrescriptionController@delete_prescription');
+	Route::post('/delete_prescription_imagedata', 'PrescriptionController@delete_prescription_imagedata');
 	Route::post('/delete_disease_report', 'HelthsummarytimelineController@delete_disease_report');
 	Route::post('/delete_presscription_report', 'HelthsummarytimelineController@delete_presscription_report');
 	Route::post('/check_valid_user_code', 'HelthsummarytimelineController@check_valid_user_code');
