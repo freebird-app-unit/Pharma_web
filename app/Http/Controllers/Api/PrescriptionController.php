@@ -127,7 +127,7 @@ class PrescriptionController extends Controller
 		
 		$data = $request->input('data');	
 		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText); 
+		$content = json_decode($data); 
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$name = isset($content->name) ? $content->name : '';
@@ -191,7 +191,7 @@ class PrescriptionController extends Controller
 				$abc->user_id = $prescriptions->user_id;
 				$abc->prescription_id = $prescriptions->id;
 				$abc->prescription_name = $prescriptions->name;
-				$abc->code = $value;
+				$abc->image = $value;
 				$abc->prescription_date = $prescriptions->prescription_date;				
 				$abc->save();
 			}
@@ -206,7 +206,7 @@ class PrescriptionController extends Controller
         $response = json_encode($response);
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	
 	}
 
@@ -221,13 +221,19 @@ class PrescriptionController extends Controller
 		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
 		$content = json_decode($plainText);
 		
+		$user_id  = isset($content->user_id) ? $content->user_id : 0;
+		$prescription_id  = isset($content->prescription_id) ? $content->prescription_id : 0;
 		$id  = isset($content->id) ? $content->id : 0;
 		
 		$params = [
+			'user_id' => $user_id,
+			'prescription_id'     => $prescription_id,
 			'id'     => $id
 		]; 
 		
 		$validator = Validator::make($params, [
+			'user_id' => 'required',
+			'prescription_id' => 'required',
             'id' => 'required'
         ]);
  
@@ -235,7 +241,7 @@ class PrescriptionController extends Controller
             return $this->send_error($validator->errors()->first());  
         }
 		
-		$prescription = Prescription::where('id',$id)->first();
+		$prescription = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>$prescription_id,'id'=>$id])->first();
 		$prescription->is_delete="1";
 		$prescription->save();
 		
