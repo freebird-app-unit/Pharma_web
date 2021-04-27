@@ -13,7 +13,7 @@ use App\Orderassign;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
-
+use App\new_order_history;
 use App\new_pharma_logistic_employee;
 use App\new_users;
 use App\new_pharmacies;
@@ -226,24 +226,76 @@ class LogisticincompleteController extends Controller
 		//echo $request->reject_reason.'--'.$request->reject_id;exit;
 		$user_id = Auth::user()->id;
 
-		$order = new_orders::find($request->reject_id);
-		$order->logistic_user_id = null;
-		$order->deliveryboy_id = 0;
-		$order->logistic_reject_reason = $request->reject_reason;
-		$order->assign_datetime = null;
-		$order->order_status = 'accept';
-		$order->save();
-
+		$orders = new_orders::find($request->reject_id);
+		$orders->logistic_user_id = Auth::user()->user_id;
+		$orders->deliveryboy_id = 0;
+		$orders->logistic_reject_reason = $request->rejectreason;
+		$orders->cancel_datetime = date('Y-m-d H:i:s');
+		$orders->order_status = 'cancel';
+		$orders->save();
+		$order = new_orders::where('id',$request->reject_id)->first();
+         	$order_history = new new_order_history();
+            $order_history->order_id = $order->id;
+            $order_history->customer_id = $order->customer_id;
+            $order_history->prescription_id = $order->prescription_id;
+            $order_history->order_number = $order->order_number;
+            $order_history->order_status = $order->order_status;
+            $order_history->order_note = $order->order_note;
+            $order_history->address_id = $order->address_id;
+            $order_history->audio = $order->audio;
+            $order_history->logistic_reject_reason = $order->logistic_reject_reason;
+            $order_history->audio_info = $order->audio_info;
+            $order_history->order_type = $order->order_type;
+            $order_history->total_days = $order->total_days;
+            $order_history->reminder_days = $order->reminder_days;
+            $order_history->pharmacy_id = $order->pharmacy_id;
+            $order_history->process_user_type = $order->process_user_type;
+            $order_history->process_user_id = $order->process_user_id;
+            $order_history->logistic_user_id = $order->logistic_user_id;
+            $order_history->deliveryboy_id = $order->deliveryboy_id;
+            $order_history->second_attempt_delivery_id = $order->second_attempt_delivery_id;
+            $order_history->create_datetime  = $order->create_datetime;
+            $order_history->accept_datetime  = $order->accept_datetime;
+            $order_history->assign_datetime  = $order->assign_datetime;
+            $order_history->pickup_datetime  = $order->pickup_datetime;
+            $order_history->deliver_datetime = $order->deliver_datetime;
+            $order_history->second_attempt_delivery_datetime = $order->second_attempt_delivery_datetime;
+            $order_history->return_datetime  = $order->return_datetime;
+            $order_history->cancel_datetime  = $order->cancel_datetime;
+            $order_history->rejectby_user  = $order->rejectby_user;
+            $order_history->reject_user_id  = $order->reject_user_id;
+            $order_history->reject_cancel_reason  = $order->reject_cancel_reason;
+            $order_history->leave_neighbour  = $order->leave_neighbour;
+            $order_history->neighbour_info  = $order->neighbour_info;
+            $order_history->is_external_delivery  = $order->is_external_delivery;
+            $order_history->external_delivery_initiatedby  = $order->external_delivery_initiatedby;
+            $order_history->order_amount  = $order->order_amount;
+            $order_history->delivery_charges_id   = $order->delivery_charges_id;
+            $order_history->is_delivery_charge_collect  = $order->is_delivery_charge_collect;
+            $order_history->is_amount_collect  = $order->is_amount_collect;
+            $order_history->is_refund_intiated  = $order->is_refund_intiated;
+            $order_history->refund_datetime  = $order->refund_datetime;
+            /*$order_history->refund_info  = $order->refund_info;
+            $order_history->is_admin_amount_collect  = $order->is_admin_amount_collect;
+            $order_history->is_pharmacy_amount_collect  = $order->is_pharmacy_amount_collect;
+            $order_history->is_logistic_charge_collect  = $order->is_logistic_charge_collect;
+            $order_history->is_admin_delivery_charge_collect  = $order->is_admin_delivery_charge_collect;
+            $order_history->is_logistic_amount_collect  = $order->is_logistic_amount_collect;*/
+            $order_history->created_at    = $order->created_at;
+            $order_history->updated_at  = $order->updated_at;
+            $order_history->save();
+            $order_delete = new_orders::find($order->id);
+            $order_delete->delete();
 		$orderAssignCount = Orderassign::whereNull('deliveryboy_id')->Where('order_id', $request->reject_id)->count();
 		if($orderAssignCount > 0){
 			$orderAssign = Orderassign::Where('order_id', $request->reject_id)->whereNull('deliveryboy_id')->first();
-			$orderAssign->order_status = 'reject';
+			$orderAssign->order_status = 'cancel';
 			// $orderAssign->rejectreason_id = $request->reject_reason;
 			$orderAssign->reject_date = date('Y-m-d H:i:s');
 			$orderAssign->updated_at = date('Y-m-d H:i:s');
 			$orderAssign->save();
 		}
 
-		return redirect(route('logistic.incomplete.index'))->with('success_message', trans('Order Successfully reject'));
+		return redirect(route('logistic.incomplete.index'))->with('success_message', trans('Order Successfully Cancel'));
 	}
 }
