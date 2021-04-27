@@ -220,9 +220,9 @@ class OrderReportController extends Controller
         ->where('new_order_history.logistic_user_id', $user_id);
 
         if($order_type == 0){
-			$order_detail = $order_detail->orWhere(['new_order_history.is_logistic_charge_collect'=> 0, 'new_order_history.is_logistic_charge_collect'=> 1]);
+			$order_detail = $order_detail->orWhere(['new_order_history.is_logistic_charge_collect'=> 0]);
         }else{
-            $order_detail = $order_detail->Where(['new_order_history.is_external_delivery'=> 1])->orWhere(['new_order_history.is_admin_amount_collect'=> 0, 'new_order_history.is_admin_amount_collect'=> 1]);
+            $order_detail = $order_detail->Where(['new_order_history.is_external_delivery'=> 1])->orWhere(['new_order_history.is_admin_amount_collect'=> 0]);
 		}
 
         if($filter_end_date != '' && $filter_start_date !== ''){
