@@ -157,7 +157,7 @@
 				url: base_url+'/logistic/payment_create',
 				data: 'voucher_type='+voucher_type+'&orderIds='+orderIds+"&voucher_info="+voucher_info+"&_token="+token+"&transation_number="+transation_number,
 				success: function (responce) {	
-					// location.reload();
+					 location.reload();
 				}
 			});
 		}
