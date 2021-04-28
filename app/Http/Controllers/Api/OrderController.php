@@ -1575,6 +1575,175 @@ class OrderController extends Controller
 		
         return response($cipher, 200);
 	}
+	public function mycartdetail_imagedata(Request $request)
+	{
+		$response = array();
+		$response['status'] = 200;
+		$response['message'] = '';
+		$response['data'] = (object)array();
+		// $user_id = $request->user_id;
+		// $order_id = $request->order_id;
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
+		
+		$user_id = isset($content->user_id) ? $content->user_id : '';
+		$order_id = isset($content->order_id) ? $content->order_id : '';
+		
+		$params = [
+			'user_id' => $user_id,
+			'order_id' => $order_id
+		];
+		
+		$validator = Validator::make($params, [
+            'user_id' => 'required',
+            'order_id' => 'required'
+        ]);
+ 
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+        }
+		$token =  $request->bearerToken();
+		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
+		if(count($user)>0){
+		$orders_data1 = new_orders::with('prescriptions')->where(['customer_id'=>$user_id,'id'=> $order_id])->get();
+		$orders_data2 = new_order_history::with('prescriptions')->where(['customer_id'=>$user_id,'id'=> $order_id])->get();
+
+		$orders_arr1 = array();
+		$orders = $orders_data1->merge($orders_data2);
+
+		$audio_url = '';
+		if(count($orders)>0){
+			//$order = new_orders::with('prescriptions')->find($order_id);
+			$mutiple_data = multiple_prescription::where(['prescription_id'=>$orders[0]->prescription_id,'is_delete'=>'0'])->get();
+				$mutiple_images = [];
+				foreach ($mutiple_data as $value) {
+						$mutiple_images[]=[
+						'id'	=> $value->id,
+						'image' => $value->image,
+					];	
+				}	
+
+			if (!empty($orders[0]->audio)) {
+				$filename = storage_path('app/public/uploads/audio/' . $orders[0]->audio);
+				if (File::exists($filename)) {
+					$audio_url = asset('storage/app/public/uploads/audio/' . $orders[0]->audio);
+				}
+			}
+				
+			$order_status_array = array(
+				'accept'=>'Accepted',
+				'assign'=>'Ready For Pickup',
+				'complete'=>'Delivered',
+				'incomplete'=>'Delivery Attempted',
+				'pickup' => 'Out For Delivery',
+				'reject'=>'Rejected',
+				'cancel'=>'Cancelled',
+				'new'=>'Pending',
+				'payment_pending'=>'Payment Pending',
+			);
+			
+			//$destination_address[] = [];
+			$address_data = new_address::where('id',$orders[0]->address_id)->get();
+			foreach ($address_data as $key => $val) {
+				$destination_address[] = [
+					'address_id' => $val->id,
+					'user_id' => $val->user_id,
+					'locality'=>$val->locality,
+					'address' =>$val->address,
+					'name' => $val->name,
+					'mobileno' =>$val->mobileno,
+					'blockno' =>$val->blockno,
+					'streetname'=>$val->streetname,
+					'city'=>$val->city,
+					'pincode'=>$val->pincode,
+					'latitude'=>$val->latitude,
+					'longitude'=>$val->longitude
+				];
+			}	
+			$order_feedback = Orderfeedback::where('order_id',$orders[0]->id)->where('user_id',$user_id)->get();
+			if(count($order_feedback)>0){
+				$ord_feedback = 1;
+			}else{
+				$ord_feedback = 0;
+			}
+			$pharmacy = new_pharmacies::where('id',$orders[0]->pharmacy_id)->first();
+
+			$userdata = new_users::where('id',$user_id)->first();
+
+			$orders_arr1[0]['id'] = $orders[0]->id;
+			$orders_arr1[0]['payment_url'] = '';
+			$orders_arr1[0]['pharmacy_id'] = $orders[0]->pharmacy_id;
+			$orders_arr1[0]['order_number'] = $orders[0]->order_number;
+			$orders_arr1[0]['order_note'] = $orders[0]->order_note;
+			$orders_arr1[0]['origin_user_name'] = isset($pharmacy->name) ? $pharmacy->name : '';
+			$orders_arr1[0]['origin_address'] = isset($pharmacy->address) ? $pharmacy->address : '';
+			$orders_arr1[0]['destination_user_name'] = $userdata->name;
+			$orders_arr1[0]['destination_address'] = ($destination_address)?$destination_address:'';
+			
+			$orders_arr1[0]['order_detail_image'] = $mutiple_images;
+			$orders_arr1[0]['audio'] = $audio_url;
+			$orders_arr1[0]['audio_info'] = date('d-m-Y h:i A',strtotime($orders[0]->audio_info));
+			$orders_arr1[0]['order_type'] = ($orders[0]->order_type!='')?$orders[0]->order_type:'';
+			$orders_arr1[0]['total_days'] = ($orders[0]->total_days!='')?str_replace('_',' ',$orders[0]->total_days):'';
+			$orders_arr1[0]['order_note'] = ($orders[0]->order_note!='')?str_replace('_',' ',$orders[0]->order_note):'';
+			$orders_arr1[0]['reminder_days'] = ($orders[0]->reminder_days!='')?str_replace('_',' ',$orders[0]->reminder_days):'';
+			$orders_arr1[0]['reject_reason'] = ($orders[0]->reject_cancel_reason)?$orders[0]->reject_cancel_reason:'';
+			$orders_arr1[0]['order_feedback'] = $ord_feedback;
+			$orders_arr1[0]['order_date'] = date('d-m-Y h:i A',strtotime($orders[0]->created_at));
+			$orders_arr1[0]['prescription_id'] = $orders[0]->prescription_id;
+			$orders_arr1[0]['leaved_with_neighbor'] = $orders[0]->leave_neighbour;
+			$orders_arr1[0]['neighbour_info'] = ($orders[0]->neighbour_info)?$orders[0]->neighbour_info:'';
+			$orders_arr1[0]['refund_reference_no'] = '';
+			$orders_arr1[0]['reference_code'] = '';
+			$orders_arr1[0]['mobile_number'] = isset($pharmacy->mobile_number)?$pharmacy->mobile_number:'';
+			$orders_arr1[0]['payment_order_id'] = $orders[0]->payment_order_id;
+			if($orders[0]->order_status == 'cancel' && !empty($orders[0]->delivery_charges_id)){
+				$orders_arr1[0]['refund_string'] = '';
+				$orders_arr1[0]['order_status'] = (isset($order_status_array[$orders[0]->order_status]))?$order_status_array[$orders[0]->order_status]:'';
+			}else{
+				$orders_arr1[0]['order_status'] = (isset($order_status_array[$orders[0]->order_status]))?$order_status_array[$orders[0]->order_status]:'';
+				$orders_arr1[0]['refund_string'] = '';
+			}
+			if($orders[0]->external_delivery_initiatedby == 'customer'){
+				if(!empty($orders[0]->delivery_charges_id)){
+					$dev_data = new_delivery_charges::where('id',$orders[0]->delivery_charges_id)->get();
+					foreach ($dev_data as $dev) {
+							$orders_arr1[0]['delivery_type'] = $dev->delivery_type;	
+							$orders_arr1[0]['unit'] = 'Rs';	
+							$orders_arr1[0]['delivery_price'] = $dev->delivery_price;
+					}
+				}
+			}else{
+				$orders_arr1[0]['delivery_type'] = 'free';
+			}	
+			if($orders[0]->is_external_delivery==1){
+				$orders_arr1[0]['is_paid'] = 'True';
+			}else{
+				$orders_arr1[0]['is_paid'] = 'False';
+			}
+			if($orders[0]->is_external_delivery==1 && $orders[0]->external_delivery_initiatedby == 'customer' && $orders[0]->order_status == 'payment_pending'){
+				$orders_arr1[0]['payment_url'] = 'create_transaction/'.$orders[0]->id;
+			}
+			$response['status'] = 200;
+		} else {
+			$response['status'] = 404;
+		}
+		$response['message'] = 'My cart detail';
+		$response['data'] = $orders_arr1;
+		}else{
+	    		$response['status'] = 401;
+	            $response['message'] = 'Unauthenticated';
+	   	}
+        $response = json_encode($response);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($cipher, 200);	
+	}
 	// public function sendNotification($reg_ids, $message, $title) {
 		
 		// $serverKey = 'AAAAKIqNu8Q:APA91bEJSvjmr9TiUjAtQRc1PosKmb3nqRqQULAFUXHnujLmTw4zLmiSLD27gFffQeqxSR7U75JXUO-V65WIcMKorV7OjZ2boepBanPFwPFnxBEyCp7Uv0OwMVjnhMHp1ib_GtFiEwI8';

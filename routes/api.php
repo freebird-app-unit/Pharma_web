@@ -55,6 +55,7 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/mycartlist', 'OrderController@mycartlist');
 	Route::post('/mycartlist_imagedata', 'OrderController@mycartlist_imagedata');
 	Route::post('/mycartdetail', 'OrderController@mycartdetail');
+	Route::post('/mycartdetail_imagedata', 'OrderController@mycartdetail_imagedata');
 	Route::post('/notification_user', 'OrderController@notification_user');
 	Route::post('/new_notification_user', 'New_orderController@notification_user');
 	Route::post('/create_pillreminder', 'PillreminderController@create_pillreminder');
