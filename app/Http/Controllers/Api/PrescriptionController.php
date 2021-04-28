@@ -254,14 +254,12 @@ class PrescriptionController extends Controller
 			'user_id' => $user_id,
 			'name' => $name,
 			'prescription_date' => $prescription_date,
-			'prescription_image' => $prescription_image
 		]; 
 		
 		$validator = Validator::make($params, [
             'user_id' => 'required',
             'name' => 'required',
             'prescription_date' => 'required',
-            'prescription_image' => 'required'
         ]);
  
         if ($validator->fails()) {
@@ -276,6 +274,9 @@ class PrescriptionController extends Controller
 		if(count($find_name)>0){
 			$response['status'] = 404;
 			$response['message'] = 'Prescription name already exists';
+		}elseif (empty($prescription_image)) {
+			$response['status'] = 404;
+			$response['message'] = 'Please upload prescription';
 		}else{
 			$prescriptions = new Prescription();
 			$prescriptions->user_id = $user_id;
