@@ -53,6 +53,7 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/cancelorder', 'OrderController@cancelorder');
 	Route::post('/savedarticleslist', 'ArticlesController@savedarticleslist');
 	Route::post('/mycartlist', 'OrderController@mycartlist');
+	Route::post('/mycartlist_imagedata', 'OrderController@mycartlist_imagedata');
 	Route::post('/mycartdetail', 'OrderController@mycartdetail');
 	Route::post('/notification_user', 'OrderController@notification_user');
 	Route::post('/new_notification_user', 'New_orderController@notification_user');

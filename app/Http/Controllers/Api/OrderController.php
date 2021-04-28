@@ -45,7 +45,7 @@ use DatePeriod;
 use DateInterval;
 use Illuminate\Support\Str;
 use Helper;
-
+use App\multiple_prescription;
 class OrderController extends Controller
 {
 	public function cancelorderlist(Request $request)
@@ -1421,7 +1421,160 @@ class OrderController extends Controller
 		}
 		echo "Order Added successfully..";
 	}
-	
+	public function mycartlist_imagedata(Request $request)
+	{
+		$response = array();
+		$response['status'] = 200;
+		$response['message'] = '';
+		$response['data'] = (object)array();
+		// $user_id = $request->user_id;
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
+		
+		$user_id = isset($content->user_id) ? $content->user_id : '';
+		$is_completed = isset($content->is_completed) ? $content->is_completed : '';
+		$page = isset($content->page) ? $content->page : '';
+		
+		$params = [
+			'user_id' => $user_id,
+			'is_completed'=>$is_completed
+		];
+		
+		$validator = Validator::make($params, [
+            'user_id' => 'required',
+            'is_completed' => 'required',
+        ]);
+ 
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+		}
+		$token =  $request->bearerToken();
+		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
+		if(count($user)>0){
+		$orders_arr_data1 = array();
+
+		if ($is_completed == 0) {
+			$raw_query = new_orders::query()->select('new_orders.order_status','new_orders.create_datetime','new_orders.external_delivery_initiatedby','new_orders.delivery_charges_id','new_orders.is_external_delivery', 'new_orders.pharmacy_id','new_orders.id AS ID', 'new_orders.order_number','new_orders.prescription_id')
+				->with(
+				[
+					'prescriptions' => function($query) {
+						$query->select('id','image', 'name');
+					},
+					'pharmacy' => function($query) {
+						$query->select('id','name','address', 'discount', 'mobile_number');
+					},
+				])
+				->where('customer_id', $user_id)->orderby('new_orders.id','desc');
+
+			$total = $raw_query->count();
+			$page = $page;
+			if($total > ($page*10)){
+				$is_record_available = 1;
+			}else{
+				$is_record_available = 0;
+			}
+			$per_page = 10;
+			$response['data']->currentPageIndex = $page;
+			$response['data']->totalPage = ceil($total/$per_page);
+			$data_array = $raw_query->paginate($per_page,'','',$page);
+			
+		}else{
+			$raw_query = new_order_history::query()->select('new_order_history.order_status','new_order_history.create_datetime','new_order_history.external_delivery_initiatedby','new_order_history.delivery_charges_id','new_order_history.is_external_delivery', 'new_order_history.pharmacy_id','new_order_history.id AS ID', 'new_order_history.order_number','new_orders.prescription_id')
+				->with(
+				[
+					'prescriptions' => function($query) {
+						$query->select('id','image');
+					},
+					'pharmacy' => function($query) {
+						$query->select('id','name','address', 'discount', 'mobile_number');
+					},
+				])
+			->where('customer_id', $user_id)->orderby('new_order_history.id','desc');
+
+			$total = $raw_query->count();
+			$page = $page;
+			if($total > ($page*10)){
+				$is_record_available = 1;
+			}else{
+				$is_record_available = 0;
+			}
+			$per_page = 10;
+			$response['data']->currentPageIndex = $page;
+			$response['data']->totalPage = ceil($total/$per_page);
+			$data_array = $raw_query->paginate($per_page,'','',$page);
+			// $data_array = $orders_data1->toArray();
+			// $data_array = $orders_data1->data;
+		}
+		if(count($data_array)>0){
+			
+			$order_status_array = array(
+				'payment_pending'=>'Payment Pending',
+				'new'=>'Pending', // USER
+				'accept'=>'Accepted', // PHARMACY, SELLER
+				'reject'=>'Rejected', // PHARMACY, SELLER
+				'assign'=>'Ready For Pickup', // PHARMACY, SELLER, LOGISTIC
+				'pickup'=>'Out For Delivery', // DELIVERY BOY
+				'complete'=>'Delivered', // DELIVERY BOY
+				'incomplete'=>'Delivery Attempted', // DELIVERY BOY
+				'cancel'=>'Cancelled', // USER
+			);
+
+			foreach($data_array as $key=>$val){
+				$mutiple_data = multiple_prescription::where(['prescription_id'=>$val->prescription_id,'is_delete'=>'0'])->get();
+				$mutiple_images = [];
+				foreach ($mutiple_data as $value) {
+						$mutiple_images[]=[
+						'id'	=> $value->id,
+						'image' => $value->image,
+					];	
+				}
+				
+				$orders_arr_data1[$key]['id'] = $val->ID;
+				$orders_arr_data1[$key]['pharmacy_id'] = $val->pharmacy_id;
+				$orders_arr_data1[$key]['prescription_name'] = !empty($val->prescriptions->name) ? $val->prescriptions->name : '';
+				$orders_arr_data1[$key]['order_number'] = ($val->order_number)?$val->order_number:'';
+				$orders_arr_data1[$key]['prescription'] = $mutiple_images;
+				$orders_arr_data1[$key]['pharmacy'] = isset($val->pharmacy->name) ? $val->pharmacy->name : '';
+				$orders_arr_data1[$key]['pharmacy_address'] = isset($val->pharmacy->address) ? $val->pharmacy->address : '';
+				/*$orders_arr[$key]['logistic_id'] = 	$val->logistic_user_id;*/
+				$orders_arr_data1[$key]['mobile_number'] = isset($val->pharmacy->mobile_number)?$val->pharmacy->mobile_number:'';
+				$orders_arr_data1[$key]['discount'] = isset($val->pharmacy->discount)?$val->pharmacy->discount.'% off on your order ':'';
+				$orders_arr_data1[$key]['order_status'] = (isset($order_status_array[$val->order_status]))?$order_status_array[$val->order_status]:'';
+				$orders_arr_data1[$key]['order_date'] = date('d-m-Y h:i A',strtotime($val->create_datetime));
+
+				if($val->external_delivery_initiatedby == 'customer'){
+					if(!empty($val->delivery_charges_id)){
+						$d = new_delivery_charges::where('id',$val->delivery_charges_id)->first();
+						$orders_arr_data1[$key]['delivery_type'] = isset($d->delivery_type) ? $d->delivery_type : '';	
+					}	
+				}else{
+					$orders_arr_data1[$key]['delivery_type'] = 'free';
+				}			
+				if($val->is_external_delivery==1){
+					$orders_arr_data1[$key]['is_paid'] = 'True';
+				}else{
+					$orders_arr_data1[$key]['is_paid'] = 'False';
+				}
+			}
+			$response['status'] = 200;
+		}  else {
+			$response['status'] = 404;
+		}
+		$response['data']->content = $orders_arr_data1;
+		}else{
+	    		$response['status'] = 401;
+	            $response['message'] = 'Unauthenticated';
+	   	}
+        $response = json_encode($response);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($cipher, 200);
+	}
 	// public function sendNotification($reg_ids, $message, $title) {
 		
 		// $serverKey = 'AAAAKIqNu8Q:APA91bEJSvjmr9TiUjAtQRc1PosKmb3nqRqQULAFUXHnujLmTw4zLmiSLD27gFffQeqxSR7U75JXUO-V65WIcMKorV7OjZ2boepBanPFwPFnxBEyCp7Uv0OwMVjnhMHp1ib_GtFiEwI8';
