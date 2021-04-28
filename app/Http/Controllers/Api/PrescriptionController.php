@@ -317,8 +317,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$user_id  = isset($content->user_id) ? $content->user_id : 0;
 		$prescription_id  = isset($content->prescription_id) ? $content->prescription_id : 0;
@@ -348,8 +348,8 @@ class PrescriptionController extends Controller
 		$response['message'] = 'prescription successfully deleted!';    
 		
 		$response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
     }
 }	
