@@ -1977,9 +1977,9 @@ class OrderController extends Controller
 	   	}
 		
         $response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
 	}
 	// public function sendNotification($reg_ids, $message, $title) {
 		
