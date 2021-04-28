@@ -141,5 +141,118 @@ class NotificationHelper
         curl_close($ch);
           return $result; 
 	}    
+    public static function sendReport($name,$email,$mobile_number,$description,$image,$pre_image,$subject){
 
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://api.transmail.co.in/v1.1/email",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => '{
+            "bounce_address":"contact@bounce.myhealthchart.in",
+            "from": { "address": "transmail@myhealthchart.in"},
+            "to": [{"email_address": {"address": "poonam.k@clientsdemosite.in"}},{"email_address": {"address": "poonamjk10@gmail.com"}}],
+            "subject":'.$subject.',
+            "htmlbody":"<div><p>Name '.$name.',</p> <p>Email Address '.$email.'</p> <p>Mobile Number '.$mobile_number.'</p> <p>Description '.$description.'</p> <p>Image </p> <p><a href='.$image.'><img src='.$image.' alt='.$image.' width=150 height=150></a></p> <p>PrescriptionImage </p> <p><a href='.$pre_image.'><img src='.$pre_image.' alt='.$pre_image.' width=150 height=150></a></p> </div>",
+            }
+              ]
+            }',
+                    CURLOPT_HTTPHEADER => array(
+                    "accept: application/json",
+                    "authorization: Zoho-enczapikey PHtE6r0FF+3rj28roRED5/7sFcP2N4wrqO82eVRA495BCfcETU1R+dAjlTOyqx0oB/lGHPDNno1ot7+V5uOFImq/Y2lNX2qyqK3sx/VYSPOZsbq6x00Vs18Sc0bcXIPnddRv0yXTvtbZNA==",
+                    "cache-control: no-cache",
+                    "content-type: application/json",
+                ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+                return "cURL Error #:" . $err;
+            } else {
+                return $response;
+
+            } 
+        }
+        public static function sendReportPaid($name,$email,$mobile_number,$description,$image,$pre_image,$inv_image,$pick_image,$del_image,$subject){
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://api.transmail.co.in/v1.1/email",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => '{
+            "bounce_address":"contact@bounce.myhealthchart.in",
+            "from": { "address": "transmail@myhealthchart.in"},
+            "to": [{"email_address": {"address": "poonam.k@clientsdemosite.in"}},{"email_address": {"address": "poonamjk10@gmail.com"}}],
+            "subject":'.$subject.',
+            "htmlbody":"<div><p>Name '.$name.',</p> <p>Email Address '.$email.'</p> <p>Mobile Number '.$mobile_number.'</p> <p>Description '.$description.'</p> <p>Image </p> <p><a href='.$image.'><img src='.$image.' alt='.$image.' width=150 height=150></a></p> <p>Prescription Image </p> <p><a href='.$pre_image.'><img src='.$pre_image.' alt='.$pre_image.' width=150 height=150></a></p> <p>Invoice Image </p> <p><a href='.$inv_image.'><img src='.$inv_image.' alt='.$inv_image.' width=150 height=150></a></p> <p>Pickup Image </p> <p><a href='.$pick_image.'><img src='.$pick_image.' alt='.$pick_image.' width=150 height=150></a></p> <p>Deliver Image </p> <p><a href='.$del_image.'><img src='.$del_image.' alt='.$del_image.' width=150 height=150></a></p> </div>",
+            }
+              ]
+            }',
+                    CURLOPT_HTTPHEADER => array(
+                    "accept: application/json",
+                    "authorization: Zoho-enczapikey PHtE6r0FF+3rj28roRED5/7sFcP2N4wrqO82eVRA495BCfcETU1R+dAjlTOyqx0oB/lGHPDNno1ot7+V5uOFImq/Y2lNX2qyqK3sx/VYSPOZsbq6x00Vs18Sc0bcXIPnddRv0yXTvtbZNA==",
+                    "cache-control: no-cache",
+                    "content-type: application/json",
+                ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+                return "cURL Error #:" . $err;
+            } else {
+                return $response;
+
+            } 
+        }
+        public static function sendReportFree($name,$email,$mobile_number,$description,$image,$pre_image,$inv_image,$subject){
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://api.transmail.co.in/v1.1/email",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => '{
+            "bounce_address":"contact@bounce.myhealthchart.in",
+            "from": { "address": "transmail@myhealthchart.in"},
+            "to": [{"email_address": {"address": "poonam.k@clientsdemosite.in"}},{"email_address": {"address": "poonamjk10@gmail.com"}}],
+            "subject":'.$subject.',
+            "htmlbody":"<div><p>Name '.$name.',</p> <p>Email Address '.$email.'</p> <p>Mobile Number '.$mobile_number.'</p> <p>Description '.$description.'</p> <p>Image </p> <p><a href='.$image.'><img src='.$image.' alt='.$image.' width=150 height=150></a></p> <p>Prescription Image </p> <p><a href='.$pre_image.'><img src='.$pre_image.' alt='.$pre_image.' width=150 height=150></a></p> <p>Invoice Image </p> <p><a href='.$inv_image.'><img src='.$inv_image.' alt='.$inv_image.' width=150 height=150></a></p> </div>",
+            }
+              ]
+            }',
+                    CURLOPT_HTTPHEADER => array(
+                    "accept: application/json",
+                    "authorization: Zoho-enczapikey PHtE6r0FF+3rj28roRED5/7sFcP2N4wrqO82eVRA495BCfcETU1R+dAjlTOyqx0oB/lGHPDNno1ot7+V5uOFImq/Y2lNX2qyqK3sx/VYSPOZsbq6x00Vs18Sc0bcXIPnddRv0yXTvtbZNA==",
+                    "cache-control: no-cache",
+                    "content-type: application/json",
+                ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+            if ($err) {
+                return "cURL Error #:" . $err;
+            } else {
+                return $response;
+
+            } 
+        }
 }

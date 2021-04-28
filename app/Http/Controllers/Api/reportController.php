@@ -19,6 +19,7 @@ use Storage;
 use Image;
 use File;
 use Mail;
+use Helper;
 class reportController extends Controller
 {
     public function index(Request $request)
@@ -87,16 +88,19 @@ class reportController extends Controller
             $user_data = new_users::where('id',$user_id)->first();
             $order_data = new_orders::where('id',$order_id)->first();
             $order_history_data = new_order_history::where('order_id',$order_id)->first();
+            $report = report::where('order_id',$order_id)->orderBy('created_at','DESC')->first();
             if(!empty($order_data)){
-                $profile_image = '';
-                if (!empty($report_images->image)) {
-
-                    $filename = storage_path('app/public/uploads/report/' . $report_images->image);
-                        
-                    if (File::exists($filename)) {
-                        $profile_image = asset('storage/app/public/uploads/report/' . $report_images->image);
-                    } else {
-                        $profile_image = '';
+                if(!empty($report)){
+                    $report_data = report_images::where('report_id',$report->id)->first();
+                    $profile_image = '';
+                    if (!empty($report_data->image)) {
+                        $filename = storage_path('app/public/uploads/report/' . $report_data->image);
+                            
+                        if (File::exists($filename)) {
+                            $profile_image = asset('storage/app/public/uploads/report/' . $report_data->image);
+                        } else {
+                            $profile_image = '';
+                        }
                     }
                 }
                 $prescription_image = '';
@@ -113,34 +117,35 @@ class reportController extends Controller
                         }
                     }
                 }
-                $data = [
-                'name' => $user_data->name,
-                'email'=>$user_data->email,
-                'mobile_number'=>$report->mobile_number,
-                'description'=>$report->description,
-                'image'=> $profile_image,
-                'pre_image' =>$prescription_image,
-                ];
-                //$email = ['bhavik@thefreebirdtech.com','ravi@thefreebirdtech.com'];
-                $email = ['poonamjk10@gmail.com'];
+                $name = $user_data->name;
+                $email=$user_data->email;
+                $mobile_number=$report->mobile_number;
+                $description=$report->description;
+                $image= $profile_image;
+                $pre_image =$prescription_image;
+                $subject='Pharma - Report Problem';
+                Helper::sendReport($name,$email,$mobile_number,$description,$image,$pre_image,$subject);
+                /*$email = ['bhavik@thefreebirdtech.com','ravi@thefreebirdtech.com'];
                 $result = Mail::send('email.report1', $data, function ($message) use ($email) {
                          $message->to($email)->subject('Pharma - Report Problem');
-                });
+                });*/
                 $response['status'] = 200;
                 $response['message'] = 'Report Added Successfully';
             }elseif (!empty($order_history_data)) {
                 $order_his_data = new_order_history::where('order_id',$order_id)->first();
-                $report_data = report::where('order_id',$order_his_data->id)->first();
-                $report_image_data = report_images::where('report_id',$report_data->id)->first();
-                $profile_image = '';
-                if (!empty($report_image_data->image)) {
-
-                    $filename = storage_path('app/public/uploads/report/' . $report_image_data->image);
-                        
-                    if (File::exists($filename)) {
-                        $profile_image = asset('storage/app/public/uploads/report/' . $report_image_data->image);
-                    } else {
-                        $profile_image = '';
+                if($order_his_data->is_external_delivery == 1){
+                     $report = report::where('order_id',$order_id)->orderBy('created_at','DESC')->first();
+                if(!empty($report)){
+                    $report_data = report_images::where('report_id',$report->id)->first();
+                    $profile_image = '';
+                    if (!empty($report_data->image)) {
+                        $filename = storage_path('app/public/uploads/report/' . $report_data->image);
+                            
+                        if (File::exists($filename)) {
+                            $profile_image = asset('storage/app/public/uploads/report/' . $report_data->image);
+                        } else {
+                            $profile_image = '';
+                        }
                     }
                 }
                 $prescription_image = '';
@@ -199,22 +204,71 @@ class reportController extends Controller
                             }
                         }
                     }
-                $data = [
-                'name' => $user_data->name,
-                'email'=>$user_data->email,
-                'mobile_number'=>$report->mobile_number,
-                'description'=>$report->description,
-                'image'=> $profile_image,
-                'pre_image' =>$prescription_image,
-                'inv_image' => $invoice_image,
-                'pick_image'=> $pickup_image,
-                'del_image'=> $deliver_image,
-                ];
-                //$email = ['bhavik@thefreebirdtech.com','ravi@thefreebirdtech.com'];
-                $email = ['poonamjk10@gmail.com'];
-                $result = Mail::send('email.report2', $data, function ($message) use ($email) {
-                         $message->to($email)->subject('Pharma - Report Problem');
-                });
+                
+                $name = $user_data->name;
+                $email=$user_data->email;
+                $mobile_number=$report->mobile_number;
+                $description=$report->description;
+                $image= $profile_image;
+                $pre_image =$prescription_image;
+                $inv_image= $invoice_image;
+                $pick_image= $pickup_image;
+                $del_image= $deliver_image;
+                $subject='Pharma - Report Problem';
+                Helper::sendReportPaid($name,$email,$mobile_number,$description,$image,$pre_image,$inv_image,$pick_image,$del_image,$subject);
+                }else{
+                    $report = report::where('order_id',$order_id)->orderBy('created_at','DESC')->first();
+                if(!empty($report)){
+                    $report_data = report_images::where('report_id',$report->id)->first();
+                    $profile_image = '';
+                    if (!empty($report_data->image)) {
+                        $filename = storage_path('app/public/uploads/report/' . $report_data->image);
+                            
+                        if (File::exists($filename)) {
+                            $profile_image = asset('storage/app/public/uploads/report/' . $report_data->image);
+                        } else {
+                            $profile_image = '';
+                        }
+                    }
+                }
+                $prescription_image = '';
+                $prescription_data = Prescription::where('id',$order_history_data->prescription_id)->first();
+                if(!empty($prescription_data)){
+                        if (!empty($prescription_data->image)) {
+
+                        $filename = storage_path('app/public/uploads/prescription/' . $prescription_data->image);
+                                
+                        if (File::exists($filename)) {
+                            $prescription_image = asset('storage/app/public/uploads/prescription/' . $prescription_data->image);
+                        } else {
+                            $prescription_image = '';
+                        }
+                    }
+                }
+                $invoice_image = '';
+                $invoice_data = invoice::where('order_id',$order_history_data->order_id)->first();
+                    if(!empty($invoice_data)){
+                        if (!empty($invoice_data->invoice)) {
+
+                            $filename = storage_path('app/public/uploads/invoice/' . $invoice_data->invoice);
+                                
+                            if (File::exists($filename)) {
+                                $invoice_image = asset('storage/app/public/uploads/invoice/' . $invoice_data->invoice);
+                            } else {
+                                $invoice_image = '';
+                            }
+                        }
+                    }
+                $name = $user_data->name;
+                $email=$user_data->email;
+                $mobile_number=$report->mobile_number;
+                $description=$report->description;
+                $image= $profile_image;
+                $pre_image =$prescription_image;
+                $inv_image= $invoice_image;
+                $subject='Pharma - Report Problem';
+                Helper::sendReportFree($name,$email,$mobile_number,$description,$image,$pre_image,$inv_image,$subject);
+                }
                 $response['status'] = 200;
                 $response['message'] = 'Report Added Successfully';
             }else{
@@ -233,7 +287,7 @@ class reportController extends Controller
     }
 
     public function contact_report(Request $request){
-    	$response = array();
+        $response = array();
         $response['status'] = 200;
         $response['message'] = '';
         $response['data'] = (object)array();
@@ -322,7 +376,7 @@ class reportController extends Controller
             $result = Mail::send('email.contactus', $data, function ($message) use ($email) {
                      $message->to($email)->subject('Pharma - ContactUs');
             });
-      	$response['status'] = 200;
+        $response['status'] = 200;
         $response['message'] = 'Contact Report Added Successfully';
         }else{
                 $response['status'] = 401;
