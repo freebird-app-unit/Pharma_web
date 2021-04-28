@@ -1744,6 +1744,243 @@ class OrderController extends Controller
 		
         return response($cipher, 200);	
 	}
+	public function createorder_imagedata(Request $request)
+	{
+		$response = array();
+		$response['status'] = 200;
+		$response['message'] = '';
+		$response['data'] = array();
+		$response['data']['payment_url'] = '';
+		$response['data']['payment_order_id'] = '';
+		// $user_id = $request->user_id;
+		// $pharmacy_id = $request->pharmacy_id;
+		// $address_id = $request->address_id;
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
+		
+		$user_id       = isset($content->user_id) ? $content->user_id : '';
+		$pharmacy_id   = isset($content->pharmacy_id) ? $content->pharmacy_id : '';
+		$address_id    = isset($content->address_id) ? $content->address_id : '';
+		$order_type    = isset($content->order_type) ? $content->order_type : '' ;
+		$total_days    = isset($content->total_days) ? $content->total_days : '';
+		$prescription_id  = isset($content->prescription_id) ? $content->prescription_id : '';
+		$prescription_name  = isset($content->prescription_name) ? $content->prescription_name : '';
+		$reminder_days = isset($content->reminder_days) ? $content->reminder_days : '';
+		$order_note = isset($content->order_note) ? $content->order_note : '';
+		$audio = isset($content->audio) ? $content->audio : '';
+		$leaved_with_neighbor = isset($content->leaved_with_neighbor)?($content->leaved_with_neighbor):'false';
+		$delivery_charges_id = isset($content->delivery_charges_id) ? $content->delivery_charges_id : '';
+		$logistic_id = isset($content->logistic_id) ? $content->logistic_id : 0;
+		$is_external_delivery = isset($content->is_external_delivery) ? $content->is_external_delivery : '';
+		$is_intersection = isset($content->is_intersection) ? $content->is_intersection : '';
+		$prescription = isset($content->prescription) ? implode(',',$content->prescription) : '';
+		$params = [
+			'user_id' => $user_id,
+			'pharmacy_id' => $pharmacy_id,
+			//'address_id' => $address_id,
+			'order_type' => $order_type,
+			'total_days' => $total_days,
+			//'prescription_id' => $prescription_id,
+			'reminder_days' => $reminder_days
+		];
+		 
+		$validator = Validator::make($params, [
+            'user_id' => 'required',
+            'pharmacy_id' => 'required',
+            'order_type' => 'required',
+            //'total_days' => 'required',
+            //'prescription_id' => 'required',
+            //'reminder_days' => 'required'
+        ]);
+		
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+        }
+		
+		$token =  $request->bearerToken();
+		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->first();
+		if(!empty($user)){
+			$userdata = new_users::find($user_id);
+			if($userdata){
+				
+				$pre = Prescription::where('id','=',$prescription_id);
+				$prescriptions = new Prescription();
+				
+				if (($pre->count()) == 0) {
+					$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$prescription_name,"is_delete"=>"0"])->get();
+					if(count($find_name)>0){
+						$response['status'] = 404;
+						$response['message'] = 'Prescription name already exists';
+						$response = json_encode($response);
+						$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+						
+						return response($cipher, 200);
+					}else{
+						if (!empty($prescription)) {
+							$prescriptions = new Prescription();
+							$prescriptions->user_id = $user_id;
+							$prescriptions->name = $prescription_name;
+							$prescriptions->image = $prescription;
+							$prescriptions->prescription_date = date('Y-m-d H:i:s');
+							$prescriptions->save();
+							$prescription = $prescriptions->id;
+							$code_data = explode(',',$prescriptions->image);
+							foreach ($code_data as $value) {
+								$abc= new multiple_prescription();
+								$abc->user_id = $prescriptions->user_id;
+								$abc->prescription_id = $prescriptions->id;
+								$abc->prescription_name = $prescriptions->name;
+								$abc->image = $value;
+								$abc->prescription_date = $prescriptions->prescription_date;				
+								$abc->save();
+							}
+						} else {
+							$response['status'] = 404;
+							$response['message'] = 'Please upload prescription';
+							
+							$response = json_encode($response);
+							$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+							
+							return response($cipher, 200);
+						}
+					}
+				} else {
+					$pre = $pre->get();
+					$prescription = $prescription_id;
+					//$prescriptions->image = $pre[0]->image;
+				} 
+				
+				$audio_name = '';
+				$music_file = $request->file('audio'); 
+				if(isset($music_file)) { 
+					$filename= time().'-'.$music_file->getClientOriginalName();
+					Storage::disk('public')->put('uploads/audio/'.$filename, file_get_contents($music_file));
+					$audio_name = $filename; 
+				}
+				$neworder = new new_orders();
+				$neworder->process_user_type ='';
+				$neworder->process_user_id = 0;
+				$neworder->pharmacy_id = $pharmacy_id;
+				$neworder->deliveryboy_id = 0;
+				$neworder->customer_id = $user_id;
+				$neworder->address_id = $address_id;
+				$neworder->logistic_user_id = $logistic_id;
+				$neworder->order_status = 'new';
+
+				/*$neworder->is_paid = (isset($content->logistic_id) && (Int)($content->logistic_id) > 0) ? 1 : 0;*/
+				$neworder->is_external_delivery = $is_external_delivery;
+				$neworder->is_intersection = $is_intersection;
+				if($neworder->is_external_delivery){
+					$neworder->external_delivery_initiatedby = 'customer';
+					$neworder->order_status = 'payment_pending';
+				}
+				$neworder->prescription_id = $prescription;
+				$neworder->order_type = $order_type;
+				$neworder->total_days = $total_days;
+				$neworder->reminder_days = $reminder_days;
+				$neworder->order_note = $order_note;
+				/*$neworder->rejectreason_id = 0;
+				$neworder->incompletereason_id = 0;
+				$neworder->cancelreason_id = 0;*/
+				$neworder->audio = $audio_name;
+				$neworder->leave_neighbour = $leaved_with_neighbor;
+				$neworder->delivery_charges_id = ($delivery_charges_id)?$delivery_charges_id:'1';
+				/*$neworder->receive_date = date('Y-m-d H:i:s');*/
+				$neworder->audio_info= date('Y-m-d H:i:s');
+				$neworder->create_datetime = date('Y-m-d H:i:s');
+				$neworder->created_at = date('Y-m-d H:i:s');
+				$neworder->updated_at = date('Y-m-d H:i:s');
+				if($neworder->save()){
+					$order_data = new_orders::where('id',$neworder->id)->first();
+					$pharmacy_name = new_pharmacies::where('id',$neworder->pharmacy_id)->first();
+
+					if($neworder->is_external_delivery == 0){
+						if($user_id > 0){
+							$ids = array();
+							$t_data = new_users::where('id',$neworder->customer_id)->first();
+							$sellerdetails = new_pharma_logistic_employee::where(['pharma_logistic_id'=>$order_data->pharmacy_id,'user_type'=>'seller'])->get();
+							
+							$message = ' Order Create '. $order_data->order_number.' User Name : '. $t_data->name;
+							$seller_id = [];
+							foreach ($sellerdetails as $sellerdetail) {
+								if($sellerdetail->fcm_token!=''){
+									$ids[] = $sellerdetail->fcm_token;
+									$seller_id[] = $sellerdetail->id;
+								}
+								$msg = array
+								(
+									'body'   => ' Order Create '. $order_data->order_number.' User Name : '. $t_data->name ,
+									'title'     => 'Order Created'
+								);
+								
+								$notification = new notification_seller();
+								$notification->user_id=$sellerdetail->id;
+								$notification->order_id=$order_data->id;
+								$notification->order_status=$order_data->order_status;
+								$notification->subtitle=$msg['body'];
+								$notification->title=$msg['title'];
+								$notification->created_at=date('Y-m-d H:i:s');
+								$notification->save();
+							}
+							
+							if (count($ids) > 0) {					
+								Helper::sendNotification($ids, $message, 'Order Created', $user->id, 'user', $seller_id, 'seller', $ids);
+
+							}
+						}
+					}
+
+					if(!empty($order_data)){
+						$data = [
+							'name' => $pharmacy_name->name,
+							'orderno'=>$order_data->order_number
+						];
+						$email = $pharmacy_name->email;
+						Mail::send('email.createorder', $data, function ($message) use ($email) {
+								$message->to($email)->subject('Pharma - Order Create');
+						});
+					}
+
+					$update_payment_id = new_orders::where('id',$neworder->id)->first();
+					$update_payment_id->payment_order_id = time().$neworder->id;
+					$update_payment_id->save();
+					$pharmacy_name = new_pharmacies::where('id',$neworder->pharmacy_id)->first();
+					$response['data']['payment_order_id'] = $update_payment_id->payment_order_id;
+					$response['data']['order_id'] = $update_payment_id->id;
+					$response['data']['order_message'] ='Your order '.$update_payment_id->order_number.' has been placed successfully.\n'.$pharmacy_name->name.' will accept your order soon.';
+					
+					
+					$response['status'] = 200;
+					$response['message'] = 'Your order successfully submitted';
+
+				} else {
+					$response['status'] = 404;
+					$response['message'] = 'Something went wrong';
+				}			
+			}else{
+				$response['status'] = 404;
+				$response['message'] = 'User not found';
+			}
+
+			if($neworder->is_external_delivery){
+				$response['data']['payment_url'] = 'create_transaction/'.$neworder->id;
+			}
+
+		}else{
+	    		$response['status'] = 401;
+	            $response['message'] = 'Unauthenticated';
+	   	}
+		
+        $response = json_encode($response);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($response, 200);
+	}
 	// public function sendNotification($reg_ids, $message, $title) {
 		
 		// $serverKey = 'AAAAKIqNu8Q:APA91bEJSvjmr9TiUjAtQRc1PosKmb3nqRqQULAFUXHnujLmTw4zLmiSLD27gFffQeqxSR7U75JXUO-V65WIcMKorV7OjZ2boepBanPFwPFnxBEyCp7Uv0OwMVjnhMHp1ib_GtFiEwI8';

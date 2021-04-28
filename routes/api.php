@@ -50,6 +50,7 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/new_pharmacylist', 'New_pharmacycontroller@pharmacylist');
 	Route::post('/addrecord', 'OrderController@addrecord');
 	Route::post('/createorder', 'OrderController@createorder');
+	Route::post('/createorder_imagedata', 'OrderController@createorder_imagedata');
 	Route::post('/cancelorder', 'OrderController@cancelorder');
 	Route::post('/savedarticleslist', 'ArticlesController@savedarticleslist');
 	Route::post('/mycartlist', 'OrderController@mycartlist');
