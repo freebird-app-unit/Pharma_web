@@ -352,4 +352,104 @@ class PrescriptionController extends Controller
 		
         return response($cipher, 200);
     }
+    public function prescription_list_imagedata(Request $request)
+	{
+		$response = array();
+		$response['status'] = 200;
+		$response['message'] = '';
+		$response['data'] = (object)array();
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');	
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
+		
+		$user_id    = isset($content->user_id) ? $content->user_id : '';
+		$searchtext = isset($content->searchtext) ? trim($content->searchtext) : ''; 
+		$page = isset($content->page) ? $content->page : '';
+
+		$params = [
+			'user_id' => $user_id
+		]; 
+		
+		$validator = Validator::make($params, [
+            'user_id' => 'required'
+        ]);
+ 
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+        }		
+		$token =  $request->bearerToken();
+		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
+		if(count($user)>0){
+		if (!empty($searchtext)) {
+			$prescription = Prescription::select('id', 'name', 'image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+
+			$total = $prescription->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $prescription->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+		} else {
+			$prescription = Prescription::select('id', 'name', 'image', 'created_at')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+
+			$total = $prescription->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $prescription->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+		}
+		
+		$prescription_arr = array();
+		if(count($data_array)>0){
+			foreach($data_array as $key=>$val){
+				$mutiple_data = multiple_prescription::where(['prescription_id'=>$val['id'],'is_delete'=>'0'])->get();
+				$mutiple_images = [];
+				foreach ($mutiple_data as $value) {
+						$mutiple_images[]=[
+						'id'	=> $value->id,
+						'image' => $value->image,
+					];	
+				}
+				$prescription_arr[$key]['id'] = $val['id'];
+				$prescription_arr[$key]['name'] = $val['name'];
+				$prescription_arr[$key]['date'] = date('d-m-Y', strtotime($val['created_at']));
+				$prescription_arr[$key]['image_array'] = $mutiple_images;
+			}
+			$response['status'] = 200;
+		} else {
+			$response['status'] = 404;
+		} 
+		$response['message'] = 'Prescription List';
+		$response['data']->content = $prescription_arr;
+		}else{
+	    		$response['status'] = 401;
+	            $response['message'] = 'Unauthenticated';
+	            $response['data'] = [];
+	   	}
+        $response = json_encode($response);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($cipher, 200);
+	
+	}
+
 }	
