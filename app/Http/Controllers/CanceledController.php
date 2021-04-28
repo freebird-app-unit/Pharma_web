@@ -199,7 +199,7 @@ class CanceledController extends Controller
 		$total= $order_detail->count();
 		$total_page = ceil($total/$per_page);
 
-		$order_detail = $order_detail->orderby('new_order_history.reject_datetime','desc');
+		$order_detail = $order_detail->orderby('new_order_history.cancel_datetime','desc');
 		$order_detail = $order_detail->paginate($per_page,'','',$page);
 		
 		//get list

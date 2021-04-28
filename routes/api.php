@@ -78,6 +78,7 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/get_family_members', 'HelthsummarytimelineController@get_family_members');
 	Route::get('/get_disease', 'HelthsummarytimelineController@get_disease');
 	Route::post('/prescription_list', 'PrescriptionController@prescription_list');
+	Route::post('/prescription_list_imagedata', 'PrescriptionController@prescription_list_imagedata');
 	Route::post('/new_prescription_list', 'New_prescriptioncontroller@prescription_list');
 	Route::post('/save_prescription', 'PrescriptionController@save_prescription');
 	Route::post('/save_prescription_imagedata', 'PrescriptionController@save_prescription_imagedata');
