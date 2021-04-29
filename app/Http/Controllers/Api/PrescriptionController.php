@@ -248,7 +248,7 @@ class PrescriptionController extends Controller
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$name = isset($content->name) ? $content->name : '';
 		$prescription_date = isset($content->prescription_date) ? $content->prescription_date : '';
-		$prescription_image = isset($content->prescription_image) ? implode(',',$content->prescription_image) : '';
+		$prescription_image = isset($content->prescription_image) ? implode(' ',$content->prescription_image) : '';
 
 		$params = [
 			'user_id' => $user_id,
@@ -285,7 +285,7 @@ class PrescriptionController extends Controller
 			$prescriptions->prescription_date = date('Y-m-d H:i:s');
 			$prescriptions->save();
 
-			$code_data = explode(',',$prescriptions->image);
+			$code_data = explode(' ',$prescriptions->image);
 			foreach ($code_data as $value) {
 				$abc= new multiple_prescription();
 				$abc->user_id = $prescriptions->user_id;
@@ -318,8 +318,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id  = isset($content->user_id) ? $content->user_id : 0;
 		$prescription_id  = isset($content->prescription_id) ? $content->prescription_id : 0;
@@ -342,16 +342,21 @@ class PrescriptionController extends Controller
         }
 		
 		$prescription = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>$prescription_id,'id'=>$id])->first();
-		$prescription->is_delete="1";
+		$prescription->is_delete='1';
 		$prescription->save();
-		
+		$all_delete = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>$prescription_id,'is_delete'=>'0'])->get();
+		if(count($all_delete) == 0){
+			$delete_pre = Prescription::where(['id'=>$prescription_id,'user_id'=>$user_id])->first();
+			$delete_pre->is_delete='1';
+			$delete_pre->save();
+		}
 		$response['status'] = 200;
 		$response['message'] = 'prescription successfully deleted!';    
 		
 		$response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
     }
     public function prescription_list_imagedata(Request $request)
 	{
