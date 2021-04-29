@@ -50,6 +50,9 @@ class AcceptorderController_imagedata extends Controller
     	$encode_string = encode_string($data);
     	$content = json_decode($encode_string);
 
+    	//without helper
+		//$content = json_decode($data);    	
+
         $order = [];
         $response['status'] = 200;
         $response['message'] = '';
@@ -158,6 +161,9 @@ class AcceptorderController_imagedata extends Controller
 
         $response['data']->content = $order;
         return decode_string($response, 200);
+
+        //without Helper
+        //return response($response, 200);
     }
 
     public function acceptorderlist_imagedata(Request $request)
