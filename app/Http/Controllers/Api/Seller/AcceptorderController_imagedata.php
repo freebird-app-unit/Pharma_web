@@ -356,7 +356,7 @@ class AcceptorderController_imagedata extends Controller
             $data_array = $data_array['data'];
              
         }elseif(!empty($user_id) && !empty($order_status)){
-          $outofdelivery_list = new_orders::select('process_user_id','order_status','customer_id','order_number','assign_datetime','deliveryboy_id','prescription_id','delivery_charges_id','id','accept_datetime','order_amount','pickup_datetime','external_delivery_initiatedby','create_datetime')->where('process_user_id',$user_id)->where('order_status', 'like', $order_status.'%')->orderBy('new_orders.id', 'DESC')->get();
+          $outofdelivery_list = new_orders::select('process_user_id','order_status','customer_id','order_number','assign_datetime','deliveryboy_id','prescription_id','delivery_charges_id','id','accept_datetime','order_amount','pickup_datetime','external_delivery_initiatedby','create_datetime')->where('process_user_id',$user_id)->where('order_status', 'like', $order_status.'%')->orderBy('new_orders.id', 'DESC');
 
             $total = $outofdelivery_list->count();
             $page = $page;
@@ -393,9 +393,9 @@ class AcceptorderController_imagedata extends Controller
             $data_array = $data_array['data'];
         }
 
-        $token =  $request->bearerToken();
+        /*$token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){
+        if(count($user)>0){*/
                 if(!empty($data_array)){
                          foreach($data_array as $value) {
                                     $mutiple_data = multiple_prescription::where(['prescription_id'=>$value['prescription_id'],'is_delete'=>'0'])->get();
@@ -456,10 +456,10 @@ class AcceptorderController_imagedata extends Controller
                         $response['status'] = 404;
                         $response['message'] = 'Out Of Delivery List';
                 }
-         }else{
+         /*}else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-         }
+         }*/
         $response['data']->content = $outof;
         return decode_string($response, 200);
     }
