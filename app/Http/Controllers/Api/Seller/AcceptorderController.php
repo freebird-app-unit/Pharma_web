@@ -15,7 +15,7 @@ use App\SellerModel\delivery_charges;
 use App\SellerModel\invoice;
 use App\SellerModel\Orderassign;
 use App\SellerModel\new_address;
-use App\new_orders;
+use App\SellerModel\new_orders;
 use App\SellerModel\new_pharma_logistic_employee;
 use App\DeliveryboyModel\new_order_images;
 use App\DeliveryboyModel\new_order_history;
@@ -72,7 +72,7 @@ class AcceptorderController extends Controller
         ]);
         
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
                 $check_data = new_orders::select('id','checking_by')->where('id',$order_id)->first();
                 $check_data->checking_by = $user_id;
@@ -95,9 +95,9 @@ class AcceptorderController extends Controller
     public function order_list(Request $request)
     {
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
 
         $order = [];
         $response['status'] = 200;
@@ -144,7 +144,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];      
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
             if(count($data_array)>0){
                 foreach($data_array as $value) { 
@@ -213,9 +213,9 @@ class AcceptorderController extends Controller
     public function accept_order_list(Request $request)
     {
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -240,7 +240,6 @@ class AcceptorderController extends Controller
         if (!empty($user_id) && !empty($search_text)) {
 
           $accept_list = new_orders::select('new_orders.process_user_id','new_orders.order_status','new_orders.customer_id','new_orders.accept_datetime','new_orders.order_number','new_orders.id','new_orders.prescription_id','new_orders.delivery_charges_id','new_orders.order_note','new_orders.total_days','new_orders.reminder_days','new_orders.order_amount','new_orders.order_type','new_orders.external_delivery_initiatedby','new_orders.create_datetime','u1.name')->where(['new_orders.process_user_id' => $user_id, 'new_orders.order_status' => 'accept'])->leftJoin('new_users as u1', 'u1.id', '=', 'new_orders.customer_id')->where('u1.name', 'like', $search_text.'%')->orWhere('new_orders.order_number', 'like', $search_text.'%')->orderBy('new_orders.accept_datetime', 'DESC');
-
 
             $total = $accept_list->count();
             $page = $page;
@@ -273,9 +272,8 @@ class AcceptorderController extends Controller
             $data_array = $orders->toArray();
             $data_array = $data_array['data'];
         }
-
-        $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+ 		$token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -338,12 +336,12 @@ class AcceptorderController extends Controller
         return decode_string($response, 200);
     }
 
-    public function deliveryboy_list(Request $request)
+      public function deliveryboy_list(Request $request)
     {
         $response = array();
-    	$data = $request->input('data');
-    	$encode_string = encode_string($data);
-    	$content = json_decode($encode_string);
+        $data = $request->input('data');
+        $encode_string = encode_string($data);
+        $content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -412,7 +410,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(!empty($data_array)){
                     foreach($data_array as $value) {
@@ -459,7 +457,7 @@ class AcceptorderController extends Controller
                             }
                         $response['status'] = 200;
                         $response['message'] = 'DeliveryBoy List';
-                        $response['data'] = $delivery_boy;
+                        $response['data']->content = $delivery_boy;
                 }else {
                         $response['status'] = 404;
                         $response['data']->content = $delivery_boy;
@@ -471,13 +469,11 @@ class AcceptorderController extends Controller
         
         return decode_string($response, 200);
     }
-
-    
     public function outof_order_list(Request $request){
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -543,7 +539,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
              
         }elseif(!empty($user_id) && !empty($order_status)){
-          $outofdelivery_list = new_orders::select('process_user_id','order_status','customer_id','order_number','assign_datetime','deliveryboy_id','prescription_id','delivery_charges_id','id','accept_datetime','order_amount','pickup_datetime','external_delivery_initiatedby','create_datetime')->where('process_user_id',$user_id)->where('order_status', 'like', $order_status.'%')->orderBy('new_orders.id', 'DESC')->get();
+          $outofdelivery_list = new_orders::select('process_user_id','order_status','customer_id','order_number','assign_datetime','deliveryboy_id','prescription_id','delivery_charges_id','id','accept_datetime','order_amount','pickup_datetime','external_delivery_initiatedby','create_datetime')->where('process_user_id',$user_id)->where('order_status', 'like', $order_status.'%')->orderBy('new_orders.id', 'DESC');
 
             $total = $outofdelivery_list->count();
             $page = $page;
@@ -581,9 +577,9 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
-                if(!empty($data_array)){
+                if(count($data_array)>0){
                          foreach($data_array as $value) {
                                     $prescription_image = '';
                                     $p_img = Prescription::where('id',$value['prescription_id'])->first();
@@ -715,9 +711,8 @@ class AcceptorderController extends Controller
                 $data_array = $orders->toArray();
                 $data_array = $data_array['data']; 
         }
-
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
@@ -775,9 +770,9 @@ class AcceptorderController extends Controller
     }
      public function cancel_order_list(Request $request){
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -835,7 +830,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -883,7 +878,7 @@ class AcceptorderController extends Controller
                         $response['status'] = 404;
                         $response['message'] = 'Cancelled Order List';
                 }
-            }else{
+        	}else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
             }
@@ -895,9 +890,9 @@ class AcceptorderController extends Controller
 
     public function complete_order_list(Request $request){
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -1023,7 +1018,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -1129,11 +1124,12 @@ class AcceptorderController extends Controller
         $response['message'] = '';
         $response['data'] = (object)array();
 
-       /* $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
-        if(!empty($user)){*/
-                $orders = new_orders::select('id','customer_id','pharmacy_id','order_number')->where('id',$order_id)->first();
+        $token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){
+                $orders = new_orders::where('id',$order_id)->first();
                 if(!empty($orders)){
+                        $data= new_orders::where(['process_user_id' => $user_id,'id'=>$order_id])->get();
                         $destinationPath = 'storage/app/public/uploads/invoice/'; 
                         if($files=$request->file('invoice')){
                             foreach($files as $key => $file){
@@ -1147,15 +1143,16 @@ class AcceptorderController extends Controller
                                 $invoice_data->save();
                             }
                         }
-                        $invoice_path= new_orders::select('id','order_amount')->where('id',$order_id)->first();
+                        $invoice_path= new_orders::find($order_id);
                         $invoice_path->order_amount = $order_amount;
                         $invoice_path->save();
-                         if($orders->logistic_user_id!='' || $orders->logistic_user_id!=-1){
+                        if($orders->logistic_user_id!='' || $orders->logistic_user_id!=-1){
                                         $this->passdata($order_id);
                         }
+                        
                        //send sms to user
-                         $mobile_data = new_users::select('id','name','mobile_number','email')->where('id',$orders->customer_id)->first();
-                        $pharmacy_data = new_pharmacies::select('id','name')->where('id',$orders->pharmacy_id)->first();
+                         $mobile_data = new_users::where('id',$orders->customer_id)->first();
+                        $pharmacy_data = new_pharmacies::where('id',$orders->pharmacy_id)->first();
                         $message       = 'Dear Customer '.$mobile_data->name.
                                          ', Thank you for ordering your medicine with '.$pharmacy_data->name.
                                          '. Your order '.$orders->order_number.' has been confirmed and your order amount is '.$order_amount.'.';
@@ -1163,27 +1160,26 @@ class AcceptorderController extends Controller
                         $sms = file_get_contents($api);
 
                          //send mail to user
-                        $data = [
-                          'name' => $mobile_data->name,
-                          'pharmacy_name'=>$pharmacy_data->name,
-                          'order_number'=>$orders->order_number,
-                          'order_amount'=>$order_amount
-                        ];
-                        $email = $mobile_data->email;
-                        $result = Mail::send('email.generateorder', $data, function ($message) use ($email) {
-                            $message->to($email)->subject('Pharma - Thank You For Order');
-                        }); 
+                     
+                        $name = $mobile_data->name;
+                        $pharmacy_name=$pharmacy_data->name;
+                        $order_number=$orders->order_number;
+                        $order_amount=$order_amount;
+                        $to = $mobile_data->email;
+                        $subject = 'Pharma - Thank You For Order';
+                        Helper::sendMailInvoice($name,$pharmacy_name,$order_number,$order_amount,$to,$subject);
 
                         $response['status'] = 200;
                         $response['message'] = 'Invoice Uploaded';
                 }
-           /* }else{
+            }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-            }*/
+            }
         return decode_string($response, 200);
     }
-      public function passdata($order_id){
+
+    public function passdata($order_id){
                 if(!empty($order_id)){
                                             $pass_data = array('order_id' => $order_id);
                                             $get_data = http_build_query($pass_data);
@@ -1238,7 +1234,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
             $calls= Callhistory::where(['user_id' => $user_id,'order_id'=>$order_id])->get();
             if(!empty($calls)){
@@ -1287,54 +1283,69 @@ class AcceptorderController extends Controller
         }
         $logistic_data = [];
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
         	if($user_id > 0){
 				$ids = array();
-				$order_data = new_orders::select('id','customer_id','order_number')->where('id',$order_id)->first();
+				$order_data = new_orders::where('id',$order_id)->first();
 				if(!empty($order_data)){
-					$customerdetail =  new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
+					$customerdetail =  new_users::where('id',$order_data->customer_id)->first();
 					if($customerdetail->fcm_token!=''){
 						$ids[] = $customerdetail->fcm_token;
 					}
+					$msg = array
+					(
+						'body'   => ' Order number '. $order_data->order_number,
+						'title'     => 'Your Order Accepted'
+					);
+					// if(count($ids)>0){
+						// $fields = array(
+							// 'to' => $customerdetail->fcm_token,
+							// 'notification' => $msg
+						// );
+						// $this->sendPushNotification($fields);   
+					// }
 					if (count($ids) > 0) {					
 						Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
 					}
 					$notification = new notification_user();
 					$notification->user_id=$customerdetail->id;
 					$notification->order_id=$order_data->id;
-					$notification->subtitle='Order number'. $order_data->order_number;
-					$notification->title='Your Order Accepted';
+					$notification->subtitle=$msg['body'];
+					$notification->title=$msg['title'];
 					$notification->created_at=date('Y-m-d H:i:s');
 					$notification->save();
 				}
 			}
 
-            $order = new_orders::select('id','process_user_id','process_user_type','accept_datetime','order_status','is_external_delivery','logistic_user_id','assign_datetime','prescription_id','order_number','delivery_charges_id','address_id','pharmacy_id')->where('id',$order_id)->first();
-            if(!empty($order)){
+            $orders = new_orders::where('id',$order_id)->get();
+            if(count($orders)>0){
+				foreach ($orders as $order) {
 					if($order->process_user_id == 0){
 						$order->process_user_id = $user_id;
 						$order->process_user_type = 'seller';
 						$order->accept_datetime = date('Y-m-d H:i:s');
 						$order->order_status = 'accept';
+                        $order->deposit_returned=0;
 						if($order->is_external_delivery == 1){
 							if($order->logistic_user_id > 0){
+								$order_data = new_orders::where('id',$order_id)->first();
 								//mail when order transfer to logistic
-								$email_data = new_logistics::select('id','name','email')->where('id',$order->logistic_user_id)->first();
-								$data = [
-									'name' => $email_data->name,
-									'orderno'=>$order->order_number
-								];
-								$email = $email_data->email;
-								$result = Mail::send('email.upcoming', $data, function ($message) use ($email) {
-											$message->to($email)->subject('Pharma - Upcoming Order');
-								});
+								if(!empty($order_data)){
+									$email_data = new_logistics::where('id',$order->logistic_user_id)->first();
+									$name=$email_data->name;
+                                    $order_number=$order_data->order_number;
+                                    $to=$email_data->email;
+                                    $subject='Pharma - Upcoming Order';
+                                    Helper::sendMail($name,$order_number,$to,$subject);
+								}
 								$this->AssignOrderOutsideLogistic($order_id,$order);
 							} elseif ($order->logistic_user_id < 0) {
 								$intersected = $this->AssignOrderToIntersectedLogistic();
+								//$check_intersected_array =  $intersected->toArray();
 								if(count($intersected) == 1){
 									if(strtoupper($intersected[0]->name) == "ELT"){
-										
+										//order update in our db
 										$orderAssign = new Orderassign();
 										$orderAssign->order_id = $order_id;
 										$orderAssign->logistic_id = $intersected[0]->id;
@@ -1344,42 +1355,23 @@ class AcceptorderController extends Controller
 												
 										$order->assign_datetime = date('Y-m-d H:i:s');
 										$order->order_status = 'assign';
+                                        $order->deposit_returned=0;
 										$order->logistic_user_id = $intersected[0]->id;
 
+										$order_data = new_orders::where('id',$order_id)->first();
 										//mail when order transfer to logistic
-										$email_data = new_logistics::select('id','name','email')->where('id',$intersected[0]->id)->first();
-										$data = [
-											'name' => $email_data->name,
-											'orderno'=>$order->order_number
-										];
-										$email = $email_data->email;
-										$result = Mail::send('email.upcoming', $data, function ($message) use ($email) {
-													$message->to($email)->subject('Pharma - Upcoming Order');
-										});
-										$assignOrderEmit = (object)[];
-										$assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-										$assignOrderEmit->logistic_id = $order->logistic_user_id;
-										$image_url = url('/').'/uploads/placeholder.png';
-
-										if (!empty($order->prescription_image)) {
-											if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-												$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-											}
+										if(!empty($order_data)){
+											$email_data = new_logistics::where('id',$order->logistic_user_id)->first();
+											$name=$email_data->name;
+                                            $order_number=$order_data->order_number;
+                                            $to=$email_data->email;
+                                            $subject='Pharma - Upcoming Order';
+                                            Helper::sendMail($name,$order_number,$to,$subject);
 										}
-
-										$assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-										$assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-										$assignOrderEmit->order_number = $order->order_number;
-										$assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-										$assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-										$assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-										$assignOrderEmit->order_amount = $order->order_amount;
-										$assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-										event(new AssignOrderLogistic($assignOrderEmit));
+										
 
 										//order process with external logistic
-										/*$elt_response = [];
+										$elt_response = [];
 										if(count($orders)>0){
 											$pharmacy = new_pharmacies::where('id',$orders[0]->pharmacy_id)->first();
 											$address = new_address::where('id',$orders[0]->address_id)->first();
@@ -1402,18 +1394,18 @@ class AcceptorderController extends Controller
 												'order_id' => $orders[0]->id,
 												'order_time'=> $orders[0]->create_datetime,
 											];
-										}*/
-										/*$client = new Client;
+										}
+										$client = new Client;
 										$r = $client->post('https://developer.eltapp.in/v3/order_schedule/create', 
 										['form-data' => [
 											"response" => $elt_response
-										]]);*/
+										]]);
 										//dd($r->getBody()->getContents());die;
-										/*$logistic_data[] = [
+										$logistic_data[] = [
 											'logistic_current_status' => 'true',
 											'next_logistic_working_day' => ''
 										];
-										$response['data'] = $logistic_data;*/
+										$response['data'] = $logistic_data;
 									}else{
 										//order process with internal logistic
 										$orderAssign = new Orderassign();
@@ -1425,44 +1417,25 @@ class AcceptorderController extends Controller
 												
 										$order->assign_datetime = date('Y-m-d H:i:s');
 										$order->order_status = 'assign';
+                                        $order->deposit_returned=0;
 										$order->logistic_user_id = $intersected[0]->id;
 
+										$order_data = new_orders::where('id',$order_id)->first();
 										//mail when order transfer to logistic
-										$email_data = new_logistics::select('id','name','email')->where('id',$intersected[0]->id)->first();
-										$data = [
-											'name' => $email_data->name,
-											'orderno'=>$order->order_number
-										];
-										$email = $email_data->email;
-										$result = Mail::send('email.upcoming', $data, function ($message) use ($email) {
-													$message->to($email)->subject('Pharma - Upcoming Order');
-										}); 
-										$assignOrderEmit = (object)[];
-										$assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-										$assignOrderEmit->logistic_id = $order->logistic_user_id;
-										$image_url = url('/').'/uploads/placeholder.png';
-
-										if (!empty($order->prescription_image)) {
-											if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-												$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-											}
+										if(!empty($order_data)){
+											$email_data = new_logistics::where('id',$order->logistic_user_id)->first();
+											$name=$email_data->name;
+                                            $order_number=$order_data->order_number;
+                                            $to=$email_data->email;
+                                            $subject='Pharma - Upcoming Order';
+                                            Helper::sendMail($name,$order_number,$to,$subject);
 										}
-
-										$assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-										$assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-										$assignOrderEmit->order_number = $order->order_number;
-										$assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-										$assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-										$assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-										$assignOrderEmit->order_amount = $order->order_amount;
-										$assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-										event(new AssignOrderLogistic($assignOrderEmit));
-										/*$logistic_data[] = [
+										
+										$logistic_data[] = [
 											'logistic_current_status' => 'true',
 											'next_logistic_working_day' => ''
 										];
-										$response['data'] = $logistic_data;*/
+										$response['data'] = $logistic_data;
 									}
 								}else{
 									//next day order process with first priority logistic
@@ -1476,47 +1449,29 @@ class AcceptorderController extends Controller
 												
 										$order->assign_datetime = date('Y-m-d H:i:s');
 										$order->order_status = 'assign';
+                                        $order->deposit_returned=0;
 										$order->logistic_user_id = $value->id;
 
-										$assignOrderEmit = (object)[];
-										$assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-										$assignOrderEmit->logistic_id = $order->logistic_user_id;
-										$image_url = url('/').'/uploads/placeholder.png';
-
-										if (!empty($order->prescription_image)) {
-											if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-												$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-											}
-										}
-
-										$assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$order->id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$order->id.'</span>';
-										$assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-										$assignOrderEmit->order_number = $order->order_number;
-										$assignOrderEmit->delivery_type = new_delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-										$assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-										$assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-										$assignOrderEmit->order_amount = $order->order_amount;
-										$assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-										event(new AssignOrderLogistic($assignOrderEmit));
 									}
-									/*$logistic_data[] = [
+									$logistic_data[] = [
 										'logistic_current_status' => 'false',
 										'next_logistic_working_day' => $this->GetNextDayLogic()
 									];
-									$response['data'] = $logistic_data;*/
+									$response['data'] = $logistic_data;
 								}
 							} 
 						} else {
 							$order->order_status='accept';
 						}
+							
 						$order->save();
 						$response['status'] = 200;
 						$response['message'] = 'Accept Order Successfully';
 					} else {
 						$response['status'] = 404;
 						$response['message'] = 'This Order Is Already Accepted';
-					}                   
+					}
+				}                    
             } else {
                 $response['status'] = 404;
                 $response['message'] = 'This order was already cancelled';
@@ -1535,14 +1490,13 @@ class AcceptorderController extends Controller
         $orderAssign->order_status = 'new';
         $orderAssign->updated_at = date('Y-m-d H:i:s');
         $orderAssign->save();
-        $re_assign_data = new_orders::select('id','order_status')->where('id',$order_id)->first();
+        $re_assign_data = new_orders::where('id',$order_id)->first();
         if($re_assign_data->order_status=="incomplete"){
                 $new_order_images = new_order_images::where('order_id',$order_id)->delete();
         }       
         $order->assign_datetime = date('Y-m-d H:i:s');
         $order->order_status = 'assign';
        
-
          //order pass to external logistic
                /* $elt_response = [];
                 if(count($orders)>0){
@@ -1574,7 +1528,7 @@ class AcceptorderController extends Controller
     public function AssignOrderToIntersectedLogistic()
     {
         $current_time = date('H:i:s');
-    	$logistic_active = new_logistics::select('id','name','is_active','close_time','priority')->where('is_active','1')->where('close_time','>=',$current_time)->orderBy('priority','ASC')->get();
+    	$logistic_active = new_logistics::where('is_active','1')->where('close_time','>=',$current_time)->orderBy('priority','ASC')->get();
         $logistics = [];
         foreach ($logistic_active as $current_logistic) {
 		        $logistic = $current_logistic;
@@ -1584,7 +1538,7 @@ class AcceptorderController extends Controller
 	    if($logistics == []){
 	       //response to seller order deliver tom.
             $logistic_priorities = [];
-            $logistic_priority = new_logistics::select('id','name','is_active','close_time','priority')->where('is_active','1')->orderBy('priority','ASC')->first();
+            $logistic_priority = new_logistics::where('is_active','1')->orderBy('priority','ASC')->first();
             array_push($logistic_priorities,$logistic_priority);
             return $logistic_priorities;
 	    }
@@ -1619,12 +1573,12 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
-            $dupicate_data = new_orders::select('id','deliveryboy_id')->where('id',$order_id)->first();
+             $dupicate_data = new_orders::where('id',$order_id)->first();
             $dupicate_data->deliveryboy_id = 0;
             $dupicate_data->save();
-			$assign = new_orders::select('deliveryboy_id','order_status','assign_datetime','deliveryboy_id')->where('id',$order_id)->first();
+			$assign = new_orders::find($order_id);
 			if(!empty($assign)){
 				if($assign->deliveryboy_id == 0){
 					$assign->order_status='assign';
@@ -1650,19 +1604,33 @@ class AcceptorderController extends Controller
 						if($order_assign->save()){
                                 if($user_id > 0){
                                 $ids = array();
-                                $order_data = new_orders:: select('id','deliveryboy_id','order_number')->where('id',$order_id)->first();
-                                $deliveryboydetail =  new_pharma_logistic_employee::select('id','fcm_token')->where('id',$order_data->deliveryboy_id)->first();
-                                if(!empty($deliveryboydetail)){
-                                    $ids[] = $deliveryboydetail->fcm_token;
-                                }
+                                $order_data = new_orders::where('id',$order_id)->first();
+                                $deliveryboydetail =  new_pharma_logistic_employee::where('id',$order_data->deliveryboy_id)->first();
+                                    if($deliveryboydetail->fcm_token!=''){
+                                        $ids[] = $deliveryboydetail->fcm_token;
+                                    }
+                                 $delivery_address =  new_address::where('id',$order_data->address_id)->first();
+                                 $msg = array
+                                (
+                                    'body'   => ' Order number '.$order_data->order_number,
+                                    'title'     => 'Order Assigned'
+                                );
+                                // if(count($ids)>0){
+                                    // $fields = array(
+                                        // 'to' => $deliveryboydetail->fcm_token,
+                                        // 'notification' => $msg
+                                    // );
+                                    // $this->sendPushNotificationDeliveryboy($fields);   
+                                // }
                                 if (count($ids) > 0) {                  
                                     Helper::sendNotificationDeliveryboy($ids, 'Order number '.$order_data->order_number, 'Order Assigned', $user->id, 'seller', $deliveryboydetail->id, 'delivery_boy', $deliveryboydetail->fcm_token);
-                                }                    
+                                }
+                    
                                 $notification = new notification_deliveryboy();
                                 $notification->user_id=$deliveryboydetail->id;
                                 $notification->order_id=$order_data->id;
-                                $notification->subtitle= 'Order number'.$order_data->order_number;
-                                $notification->title='Order Assigned';
+                                $notification->subtitle=$msg['body'];
+                                $notification->title=$msg['title'];
                                 $notification->created_at=date('Y-m-d H:i:s');
                                 $notification->save();
                             }
@@ -1717,9 +1685,9 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
-			$reject = new_orders::select('id','process_user_id','reject_user_id','rejectby_user','order_status','reject_cancel_reason','reject_datetime')->where('id',$order_id)->first();
+			$reject = new_orders::find($order_id);
 			if(!empty($reject)){
 				$reject->process_user_id=$user_id;
 				$reject->reject_user_id=$user_id;
@@ -1729,29 +1697,43 @@ class AcceptorderController extends Controller
 				$reject->reject_datetime = date('Y-m-d H:i:s');
 				if($reject->save()){
                     if($user_id > 0){
-                    $ids = array();
-                    $order_data = new_orders::select('id','customer_id','order_number')->where('id',$order_id)->first();
-                    if(!empty($order_data)){
-                         $customerdetail =  new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
-                         if(!empty($customerdetail)){
-                            if($customerdetail->fcm_token!=''){
-                                $ids[] = $customerdetail->fcm_token;
-                            }
-                            if (count($ids) > 0) {                  
-                                Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Rejected', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
-                            }
-                            
-                            $notification = new notification_user();
-                            $notification->user_id=$customerdetail->id;
-                            $notification->order_id=$order_data->id;
-                            $notification->subtitle='Order number'. $order_data->order_number;
-                            $notification->title='Your Order Rejected';
-                            $notification->created_at=date('Y-m-d H:i:s');
-                            $notification->save();
+                $ids = array();
+                $order_data = new_orders::where('id',$order_id)->first();
+                if(!empty($order_data)){
+                     $customerdetail =  new_users::where('id',$order_data->customer_id)->first();
+                     if(!empty($customerdetail)){
+                        if($customerdetail->fcm_token!=''){
+                            $ids[] = $customerdetail->fcm_token;
                         }
+                        
+                        $msg = array
+                        (
+                            'body'   => ' Order number '. $order_data->order_number,
+                            'title'     => 'Your Order Rejected '
+                        );
+                        // if(count($ids)>0){
+                            // $fields = array(
+                                // 'to' => $customerdetail->fcm_token,
+                                // 'notification' => $msg
+                            // );
+                            // $this->sendPushNotification($fields);   
+                        // }
+                        
+                        if (count($ids) > 0) {                  
+                            Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Rejected', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                        }
+                        
+                        $notification = new notification_user();
+                        $notification->user_id=$customerdetail->id;
+                        $notification->order_id=$order_data->id;
+                        $notification->subtitle=$msg['body'];
+                        $notification->title=$msg['title'];
+                        $notification->created_at=date('Y-m-d H:i:s');
+                        $notification->save();
                     }
                 }
             }
+                }
 				$response['status'] = 200;
 				$response['message'] = 'Reject Order';
 			}else{
@@ -1765,7 +1747,7 @@ class AcceptorderController extends Controller
         }
         return decode_string($response, 200);
     }
-    /*public function reject_order(Request $request){
+    public function reject_order(Request $request){
         $response = array();
 		$data = $request->input('data');
 		$encode_string = encode_string($data);
@@ -1813,8 +1795,32 @@ class AcceptorderController extends Controller
                 $response['message'] = 'Unauthenticated';
         }
         return decode_string($response, 200);
-    }*/
+    }
     
+     public function reason_list(Request $request){
+        $response = array();
+		$data = $request->input('data');
+		$encode_string = encode_string($data);
+		$content = json_decode($encode_string);
+
+        $reasons=[];
+        $data = Rejectreason::all();
+        if(!empty($data)){
+                 foreach($data as $value) {
+                    $reasons[] = [
+                            'id' => $value->id,
+                            'reason' => $value->reason
+                        ];
+                    }
+                $response['status'] = 200;
+                $response['message'] = 'Reasons';
+        } else {
+                $response['status'] = 404;
+        }
+        $response['data'] = $reasons;
+        return decode_string($response, 200);
+    }
+
      public function add_time(Request $request){
         $response = array();
 		$data = $request->input('data');
@@ -1842,8 +1848,8 @@ class AcceptorderController extends Controller
         }
         $time=[];
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
-        if(!empty($user)){
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){
             $data = new Callhistory();
             $data->user_id=$user_id;
             $data->order_id=$order_id;
@@ -1860,9 +1866,9 @@ class AcceptorderController extends Controller
 
     public function return_order_list(Request $request){
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
         
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $search_text = isset($content->search_text) ? $content->search_text : '';
@@ -1917,7 +1923,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
@@ -2006,9 +2012,41 @@ class AcceptorderController extends Controller
         $response['status'] = 200;
         $response['message'] = '';
         $response['data'] = (object)array();
-        
+        $logistic_id = 0;
+        $upcoming_order_details =  new_orders::where('id',$order_id)->get()->first();
+
+        if(!empty($upcoming_order_details)){
+            $delivery_data = new_address::where('id',$upcoming_order_details->address_id)->get()->first();
+            $delivery_location = array($delivery_data->latitude, $delivery_data->longitude);
+
+            $pickup_data = new_pharmacies::where('id',$upcoming_order_details->pharmacy_id)->get()->first();
+            $pickup_location = array($pickup_data->lat, $pickup_data->lon);
+
+            $logistics = new_logistics::select('new_logistics.*')
+            /*->where('new_users.user_type', '=', 'logistic')*/
+            ->where('new_logistics.city', '=', $pickup_data->city)->get();
+
+            if(count($logistics)){
+                if(count($logistics)>0){
+                    $logistic = $this->getLogisticList($logistics, $pickup_location);
+                    if(count($logistic) > 0){
+                        $result = $this->pharamcyGeofenceCheck($logistic, $delivery_location);
+                        if($result[0] == 'true'){
+                            $logisticValue = $result[1];
+                        }
+                    }
+                }
+            }
+            if(isset($logisticValue)){
+                $logistic_id = $logisticValue->id;
+            }
+        }
+        //old code
+        /*$delivery_charges_data = new_delivery_charges::where('logistic_id', $logistic_id)->orWhere('logistic_id', 0)->orderBy('logistic_id', 'ASC')->get();*/
         $delivery_charges_data = new_delivery_charges::all();
-        $logistic_get_data = new_orders::select('id','logistic_user_id')->where('id',$order_id)->first();
+        $logistic_get_data = new_orders::where('id',$order_id)->first();
+
+        // $delivery_charges_data = delivery_charges::all();
         if(!empty($delivery_charges_data)){
             foreach($delivery_charges_data as $value) {
                 if($value->is_user == 0){
@@ -2065,223 +2103,21 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id, 'api_token'=>$token])->first();
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->first();
         if(!empty($user)){
-            $order = new_orders::select('id','process_user_id','process_user_type','accept_datetime','order_status','is_external_delivery','logistic_user_id','assign_datetime','prescription_id','order_number','delivery_charges_id','address_id','pharmacy_id')->where('id',$order_id)->first();
-            if(!empty($order)){
+            $orders = new_orders::where('id',$order_id)->get();
+            if(count($orders)>0){
               // remining_paid_deliveries
-               $delivery_charges_data = new_delivery_charges::select('id','delivery_type')->where('id',$delivery_charges_id)->first();
+               $delivery_charges_data = new_delivery_charges::where('id',$delivery_charges_id)->first();
+               $check_data = new_orders::where('id',$order_id)->first();
                       if($delivery_charges_data->delivery_type == 'express'){
-                          $phar_data = new_pharmacies::select('id','remining_express_paid_deliveries')->where('id',$order->pharmacy_id)->first();
+                          $phar_data = new_pharmacies::where('id',$check_data->pharmacy_id)->first();
                           $remining_express_paid_deliveries = $phar_data->remining_express_paid_deliveries;
                           if($remining_express_paid_deliveries != -5){
                               $phar_data->remining_express_paid_deliveries = $remining_express_paid_deliveries - 1;
                               $phar_data->save();
-                                if($order->process_user_id == 0 || $order->order_status == "incomplete"){
-                                $order->is_external_delivery = 1;
-                                $order->delivery_charges_id = $delivery_charges_id;
-                                $order->external_delivery_initiatedby = 'seller';
-                                $order->process_user_id = $user_id;
-                                $order->process_user_type = 'seller';
-                                $order->accept_datetime = date('Y-m-d H:i:s');
-                                $order->order_status = 'accept';
-                                if($order->logistic_user_id > 0){
-                                    if($order->order_status == "incomplete"){
-                                            if(!empty($order->logistic_user_id)){
-                                                $email_data = new_logistics::select('id','name','email')->where('id',$order->logistic_user_id)->first();
-                                                $data = [
-                                                    'name' => $email_data->name,
-                                                    'orderno'=>$order->order_number
-                                                ];
-                                                $email = $email_data->email;
-                                                $result = Mail::send('email.redeliver', $data, function ($message) use ($email) {
-                                                        $message->to($email)->subject('Pharma - Redeliver Order');
-                                                }); 
-                                        }
-                                    }
-                                    $this->AssignOrderOutsideLogistic($order_id,$order);
-                                    //notification to user order accept
-                                    if($user_id > 0){
-                                    $ids = array();
-                                    $customerdetail = new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
-                                        if($customerdetail->fcm_token!=''){
-                                                $ids[] = $customerdetail->fcm_token;
-                                         }
-                                        if (count($ids) > 0) {          
-                                            Helper::sendNotificationUser($ids, 'Order number '. $order->order_number, 'Order Accepted', $user->id, 'seller', $order->customer_id, 'user', $customerdetail->fcm_token);
-                                        }
-                                            $notification = new notification_user();
-                                            $notification->user_id=$customerdetail->id;
-                                            $notification->order_id=$order_data->id;
-                                            $notification->subtitle='Order Accept'. $order_data->order_number;
-                                            $notification->title='Order Accepted';
-                                            $notification->created_at=date('Y-m-d H:i:s');
-                                            $notification->save();
-                                    }
-                                } elseif ($order->logistic_user_id < 0) {
-                                    $intersected = $this->AssignOrderToIntersectedLogistic();
-                                    if(count($intersected) == 1){
-                                        if(strtoupper($intersected[0]->name) == "ELT"){
-                                        //order update in our db
-                                        $orderAssign = new Orderassign();
-                                        $orderAssign->order_id = $order_id;
-                                        $orderAssign->logistic_id = $intersected[0]->id;
-                                        $orderAssign->order_status = 'new';
-                                        $orderAssign->updated_at = date('Y-m-d H:i:s');
-                                        $orderAssign->save();
-                                                
-                                        $order->assign_datetime = date('Y-m-d H:i:s');
-                                        $order->order_status = 'assign';
-                                        $order->logistic_user_id = $intersected[0]->id;
-
-
-                                         //order process with external logistic
-                                        /* $elt_response = [];
-                                        if(count($orders)>0){
-                                            $pharmacy = new_pharmacies::where('id',$orders[0]->pharmacy_id)->first();
-                                            $address = new_address::where('id',$orders[0]->address_id)->first();
-                                            $elt_response[] = [
-                                                'api_key' => 'b623d7c412d5cb593c577b1016eae93c',
-                                                'pickup_latitude' => $pharmacy->lat,
-                                                'pickup_longitude' => $pharmacy->lon,
-                                                'pickup_name' => $pharmacy->name,
-                                                'pickup_contact' => $pharmacy->mobile_number,
-                                                'pickup_address' => $pharmacy->address,
-                                                'pickup_city' => $pharmacy->city,
-                                                'delivery_latitude' => $address->latitude,
-                                                'delivery_longitude' => $address->longitude,
-                                                'delivery_name' => $address->name,
-                                                'delivery_contact' => $address->mobileno,
-                                                'delivery_address' => $address->address,
-                                                'delivery_city' => $address->city,
-                                                'order_amount' => $orders[0]->order_amount,
-                                                'no_of_parcle' => '1',
-                                                'order_id' => $orders[0]->id,
-                                                'order_time'=> $orders[0]->create_datetime,
-                                            ];
-                                        }
-                                        $client = new Client;
-                                        $r = $client->post('https://developer.eltapp.in/v3/order_schedule/create', 
-                                        ['json' => [
-                                            "response" => $elt_response
-                                        ]]);
-                                       */
-                                         $logistic_data[] = [
-                                            'logistic_current_status' => true,
-                                            'next_logistic_working_day' => ''
-                                        ];
-                                        $response['status'] = 200;
-                                        $response['message'] = 'Set delivery';
-                                        $object_data = (object)$logistic_data[0];
-                                        $response['data'] = $object_data;
-
-                                        //notification to user order accept
-                                        if($user_id > 0){
-                                        $ids = array();
-                                        $customerdetail = new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
-                                                if($customerdetail->fcm_token!=''){
-                                                            $ids[] = $customerdetail->fcm_token;
-                                                }
-                                                if (count($ids) > 0) {          
-                                                    Helper::sendNotificationUser($ids, 'Order number '. $order->order_number, 'Order Accepted', $user->id, 'seller', $order->customer_id, 'user', $customerdetail->fcm_token);
-                                                }
-                                                        $notification = new notification_user();
-                                                        $notification->user_id=$customerdetail->id;
-                                                        $notification->order_id=$order_data->id;
-                                                        $notification->subtitle='Order Accept'.$order_data->order_number;
-                                                        $notification->title='Order Accepted';
-                                                        $notification->created_at=date('Y-m-d H:i:s');
-                                                        $notification->save();
-                                        }
-                                    }else{
-                                        //order process with internal logistic
-                                        
-                                        $orderAssign = new Orderassign();
-                                        $orderAssign->order_id = $order_id;
-                                        $orderAssign->logistic_id = $intersected[0]->id;
-                                        $orderAssign->order_status = 'new';
-                                        $orderAssign->updated_at = date('Y-m-d H:i:s');
-                                        $orderAssign->save();
-                                                
-                                        $order->assign_datetime = date('Y-m-d H:i:s');
-                                        $order->order_status = 'assign';
-                                        $order->logistic_user_id = $intersected[0]->id;
-
-                                        
-                                        $logistic_data[] = [
-                                            'logistic_current_status' => true,
-                                            'next_logistic_working_day' => ''
-                                        ];
-                                    $response['status'] = 200;
-                                    $response['message'] = 'Set delivery';
-                                    $object_data = (object)$logistic_data[0];
-                                    $response['data'] = $object_data;
-                                    
-                                    //notification to user for order accept
-                                    if($user_id > 0){
-                                        $ids = array();
-                                        $customerdetail = new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->get();
-                                                if($customerdetail->fcm_token!=''){
-                                                    $ids[] = $customerdetail->fcm_token;
-                                                }
-                                                if (count($ids) > 0) {
-                                                    Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
-                                                }
-                                                $notification = new notification_user();
-                                                $notification->user_id=$customerdetail->id;
-                                                $notification->order_id=$order_data->id;
-                                                $notification->subtitle='Order Accept'.$order_data->order_number;
-                                                $notification->title='Order Accepted';
-                                                $notification->created_at=date('Y-m-d H:i:s');
-                                                $notification->save();
-                                    }
-                                }             
-                            }else{
-                                //next day order process with first priority logistic
-                                foreach ($intersected as $value) {
-                                        $orderAssign = new Orderassign();
-                                        $orderAssign->order_id = $order_id;
-                                        $orderAssign->logistic_id = $value->id;
-                                        $orderAssign->order_status = 'new';
-                                        $orderAssign->updated_at = date('Y-m-d H:i:s');
-                                        $orderAssign->save();
-                                                
-                                        $order->assign_datetime = date('Y-m-d H:i:s');
-                                        $order->order_status = 'assign';
-                                        $order->logistic_user_id = $value->id;
-
-                                       
-                                }
-                                $logistic_data[] = [
-                                    'logistic_current_status' => false,
-                                    'next_logistic_working_day' => $this->GetNextDayLogic()
-                                ];
-                                $response['status'] = 200;
-                                $response['message'] = 'Set delivery';
-                                $object_data = (object)$logistic_data[0];
-                                $response['data'] = $object_data;
-                            }
-                        } else {
-                            $order->order_status = 'accept';
-                        }
-                        $order->save();
-                        $response['status'] = 200;
-                        $response['message'] = 'Set delivery';
-                        }else{
-                            $response['status'] = 404;
-                            $response['message'] = 'This Order Is Already Accepted';
-                        }
-                    }else{
-                        $response['status'] = 404;
-                        $response['message'] = 'Your deliveries is over';
-                    }
-            }else{
-                $phar_data = new_pharmacies::select('id','remining_standard_paid_deliveries')->where('id',$order->pharmacy_id)->first();
-                $remining_standard_paid_deliveries = $phar_data->remining_standard_paid_deliveries;
-                if($remining_standard_paid_deliveries != -5){
-                    $phar_data->remining_standard_paid_deliveries = $remining_standard_paid_deliveries - 1;
-                    $phar_data->save();
-                    if($order->process_user_id == 0 || $order->order_status == "incomplete"){
+                              foreach ($orders as $order) {
+                        if($order->process_user_id == 0 || $order->order_status == "incomplete"){
                         $order->is_external_delivery = 1;
                         $order->delivery_charges_id = $delivery_charges_id;
                         $order->external_delivery_initiatedby = 'seller';
@@ -2289,38 +2125,53 @@ class AcceptorderController extends Controller
                         $order->process_user_type = 'seller';
                         $order->accept_datetime = date('Y-m-d H:i:s');
                         $order->order_status = 'accept';
+                        $order->deposit_returned=0;
                         if($order->logistic_user_id > 0){
-                            if($order->order_status == "incomplete"){
-                                if(!empty($order->logistic_user_id)){
-                                    $email_data = new_logistics::select('id','name','email')->where('id',$order->logistic_user_id)->first();
-                                    $data = [
-                                        'name' => $email_data->name,
-                                        'orderno'=>$order_data->order_number
-                                    ];
-                                    $email = $email_data->email;
-                                    $result = Mail::send('email.redeliver', $data, function ($message) use ($email) {
-                                                $message->to($email)->subject('Pharma - Redeliver Order');
-                                    }); 
+                            $order_data = new_orders::where('id',$order_id)->first();
+                            if($order_data->order_status == "incomplete"){
+                                    if(!empty($order_data->logistic_user_id)){
+                                        $email_data = new_logistics::where('id',$order_data->logistic_user_id)->first();
+                                            $name=$email_data->name;
+                                            $order_number=$order_data->order_number;
+                                            $to=$email_data->email;
+                                            $subject='Pharma - Redeliver Order';
+                                            Helper::sendMail($name,$order_number,$to,$subject);
                                 }
                             }
                             $this->AssignOrderOutsideLogistic($order_id,$order);
                             //notification to user order accept
                             if($user_id > 0){
                             $ids = array();
-                            $customerdetail = new_users::select('id','fcm_token')->where('id',$order->customer_id)->first();
+                            $order_data = new_orders::where('id',$order_id)->first();
+                            $customerdetails = new_users::where('id',$order_data->customer_id)->get();
+                                foreach ($customerdetails as $customerdetail) {
                                     if($customerdetail->fcm_token!=''){
-                                        $ids[] = $customerdetail->fcm_token;
-                                    }
-                                    if (count($ids) > 0) {          
-                                        Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
-                                    }
+                                                $ids[] = $customerdetail->fcm_token;
+                                            }
+                                            $msg = array
+                                            (
+                                                'body'   => ' Order Accept '. $order_data->order_number,
+                                                'title'     => 'Order Accepted'
+                                            );
+                                            // if(count($ids)>0){
+                        // $fields = array(
+                          // 'to' => $customerdetail->fcm_token,
+                          // 'notification' => $msg
+                        // );
+                        // $this->sendPushNotification($fields);   
+                                            // }
+                      
+                      if (count($ids) > 0) {          
+                        Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                      }
                                             $notification = new notification_user();
                                             $notification->user_id=$customerdetail->id;
                                             $notification->order_id=$order_data->id;
-                                            $notification->subtitle='Order Accept'.$order->order_number;
-                                            $notification->title='Order Accepted';
+                                            $notification->subtitle=$msg['body'];
+                                            $notification->title=$msg['title'];
                                             $notification->created_at=date('Y-m-d H:i:s');
                                             $notification->save();
+                                    }             
                             }
                         } elseif ($order->logistic_user_id < 0) {
                             $intersected = $this->AssignOrderToIntersectedLogistic();
@@ -2336,10 +2187,13 @@ class AcceptorderController extends Controller
                                             
                                     $order->assign_datetime = date('Y-m-d H:i:s');
                                     $order->order_status = 'assign';
+                                    $order->deposit_returned=0;
                                     $order->logistic_user_id = $intersected[0]->id;
 
+                                    
+
                                     //order process with external logistic
-                                        /* $elt_response = [];
+                                         $elt_response = [];
                                         if(count($orders)>0){
                                             $pharmacy = new_pharmacies::where('id',$orders[0]->pharmacy_id)->first();
                                             $address = new_address::where('id',$orders[0]->address_id)->first();
@@ -2368,7 +2222,6 @@ class AcceptorderController extends Controller
                                         ['json' => [
                                             "response" => $elt_response
                                         ]]);
-                                        */
                                         $logistic_data[] = [
                                             'logistic_current_status' => true,
                                             'next_logistic_working_day' => ''
@@ -2380,22 +2233,37 @@ class AcceptorderController extends Controller
 
                                         //notification to user order accept
                                         if($user_id > 0){
-                                            $ids = array();
-                                            $customerdetail = new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
-                                                    if($customerdetail->fcm_token!=''){
-                                                        $ids[] = $customerdetail->fcm_token;
-                                                    }
-                                                    if (count($ids) > 0) {          
-                                                        Helper::sendNotificationUser($ids, 'Order number '. $order->order_number, 'Order Accepted', $user->id, 'seller', $order->customer_id, 'user', $customerdetail->fcm_token);
-                                                    }
-                                                    $notification = new notification_user();
-                                                    $notification->user_id=$customerdetail->id;
-                                                    $notification->order_id=$order_data->id;
-                                                    $notification->subtitle=' Order Accept '. $order_data->order_number;
-                                                    $notification->title='Order Accepted';
-                                                    $notification->created_at=date('Y-m-d H:i:s');
-                                                    $notification->save();
-                                            }
+                                        $ids = array();
+                                        $order_data = new_orders::where('id',$order_id)->first();
+                                        $customerdetails = new_users::where('id',$order_data->customer_id)->get();
+                                            foreach ($customerdetails as $customerdetail) {
+                                                if($customerdetail->fcm_token!=''){
+                                                            $ids[] = $customerdetail->fcm_token;
+                                                        }
+                                                        $msg = array
+                                                        (
+                                                            'body'   => ' Order Accept '. $order_data->order_number,
+                                                            'title'     => 'Order Accepted'
+                                                        );
+                                                        // if(count($ids)>0){
+                              // $fields = array(
+                                // 'to' => $customerdetail->fcm_token,
+                                // 'notification' => $msg
+                              // );
+                              // $this->sendPushNotification($fields);   
+                                                        // }
+                            if (count($ids) > 0) {          
+                              Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                            }
+                                                        $notification = new notification_user();
+                                                        $notification->user_id=$customerdetail->id;
+                                                        $notification->order_id=$order_data->id;
+                                                        $notification->subtitle=$msg['body'];
+                                                        $notification->title=$msg['title'];
+                                                        $notification->created_at=date('Y-m-d H:i:s');
+                                                        $notification->save();
+                                                }             
+                                        }
                                     }else{
                                         //order process with internal logistic
                                         
@@ -2408,35 +2276,50 @@ class AcceptorderController extends Controller
                                                 
                                         $order->assign_datetime = date('Y-m-d H:i:s');
                                         $order->order_status = 'assign';
+                                        $order->deposit_returned=0;
                                         $order->logistic_user_id = $intersected[0]->id;
 
-                                       
                                         $logistic_data[] = [
                                             'logistic_current_status' => true,
                                             'next_logistic_working_day' => ''
                                         ];
-                                        $response['status'] = 200;
-                                        $response['message'] = 'Set delivery';
-                                        $object_data = (object)$logistic_data[0];
-                                        $response['data'] = $object_data;
+                                    $response['status'] = 200;
+                                    $response['message'] = 'Set delivery';
+                                    $object_data = (object)$logistic_data[0];
+                                    $response['data'] = $object_data;
                                     
                                     //notification to user for order accept
                                     if($user_id > 0){
                                         $ids = array();
-                                        $customerdetail = new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
-                                            if($customerdetail->fcm_token!=''){
-                                                $ids[] = $customerdetail->fcm_token;
-                                            }
-                                            if (count($ids) > 0) {
-                                                Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
-                                            }
-                                            $notification = new notification_user();
-                                            $notification->user_id=$customerdetail->id;
-                                            $notification->order_id=$order_data->id;
-                                            $notification->subtitle='Order Accept '. $order_data->order_number;
-                                            $notification->title='Order Accepted';
-                                            $notification->created_at=date('Y-m-d H:i:s');
-                                            $notification->save();
+                                        $order_data = new_orders::where('id',$order_id)->first();
+                                        $customerdetails = new_users::where('id',$order_data->customer_id)->get();
+                                            foreach ($customerdetails as $customerdetail) {
+                                                if($customerdetail->fcm_token!=''){
+                                                            $ids[] = $customerdetail->fcm_token;
+                                                        }
+                                                        $msg = array
+                                                        (
+                                                            'body'   => ' Order Accept '. $order_data->order_number,
+                                                            'title'     => 'Order Accepted'
+                                                        );
+                                                        // if(count($ids)>0){
+                              // $fields = array(
+                                // 'to' => $customerdetail->fcm_token,
+                                // 'notification' => $msg
+                              // );
+                              // $this->sendPushNotification($fields);   
+                                                        // }
+                            if (count($ids) > 0) {
+                              Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                            }
+                                                        $notification = new notification_user();
+                                                        $notification->user_id=$customerdetail->id;
+                                                        $notification->order_id=$order_data->id;
+                                                        $notification->subtitle=$msg['body'];
+                                                        $notification->title=$msg['title'];
+                                                        $notification->created_at=date('Y-m-d H:i:s');
+                                                        $notification->save();
+                                                }             
                                         }
                                     }
                             }else{
@@ -2451,9 +2334,10 @@ class AcceptorderController extends Controller
                                                 
                                         $order->assign_datetime = date('Y-m-d H:i:s');
                                         $order->order_status = 'assign';
+                                        $order->deposit_returned=0;
                                         $order->logistic_user_id = $value->id;
 
-                                        
+                                       
                                 }
                                 $logistic_data[] = [
                                     'logistic_current_status' => false,
@@ -2466,20 +2350,298 @@ class AcceptorderController extends Controller
                             }
                         } else {
                             $order->order_status = 'accept';
+                            $order->deposit_returned=0;
                         }
+                       
                         $order->save();
-                        $response['status'] = 200;
-                        $response['message'] = 'Set delivery';
-                }else{
-                    $response['status'] = 404;
-                    $response['message'] = 'This Order Is Already Accepted';
+
+                        $order_data = new_orders::where('id',$order_id)->first();
+                            //mail when order transfer to logistic
+                            if(!empty($order_data)){
+                                $email_data = new_logistics::where('id',$order->logistic_user_id)->first();
+                                $name=$email_data->name;
+                                    $order_number=$order_data->order_number;
+                                    $to=$email_data->email;
+                                    $subject='Pharma - Upcoming Order';
+                                    Helper::sendMail($name,$order_number,$to,$subject);
+                            }
+                        }else{
+                            $response['status'] = 404;
+                            $response['message'] = 'This Order Is Already Accepted';
+                        }
+                    }
+                          }else{
+                              $response['status'] = 404;
+                              $response['message'] = 'Your deliveries is over';
+                          }
+                      }else{
+                          $phar_data = new_pharmacies::where('id',$check_data->pharmacy_id)->first();
+                          $remining_standard_paid_deliveries = $phar_data->remining_standard_paid_deliveries;
+                          if($remining_standard_paid_deliveries != -5){
+                              $phar_data->remining_standard_paid_deliveries = $remining_standard_paid_deliveries - 1;
+                               $phar_data->save();
+                               foreach ($orders as $order) {
+                        if($order->process_user_id == 0 || $order->order_status == "incomplete"){
+                        $order->is_external_delivery = 1;
+                        $order->delivery_charges_id = $delivery_charges_id;
+                        $order->external_delivery_initiatedby = 'seller';
+                        $order->process_user_id = $user_id;
+                        $order->process_user_type = 'seller';
+                        $order->accept_datetime = date('Y-m-d H:i:s');
+                        $order->order_status = 'accept';
+                        $order->deposit_returned=0;
+                        if($order->logistic_user_id > 0){
+                            $order_data = new_orders::where('id',$order_id)->first();
+                            if($order_data->order_status == "incomplete"){
+                                    if(!empty($order_data->logistic_user_id)){
+                                        $email_data = new_logistics::where('id',$order_data->logistic_user_id)->first();
+                                        $name=$email_data->name;
+                                    $order_number=$order_data->order_number;
+                                    $to=$email_data->email;
+                                    $subject='Pharma - Redeliver Order';
+                                    Helper::sendMail($name,$order_number,$to,$subject);
+                                }
+                            }
+                            $this->AssignOrderOutsideLogistic($order_id,$order);
+                            //notification to user order accept
+                            if($user_id > 0){
+                            $ids = array();
+                            $order_data = new_orders::where('id',$order_id)->first();
+                            $customerdetails = new_users::where('id',$order_data->customer_id)->get();
+                                foreach ($customerdetails as $customerdetail) {
+                                    if($customerdetail->fcm_token!=''){
+                                                $ids[] = $customerdetail->fcm_token;
+                                            }
+                                            $msg = array
+                                            (
+                                                'body'   => ' Order Accept '. $order_data->order_number,
+                                                'title'     => 'Order Accepted'
+                                            );
+                                            // if(count($ids)>0){
+                        // $fields = array(
+                          // 'to' => $customerdetail->fcm_token,
+                          // 'notification' => $msg
+                        // );
+                        // $this->sendPushNotification($fields);   
+                                            // }
+                      
+                      if (count($ids) > 0) {          
+                        Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                      }
+                                            $notification = new notification_user();
+                                            $notification->user_id=$customerdetail->id;
+                                            $notification->order_id=$order_data->id;
+                                            $notification->subtitle=$msg['body'];
+                                            $notification->title=$msg['title'];
+                                            $notification->created_at=date('Y-m-d H:i:s');
+                                            $notification->save();
+                                    }             
+                            }
+                        } elseif ($order->logistic_user_id < 0) {
+                            $intersected = $this->AssignOrderToIntersectedLogistic();
+                            if(count($intersected) == 1){
+                                    if(strtoupper($intersected[0]->name) == "ELT"){
+                                    //order update in our db
+                                    $orderAssign = new Orderassign();
+                                    $orderAssign->order_id = $order_id;
+                                    $orderAssign->logistic_id = $intersected[0]->id;
+                                    $orderAssign->order_status = 'new';
+                                    $orderAssign->updated_at = date('Y-m-d H:i:s');
+                                    $orderAssign->save();
+                                            
+                                    $order->assign_datetime = date('Y-m-d H:i:s');
+                                    $order->order_status = 'assign';
+                                    $order->deposit_returned=0;
+                                    $order->logistic_user_id = $intersected[0]->id;
+
+                                    
+
+                                    //order process with external logistic
+                                         $elt_response = [];
+                                        if(count($orders)>0){
+                                            $pharmacy = new_pharmacies::where('id',$orders[0]->pharmacy_id)->first();
+                                            $address = new_address::where('id',$orders[0]->address_id)->first();
+                                            $elt_response[] = [
+                                                'api_key' => 'b623d7c412d5cb593c577b1016eae93c',
+                                                'pickup_latitude' => $pharmacy->lat,
+                                                'pickup_longitude' => $pharmacy->lon,
+                                                'pickup_name' => $pharmacy->name,
+                                                'pickup_contact' => $pharmacy->mobile_number,
+                                                'pickup_address' => $pharmacy->address,
+                                                'pickup_city' => $pharmacy->city,
+                                                'delivery_latitude' => $address->latitude,
+                                                'delivery_longitude' => $address->longitude,
+                                                'delivery_name' => $address->name,
+                                                'delivery_contact' => $address->mobileno,
+                                                'delivery_address' => $address->address,
+                                                'delivery_city' => $address->city,
+                                                'order_amount' => $orders[0]->order_amount,
+                                                'no_of_parcle' => '1',
+                                                'order_id' => $orders[0]->id,
+                                                'order_time'=> $orders[0]->create_datetime,
+                                            ];
+                                        }
+                                        $client = new Client;
+                                        $r = $client->post('https://developer.eltapp.in/v3/order_schedule/create', 
+                                        ['json' => [
+                                            "response" => $elt_response
+                                        ]]);
+                                        $logistic_data[] = [
+                                            'logistic_current_status' => true,
+                                            'next_logistic_working_day' => ''
+                                        ];
+                                        $response['status'] = 200;
+                                        $response['message'] = 'Set delivery';
+                                        $object_data = (object)$logistic_data[0];
+                                        $response['data'] = $object_data;
+
+                                        //notification to user order accept
+                                        if($user_id > 0){
+                                        $ids = array();
+                                        $order_data = new_orders::where('id',$order_id)->first();
+                                        $customerdetails = new_users::where('id',$order_data->customer_id)->get();
+                                            foreach ($customerdetails as $customerdetail) {
+                                                if($customerdetail->fcm_token!=''){
+                                                            $ids[] = $customerdetail->fcm_token;
+                                                        }
+                                                        $msg = array
+                                                        (
+                                                            'body'   => ' Order Accept '. $order_data->order_number,
+                                                            'title'     => 'Order Accepted'
+                                                        );
+                                                        // if(count($ids)>0){
+                              // $fields = array(
+                                // 'to' => $customerdetail->fcm_token,
+                                // 'notification' => $msg
+                              // );
+                              // $this->sendPushNotification($fields);   
+                                                        // }
+                            if (count($ids) > 0) {          
+                              Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                            }
+                                                        $notification = new notification_user();
+                                                        $notification->user_id=$customerdetail->id;
+                                                        $notification->order_id=$order_data->id;
+                                                        $notification->subtitle=$msg['body'];
+                                                        $notification->title=$msg['title'];
+                                                        $notification->created_at=date('Y-m-d H:i:s');
+                                                        $notification->save();
+                                                }             
+                                        }
+                                    }else{
+                                        //order process with internal logistic
+                                        
+                                        $orderAssign = new Orderassign();
+                                        $orderAssign->order_id = $order_id;
+                                        $orderAssign->logistic_id = $intersected[0]->id;
+                                        $orderAssign->order_status = 'new';
+                                        $orderAssign->updated_at = date('Y-m-d H:i:s');
+                                        $orderAssign->save();
+                                                
+                                        $order->assign_datetime = date('Y-m-d H:i:s');
+                                        $order->order_status = 'assign';
+                                        $order->deposit_returned=0;
+                                        $order->logistic_user_id = $intersected[0]->id;
+
+                                        
+                                        $logistic_data[] = [
+                                            'logistic_current_status' => true,
+                                            'next_logistic_working_day' => ''
+                                        ];
+                                    $response['status'] = 200;
+                                    $response['message'] = 'Set delivery';
+                                    $object_data = (object)$logistic_data[0];
+                                    $response['data'] = $object_data;
+                                    
+                                    //notification to user for order accept
+                                    if($user_id > 0){
+                                        $ids = array();
+                                        $order_data = new_orders::where('id',$order_id)->first();
+                                        $customerdetails = new_users::where('id',$order_data->customer_id)->get();
+                                            foreach ($customerdetails as $customerdetail) {
+                                                if($customerdetail->fcm_token!=''){
+                                                            $ids[] = $customerdetail->fcm_token;
+                                                        }
+                                                        $msg = array
+                                                        (
+                                                            'body'   => ' Order Accept '. $order_data->order_number,
+                                                            'title'     => 'Order Accepted'
+                                                        );
+                                                        // if(count($ids)>0){
+                              // $fields = array(
+                                // 'to' => $customerdetail->fcm_token,
+                                // 'notification' => $msg
+                              // );
+                              // $this->sendPushNotification($fields);   
+                                                        // }
+                            if (count($ids) > 0) {
+                              Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Order Accepted', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
+                            }
+                                                        $notification = new notification_user();
+                                                        $notification->user_id=$customerdetail->id;
+                                                        $notification->order_id=$order_data->id;
+                                                        $notification->subtitle=$msg['body'];
+                                                        $notification->title=$msg['title'];
+                                                        $notification->created_at=date('Y-m-d H:i:s');
+                                                        $notification->save();
+                                                }             
+                                        }
+                                    }
+                            }else{
+                                //next day order process with first priority logistic
+                                foreach ($intersected as $value) {
+                                        $orderAssign = new Orderassign();
+                                        $orderAssign->order_id = $order_id;
+                                        $orderAssign->logistic_id = $value->id;
+                                        $orderAssign->order_status = 'new';
+                                        $orderAssign->updated_at = date('Y-m-d H:i:s');
+                                        $orderAssign->save();
+                                                
+                                        $order->assign_datetime = date('Y-m-d H:i:s');
+                                        $order->order_status = 'assign';
+                                        $order->deposit_returned=0;
+                                        $order->logistic_user_id = $value->id;
+
+                                       
+                                }
+                                $logistic_data[] = [
+                                    'logistic_current_status' => false,
+                                    'next_logistic_working_day' => $this->GetNextDayLogic()
+                                ];
+                                $response['status'] = 200;
+                                $response['message'] = 'Set delivery';
+                                $object_data = (object)$logistic_data[0];
+                                $response['data'] = $object_data;
+                            }
+                        } else {
+                            $order->order_status = 'accept';
+                            $order->deposit_returned=0;
+                        }
+                       
+                        $order->save();
+
+                        $order_data = new_orders::where('id',$order_id)->first();
+                            //mail when order transfer to logistic
+                            if(!empty($order_data)){
+                                $email_data = new_logistics::where('id',$order->logistic_user_id)->first();
+                                $name=$email_data->name;
+                                    $order_number=$order_data->order_number;
+                                    $to=$email_data->email;
+                                    $subject='Pharma - Upcoming Order';
+                                    Helper::sendMail($name,$order_number,$to,$subject);
+                            }
+                        }else{
+                            $response['status'] = 404;
+                            $response['message'] = 'This Order Is Already Accepted';
+                        }
+                    }
+                          }else{
+                              $response['status'] = 404;
+                              $response['message'] = 'Your deliveries is over';
+                          }
+                      }
+                    
                 }
-            }else{
-                $response['status'] = 404;
-                $response['message'] = 'Your deliveries is over';
-            }
-        }
-    }
         }else{
             $response['status'] = 401;
             $response['message'] = 'Unauthenticated';
@@ -2732,29 +2894,45 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
 
-        $cancel = new_orders::select('id','reject_cancel_reason','cancel_datetime','order_status')->where('id',$order_id)->first();
+        $cancel = new_orders::find($order_id);
         if(!empty($cancel)){
             $cancel->reject_cancel_reason = $rejectreason;
+            $cancel->rejectby_user = 'seller';
+            $cancel->reject_user_id = $user_id;
             $cancel->cancel_datetime =date('Y-m-d H:i:s');
             $cancel->order_status = 'cancel';
             $cancel->save();
 
-            $user = new_pharma_logistic_employee::select('id')->where(['id'=>$user_id])->first();
+            $user = new_pharma_logistic_employee::where(['id'=>$user_id])->first();
+
             if($user_id > 0){
                 $ids = array();
-                $order_data = new_orders::select('id','customer_id','order_number')->where('id',$order_id)->first();
-                $customerdetail =  new_users::select('id','fcm_token')->where('id',$order_data->customer_id)->first();
-                if($customerdetail->fcm_token!=''){
-                    $ids[] = $customerdetail->fcm_token;
-                }
+                $order_data = new_orders::where('id',$order_id)->first();
+                $customerdetail =  new_users::where('id',$order_data->customer_id)->first();
+                    if($customerdetail->fcm_token!=''){
+                        $ids[] = $customerdetail->fcm_token;
+                    }
+                    $delivery_address =  new_address::where('id',$order_data->address_id)->first();
+                    $msg = array
+                (
+                    'body'   => ' Order number '.$order_data->order_number,
+                    'title'     => 'Your Order Cancelled'
+                );
+                // if(count($ids)>0){
+                    // $fields = array(
+                        // 'to' => $customerdetail->fcm_token,
+                        // 'notification' => $msg
+                    // );
+                    // $this->sendPushNotification($fields);   
+                // }
                 if (count($ids) > 0) {
                     Helper::sendNotificationUser($ids, 'Order number '. $order_data->order_number, 'Your Order Cancelled', $user->id, 'seller', $order_data->customer_id, 'user', $customerdetail->fcm_token);
                 }
                 $notification = new notification_user();
                 $notification->user_id=$customerdetail->id;
                 $notification->order_id=$order_data->id;
-                $notification->subtitle= 'Order number'.$order_data->order_number;
-                $notification->title='Your Order Cancelled';
+                $notification->subtitle=$msg['body'];
+                $notification->title=$msg['title'];
                 $notification->created_at=date('Y-m-d H:i:s');
                 $notification->save();
             }
@@ -2789,7 +2967,6 @@ class AcceptorderController extends Controller
             $order_history->cancel_datetime  = $order->cancel_datetime;
             $order_history->rejectby_user  = $order->rejectby_user;
             $order_history->reject_user_id  = $order->reject_user_id;
-             $order_history->return_confirmtime  = $order->return_confirmtime;
             $order_history->reject_cancel_reason  = $order->reject_cancel_reason;
             $order_history->leave_neighbour  = $order->leave_neighbour;
             $order_history->neighbour_info  = $order->neighbour_info;
@@ -2824,7 +3001,7 @@ class AcceptorderController extends Controller
 
     }
     public function return_confirm(Request $request)
-    {  
+    {
         $response = array();
 		$data = $request->input('data');
 		$encode_string = encode_string($data);
@@ -2852,33 +3029,42 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token = $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id, 'api_token'=>$token])->first();
-
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->first();
         if(!empty($user)){
-            $order = new_orders::select('id','return_confirmtime','deliveryboy_id')->where('id',$order_id)->first();
+            $order = new_orders::find($order_id);
             if(!empty($order)){
-                $order_data = new_orders::select('id','order_number','logistic_user_id','deliveryboy_id')->where('id',$order_id)->first();
-                $order_assign = Orderassign::select('order_id')->where('order_id',$order_id)->first();
+                $order_data = new_orders::where('id',$order_id)->first();
+                $order_assign = Orderassign::where('order_id',$order_id)->first();
                 if(!empty($order_assign)){
-                         $logistic_data = new_logistics::select('id','name','email')->where('id',$order_data->logistic_user_id)->first();
-                                $data = [
-                                    'name' => $logistic_data->name,
-                                    'orderno'=>$order_data->order_number
-                                ];
-                                $email = $logistic_data->email;
-                                $result = Mail::send('email.handshake', $data, function ($message) use ($email) {
-                                        $message->to($email)->subject('Pharma - Pharmacy Order Handshake');
-                                });
+                         $logistic_data = new_logistics::where('id',$order_data->logistic_user_id)->first();
+                                    $name=$logistic_data->name;
+                                    $order_number=$order_data->order_number;
+                                    $to=$logistic_data->email;
+                                    $subject='Pharma - Pharmacy Order Handshake';
+                                    Helper::sendMail($name,$order_number,$to,$subject);
                 }
 
                 if($user_id > 0){
                     $ids = array();
-                    $order_data = new_orders::select('id','deliveryboy_id','order_number')->where('id',$order_id)->first();
+                    $order_data = new_orders::where('id',$order_id)->first();
                     if(!empty($order_data)){
-                       $deliveryboydetail =  new_pharma_logistic_employee::select('id','fcm_token')->where('id',$order_data->deliveryboy_id)->first();
+                       $deliveryboydetail =  new_pharma_logistic_employee::where('id',$order_data->deliveryboy_id)->first();
                         if($deliveryboydetail->fcm_token!=''){
                             $ids[] = $deliveryboydetail->fcm_token;
                         }
+                        $msg = array
+                        (
+                            'body'   => ' Order number '. $order_data->order_number,
+                            'title'     => 'Order Return Confirmed'
+                        );
+                        if(count($ids)>0){
+                            $fields = array(
+                                'to' => $deliveryboydetail->fcm_token,
+                                'notification' => $msg
+                            );
+                            // $this->sendPushNotificationDeliveryboy($fields);   
+                        }
+                        
                         if(count($ids)>0){
                             Helper::sendNotificationDeliveryboy($ids, 'Order number '.$order_data->order_number, 'Order Return Confirmed', $user->id, 'seller', $deliveryboydetail->id, 'delivery_boy', $deliveryboydetail->fcm_token);
                         }
@@ -2888,7 +3074,7 @@ class AcceptorderController extends Controller
                 $order->deliveryboy_id = 0;
                 $order->save();
 
-                $orderAssign = Orderassign::select('order_id','deliveryboy_id')->where('order_id',$order_id)->first();
+                $orderAssign = Orderassign::where('order_id',$order_id)->first();
                 $orderAssign->deliveryboy_id = 0;
                 $orderAssign->save();
                 $response['status'] = 200;
@@ -2907,9 +3093,9 @@ class AcceptorderController extends Controller
     public function notification_seller(Request $request)
     {
         $response = array();
-    		$data = $request->input('data');
-    		$encode_string = encode_string($data);
-    		$content = json_decode($encode_string);
+    	$data = $request->input('data');
+    	$encode_string = encode_string($data);
+    	$content = json_decode($encode_string);
 
         $user_id = isset($content->user_id) ? $content->user_id : '';
         $page = isset($content->page) ? $content->page : '';
@@ -3005,14 +3191,15 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
-        if(!empty($user)){
-                $order_details =  new_orders::select('id','prescription_id','customer_id','address_id','deliveryboy_id','delivery_charges_id','order_number','order_note','order_type','total_days','reminder_days','return_confirmtime','accept_datetime','reject_cancel_reason','reject_datetime','order_amount','cancel_datetime','created_at','order_status','external_delivery_initiatedby','create_datetime','pickup_datetime','deliver_datetime')->where('id' , $order_id)->orderBy('id', 'DESC')->first(); 
-                $order_details_complete =  new_order_history::select('id','prescription_id','customer_id','address_id','deliveryboy_id','delivery_charges_id','order_number','order_note','order_type','total_days','reminder_days','return_confirmtime','accept_datetime','reject_cancel_reason','reject_datetime','order_amount','cancel_datetime','created_at','order_status','external_delivery_initiatedby','create_datetime','pickup_datetime','deliver_datetime')->where('order_id' , $order_id)->orderBy('order_id', 'DESC')->first();
-
-                if(!empty($order_details)){
+        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){
+                $order_details =  new_orders::where('id' , $order_id)->orderBy('id', 'DESC')->get();
+                $order_details_complete =  new_order_history::where('order_id' , $order_id)->orderBy('order_id', 'DESC')->get();
+                if(count($order_details)>0){
+                         foreach($order_details as $value) {
                                     $prescription_image = '';
-                                    $p_img = Prescription::where('id',$order_details->prescription_id)->first();
+                                    $image_list = Prescription::where('id',$value->prescription_id)->get();
+                                    foreach ($image_list as $p_img) {
                                     if (!empty($p_img->image)) {
 
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -3023,6 +3210,7 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
+                                }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
                                 foreach ($invoice_data as $invoice) {
@@ -3042,51 +3230,40 @@ class AcceptorderController extends Controller
                                         'invoice' => $invoice_image
                                     ];
                                 }
-
-                               $user_data = new_users::where('id',$order_details->customer_id)->first();
-                               if(!empty($user_data)){
-                                    $name = $user_data->name;
-                                    $mobile = $user_data->mobile_number;
-                               }else{
-                                    $name = '';
-                                    $mobile = '';
-                               }
-                               
-                               $address_data = new_address::where('id',$order_details->address_id)->first();
-                               if(!empty($address_data)){
-                                     $destination_address[] = [
-                                        'address_id' => $address_data->id,
-                                        'user_id' => $address_data->user_id,
-                                        'locality'=>$address_data->locality,
-                                        'address' =>$address_data->address,
-                                        'name' => $address_data->name,
-                                        'mobileno' =>$address_data->mobileno,
-                                        'blockno' =>$address_data->blockno,
-                                        'streetname'=>$address_data->streetname,
-                                        'city'=>$address_data->city,
-                                        'pincode'=>$address_data->pincode,
-                                        'latitude'=>$address_data->latitude,
-                                        'longitude'=>$address_data->longitude
+                               $user_list = new_users::where('id',$value->customer_id)->get();
+                               $name='';
+                               $mobile='';
+                                foreach ($user_list as $u_img) { 
+                                    $name = $u_img->name;
+                                    $mobile = $u_img->mobile_number;
+                                }
+                                $address_data = new_address::where('id',$value->address_id)->get();
+                                foreach ($address_data as $key => $val) {
+                                    $destination_address[] = [
+                                        'address_id' => $val->id,
+                                        'user_id' => $val->user_id,
+                                        'locality'=>$val->locality,
+                                        'address' =>$val->address,
+                                        'name' => $val->name,
+                                        'mobileno' =>$val->mobileno,
+                                        'blockno' =>$val->blockno,
+                                        'streetname'=>$val->streetname,
+                                        'city'=>$val->city,
+                                        'pincode'=>$val->pincode,
+                                        'latitude'=>$val->latitude,
+                                        'longitude'=>$val->longitude
                                     ];
-                               }
-                                   
-                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$order_details->deliveryboy_id)->first();
-                                if(!empty($deliveryboy_name)){
-                                     $deliveryboy = $deliveryboy_name->name;
-                                }else{
-                                    $deliveryboy ='';
                                 }
-                               
-                                $delivery_type_data = new_delivery_charges::where('id',$order_details->delivery_charges_id)->first();
-                                if(!empty($delivery_type_data)){
-                                    $delivery_type = $delivery_type_data->delivery_type;
-                                }else{
-                                    $delivery_type = 'free';
+                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$value->deliveryboy_id)->get();
+                                $deliveryboy='';
+                                foreach ($deliveryboy_name as $d_name) {
+                                    $deliveryboy = $d_name->name;
                                 }
-                                
+                                $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
+
                                  $pickup_images=[];
                                  $pickup_date = '';
-                                 if($order_details->order_status == 'pickup'){
+                                 if($value->order_status == 'pickup'){
                                      $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
                                     foreach ($pickup_data as $pickup) {
                                             $pickup_image = '';
@@ -3105,12 +3282,12 @@ class AcceptorderController extends Controller
                                             'pickup_image' => $pickup_image
                                         ];
                                     }
-                                    $pickup_date = $order_details->pickup_datetime;
+                                    $pickup_date = $value->pickup_datetime;
                                  }
                                 
                                 $delivered_images=[];
                                 $deliver_date = '';
-                                 if($order_details->order_status == 'complete'){  
+                                 if($value->order_status == 'complete'){  
                                      $deliver_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'deliver'])->get();
                                     foreach ($deliver_data as $deliver) {
                                             $deliver_image = '';
@@ -3129,49 +3306,57 @@ class AcceptorderController extends Controller
                                             'deliver_image' => $deliver_image
                                         ];
                                     }
-                                    $deliver_date = $order_details->deliver_datetime;
+                                    $deliver_date = $value->deliver_datetime;
                                 }
-                              
+                                   
+
+                                $delivery_type = '';
+                                foreach ($delivery_type_data as $dt) {
+                                    $delivery_type =$dt->delivery_type;
+                                }
                                     $orders[] = [
-                                    'order_id' => $order_details->id,
-                                    'order_number' => $order_details->order_number,
+                                    'order_id' => $value->id,
+                                    'order_number' => $value->order_number,
                                     'prescription_image' => $prescription_image,
                                     'invoice'=> $invoice_images,
-                                    'order_note' => $order_details->order_note,
-                                    'order_type' => $order_details->order_type,
-                                    'total_days' => ($order_details->total_days)?$order_details->total_days:'',
-                                    'reminder_days' => ($order_details->reminder_days)?$order_details->reminder_days:'',
+                                    'order_note' => $value->order_note,
+                                    'order_type' => $value->order_type,
+                                    'total_days' => $value->total_days,
+                                    'reminder_days' => $value->reminder_days,
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
-                                    'return_confirmtime' => ($order_details->return_confirmtime)?$order_details->return_confirmtime:'',
-                                    'location' => ($destination_address)?$destination_address:'',
+                                    'return_confirmtime' => ($value->return_confirmtime)?$value->return_confirmtime:'',
+                                    'location' => ($destination_address)?$destination_address[0]:'',
                                     'order_assign_to' => $deliveryboy,
                                     'deliver_to' =>  $name,
-                                    'accept_date' => ($order_details->accept_datetime)?$order_details->accept_datetime:'',
+                                    'accept_date' => ($value->accept_datetime)?$value->accept_datetime:'',
                                     'deliver_date' => $deliver_date,
-                                    'assign_date' => ($order_details->assign_datetime)?$order_details->assign_datetime:'',
-                                    'cancel_reason' => ($order_details->reject_cancel_reason) ? $order_details->reject_cancel_reason: '',
-                                    'return_reason' => ($order_details->reject_cancel_reason) ? $order_details->reject_cancel_reason: '',
-                                    'reject_reason' => ($order_details->reject_cancel_reason) ?$order_details->reject_cancel_reason: '',
-                                    'return_date' => ($order_details->reject_datetime)?$order_details->reject_datetime:'',
-                                    'order_amount' => ($order_details->order_amount)?$order_details->order_amount:'',
-                                    'delivery_type' => $delivery_type,
+                                    'assign_date' => ($value->assign_datetime)?$value->assign_datetime:'',
+                                    'cancel_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
+                                    'return_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
+                                    'reject_reason' => ($value->reject_cancel_reason) ?$value->reject_cancel_reason: '',
+                                    'return_date' => ($value->reject_datetime)?$value->reject_datetime:'',
+                                    'order_amount' => ($value->order_amount)?$value->order_amount:'',
+                                    'delivery_type' => ($delivery_type)?$delivery_type:'free',
                                     'pickup_images' => $pickup_images,
                                     'pickup_date' => $pickup_date,
                                     'drop_images' => $delivered_images,
                                     'drop_date' => $deliver_date,
-                                    'reject_date' => ($order_details->reject_datetime)?$order_details->reject_datetime:'',
-                                    'cancel_date' => ($order_details->cancel_datetime)?$order_details->cancel_datetime:'',
-                                    'received_date' => (date_format($order_details->created_at,"Y-m-d H:i:s"))?(date_format($order_details->created_at,"Y-m-d H:i:s")):'',
-                                    'order_status' => $order_details->order_status,
-                                    'external_delivery_initiatedby' => ($order_details->external_delivery_initiatedby)?$order_details->external_delivery_initiatedby:'',
-                                    'order_time'=>($order_details->create_datetime)?$order_details->create_datetime:''
+                                    'reject_date' => ($value->reject_datetime)?$value->reject_datetime:'',
+                                    'cancel_date' => ($value->cancel_datetime)?$value->cancel_datetime:'',
+                                    'received_date' => (date_format($value->created_at,"Y-m-d H:i:s"))?(date_format($value->created_at,"Y-m-d H:i:s")):'',
+                                    'order_status' => $value->order_status,
+                                    'external_delivery_initiatedby' => ($value->external_delivery_initiatedby)?$value->external_delivery_initiatedby:'',
+                                    'order_time'=>($value->create_datetime)?$value->create_datetime:''
                                 ];
+                            }
                         $response['status'] = 200;
                         $response['message'] = 'Order Details';
-                } elseif (!empty($order_details_complete)) {
-                                $prescription_image = '';
-                                    $p_img = Prescription::where('id',$order_details_complete->prescription_id)->first();
+                } elseif (count($order_details_complete)>0) {
+                    foreach($order_details_complete as $value) {
+                                    $prescription_image = '';
+                                    $image_list = Prescription::where('id',$value->prescription_id)->get();
+                                    foreach ($image_list as $p_img) {
                                     if (!empty($p_img->image)) {
 
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -3182,6 +3367,7 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
+                                }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
                                 foreach ($invoice_data as $invoice) {
@@ -3201,52 +3387,41 @@ class AcceptorderController extends Controller
                                         'invoice' => $invoice_image
                                     ];
                                 }
-
-                              $user_data = new_users::where('id',$order_details_complete->customer_id)->first();
-                               if(!empty($user_data)){
-                                    $name = $user_data->name;
-                                    $mobile = $user_data->mobile_number;
-                               }else{
-                                    $name = '';
-                                    $mobile = '';
-                               }
-                               
-                               $address_data = new_address::where('id',$order_details_complete->address_id)->first();
-                               if(!empty($address_data)){
-                                     $destination_address[] = [
-                                        'address_id' => $address_data->id,
-                                        'user_id' => $address_data->user_id,
-                                        'locality'=>$address_data->locality,
-                                        'address' =>$address_data->address,
-                                        'name' => $address_data->name,
-                                        'mobileno' =>$address_data->mobileno,
-                                        'blockno' =>$address_data->blockno,
-                                        'streetname'=>$address_data->streetname,
-                                        'city'=>$address_data->city,
-                                        'pincode'=>$address_data->pincode,
-                                        'latitude'=>$address_data->latitude,
-                                        'longitude'=>$address_data->longitude
+                               $user_list = new_users::where('id',$value->customer_id)->get();
+                               $name='';
+                               $mobile='';
+                                foreach ($user_list as $u_img) { 
+                                    $name = $u_img->name;
+                                    $mobile = $u_img->mobile_number;
+                                }
+                                $address_data = new_address::where('id',$value->address_id)->get();
+                                foreach ($address_data as $key => $val) {
+                                    $destination_address[] = [
+                                        'address_id' => $val->id,
+                                        'user_id' => $val->user_id,
+                                        'locality'=>$val->locality,
+                                        'address' =>$val->address,
+                                        'name' => $val->name,
+                                        'mobileno' =>$val->mobileno,
+                                        'blockno' =>$val->blockno,
+                                        'streetname'=>$val->streetname,
+                                        'city'=>$val->city,
+                                        'pincode'=>$val->pincode,
+                                        'latitude'=>$val->latitude,
+                                        'longitude'=>$val->longitude
                                     ];
-                               }
-                                   
-                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$order_details_complete->deliveryboy_id)->first();
-                                if(!empty($deliveryboy_name)){
-                                     $deliveryboy = $deliveryboy_name->name;
-                                }else{
-                                    $deliveryboy ='';
                                 }
-                               
-                                $delivery_type_data = new_delivery_charges::where('id',$order_details_complete->delivery_charges_id)->first();
-                                if(!empty($delivery_type_data)){
-                                    $delivery_type = $delivery_type_data->delivery_type;
-                                }else{
-                                    $delivery_type = 'free';
+                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$value->deliveryboy_id)->get();
+                                $deliveryboy='';
+                                foreach ($deliveryboy_name as $d_name) {
+                                    $deliveryboy = $d_name->name;
                                 }
+                                $delivery_type_data = new_delivery_charges::where('id',$value->delivery_charges_id)->get();
 
-                                $pickup_images=[];
-                                $pickup_date = '';
-                                if($order_details_complete->order_status == 'pickup'){
-                                    $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
+                                 $pickup_images=[];
+                                 $pickup_date = '';
+                                 if($value->order_status == 'pickup'){
+                                     $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
                                     foreach ($pickup_data as $pickup) {
                                             $pickup_image = '';
                                             if (!empty($pickup->image_name)) {
@@ -3259,17 +3434,17 @@ class AcceptorderController extends Controller
                                                     $pickup_image = '';
                                                 }
                                             }
-                                            $pickup_images[] =[
-                                                'id' => $pickup->id,
-                                                'pickup_image' => $pickup_image
-                                            ];
-                                        }
-                                    $pickup_date = $order_details_complete->pickup_datetime;
-                                }
+                                        $pickup_images[] =[
+                                            'id' => $pickup->id,
+                                            'pickup_image' => $pickup_image
+                                        ];
+                                    }
+                                    $pickup_date = $value->pickup_datetime;
+                                 }
                                 
                                 $delivered_images=[];
                                 $deliver_date = '';
-                                 if($order_details_complete->order_status == 'complete'){  
+                                 if($value->order_status == 'complete'){  
                                      $deliver_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'deliver'])->get();
                                     foreach ($deliver_data as $deliver) {
                                             $deliver_image = '';
@@ -3288,47 +3463,53 @@ class AcceptorderController extends Controller
                                             'deliver_image' => $deliver_image
                                         ];
                                     }
-                                    $deliver_date = $order_details_complete->deliver_datetime;
+                                    $deliver_date = $value->deliver_datetime;
                                 }
-                              
+                                   
+
+                                $delivery_type = '';
+                                foreach ($delivery_type_data as $dt) {
+                                    $delivery_type =$dt->delivery_type;
+                                }
                                     $orders[] = [
-                                    'order_id' => $order_details_complete->id,
-                                    'order_number' => $order_details_complete->order_number,
+                                    'order_id' => $value->order_id,
+                                    'order_number' => $value->order_number,
                                     'prescription_image' => $prescription_image,
                                     'invoice'=> $invoice_images,
-                                    'order_note' => $order_details_complete->order_note,
-                                    'order_type' => $order_details_complete->order_type,
-                                    'total_days' => ($order_details_complete->total_days)?$order_details_complete->total_days:'',
-                                    'reminder_days' => ($order_details_complete->reminder_days)?$order_details_complete->reminder_days:'',
+                                    'order_note' => $value->order_note,
+                                    'order_type' => $value->order_type,
+                                    'total_days' => $value->total_days,
+                                    'reminder_days' => $value->reminder_days,
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
-                                    'return_confirmtime' => ($order_details_complete->return_confirmtime)?$order_details_complete->return_confirmtime:'',
-                                    'location' => ($destination_address)?$destination_address:'',
+                                    'return_confirmtime' => ($value->return_confirmtime)?$value->return_confirmtime:'',
+                                    'location' => ($destination_address)?$destination_address[0]:'',
                                     'order_assign_to' => $deliveryboy,
                                     'deliver_to' =>  $name,
-                                    'accept_date' => ($order_details_complete->accept_datetime)?$order_details_complete->accept_datetime:'',
+                                    'accept_date' => ($value->accept_datetime)?$value->accept_datetime:'',
                                     'deliver_date' => $deliver_date,
-                                    'assign_date' => ($order_details_complete->assign_datetime)?$order_details_complete->assign_datetime:'',
-                                    'cancel_reason' => ($order_details_complete->reject_cancel_reason) ? $order_details_complete->reject_cancel_reason: '',
-                                    'return_reason' => ($order_details_complete->reject_cancel_reason) ? $order_details_complete->reject_cancel_reason: '',
-                                    'reject_reason' => ($order_details_complete->reject_cancel_reason) ?$order_details_complete->reject_cancel_reason: '',
-                                    'return_date' => ($order_details_complete->reject_datetime)?$order_details_complete->reject_datetime:'',
-                                    'order_amount' => ($order_details_complete->order_amount)?$order_details_complete->order_amount:'',
-                                    'delivery_type' => $delivery_type,
+                                    'assign_date' => ($value->assign_datetime)?$value->assign_datetime:'',
+                                    'cancel_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
+                                    'return_reason' => ($value->reject_cancel_reason) ? $value->reject_cancel_reason: '',
+                                    'reject_reason' => ($value->reject_cancel_reason) ?$value->reject_cancel_reason: '',
+                                    'return_date' => ($value->reject_datetime)?$value->reject_datetime:'',
+                                    'order_amount' => ($value->order_amount)?$value->order_amount:'',
+                                    'delivery_type' => ($delivery_type)?$delivery_type:'free',
                                     'pickup_images' => $pickup_images,
                                     'pickup_date' => $pickup_date,
                                     'drop_images' => $delivered_images,
                                     'drop_date' => $deliver_date,
-                                    'reject_date' => ($order_details_complete->reject_datetime)?$order_details_complete->reject_datetime:'',
-                                    'cancel_date' => ($order_details_complete->cancel_datetime)?$order_details_complete->cancel_datetime:'',
-                                    'received_date' => (date_format($order_details_complete->created_at,"Y-m-d H:i:s"))?(date_format($order_details_complete->created_at,"Y-m-d H:i:s")):'',
-                                    'order_status' => $order_details_complete->order_status,
-                                    'external_delivery_initiatedby' => ($order_details_complete->external_delivery_initiatedby)?$order_details_complete->external_delivery_initiatedby:'',
-                                    'order_time'=>($order_details_complete->create_datetime)?$order_details_complete->create_datetime:''
+                                    'reject_date' => ($value->reject_datetime)?$value->reject_datetime:'',
+                                    'cancel_date' => ($value->cancel_datetime)?$value->cancel_datetime:'',
+                                    'received_date' => (date_format($value->created_at,"Y-m-d H:i:s"))?(date_format($value->created_at,"Y-m-d H:i:s")):'',
+                                    'order_status' => $value->order_status,
+                                    'external_delivery_initiatedby' => ($value->external_delivery_initiatedby)?$value->external_delivery_initiatedby:'',
+                                    'order_time'=>($value->create_datetime)?$value->create_datetime:''
                                 ];
+                            }
                         $response['status'] = 200;
                         $response['message'] = 'Order Details';
-                } else {
+                }  else {
                         $response['status'] = 404;
                 }
             }else{
@@ -3366,8 +3547,8 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
 		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
-		if(!empty($user)){
+		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+		if(count($user)>0){
 		$notification_arr = [];
 		
 		$notification = notification_seller::where('user_id','=',$user_id)->delete();
