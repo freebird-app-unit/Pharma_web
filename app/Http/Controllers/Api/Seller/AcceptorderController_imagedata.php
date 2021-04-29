@@ -581,4 +581,122 @@ class AcceptorderController_imagedata extends Controller
         
         return decode_string($response, 200);
     }
+
+    public function cancelorderlist_seller_imagedata(Request $request){
+        $response = array();
+    		$data = $request->input('data');
+    		$encode_string = encode_string($data);
+    		$content = json_decode($encode_string);
+        
+        $user_id = isset($content->user_id) ? $content->user_id : '';
+        $search_text = isset($content->search_text) ? $content->search_text : '';
+        $page = isset($content->page) ? $content->page : '';
+
+        $params = [
+            'user_id' => $user_id
+        ];
+        
+        $validator = Validator::make($params, [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return validation_error($validator->errors()->first());  
+        }
+        $cancel = [];
+        $response['status'] = 200;
+        $response['message'] = '';
+        $response['data'] = (object)array();
+
+        if (!empty($user_id) && !empty($search_text)) {
+
+             $cancel_list = new_order_history::select('new_order_history.process_user_id','new_order_history.order_status','new_order_history.customer_id','new_order_history.order_number','new_order_history.id','new_order_history.prescription_id','new_order_history.reject_cancel_reason','new_order_history.external_delivery_initiatedby','new_order_history.create_datetime','u1.name','new_order_history.order_id','new_order_history.delivery_charges_id')->where(['new_order_history.process_user_id' => $user_id, 'new_order_history.order_status' => 'cancel'])->leftJoin('new_users as u1', 'u1.id', '=', 'new_order_history.customer_id')->where('u1.name', 'like', $search_text.'%')->orWhere('new_order_history.order_number', 'like', $search_text.'%')->orderBy('new_order_history.id', 'DESC');
+
+            $total = $cancel_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $cancel_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+        }else{
+               $cancel_list =  new_order_history::select('process_user_id','order_status','customer_id','order_number','id','prescription_id','reject_cancel_reason','external_delivery_initiatedby','create_datetime','order_id','delivery_charges_id')->where('process_user_id', $user_id)->where('order_status','cancel')->orderBy('id', 'DESC');
+
+            $total = $cancel_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $cancel_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+        }
+
+      /*  $token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){*/
+                if(count($data_array)>0){
+                         foreach($data_array as $value) {
+                                    $mutiple_data = multiple_prescription::where(['prescription_id'=>$value['prescription_id'],'is_delete'=>'0'])->get();
+										$mutiple_images = [];
+										if(count($mutiple_data)>0){
+												foreach ($mutiple_data as $mutiple) {
+													$mutiple_images[]=[
+													'id'	=> $mutiple->id,
+													'image' => $mutiple->image,
+												];	
+											}
+										} 
+                                
+                               $user_data = new_users::where('id',$value['customer_id'])->first();
+                                if(!empty($user_data)){
+                                    $name =$user_data->name;
+                                }else{
+                                    $name = '';
+                                }
+
+
+                                $delivery_type_data = new_delivery_charges::where('id',$value['delivery_charges_id'])->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type =$delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
+                                }
+                                    $cancel[] = [
+                                    'order_id' => $value['order_id'],
+                                    'order_number' => $value['order_number'],
+                                    'prescription_image' => $mutiple_images,
+                                    'customer_name' => $name,
+                                    'reason' =>($value['reject_cancel_reason'])?$value['reject_cancel_reason']:'',
+                                    'delivery_type' => $delivery_type,
+                                    'external_delivery_initiatedby' => ($value['external_delivery_initiatedby'])?$value['external_delivery_initiatedby']:'',
+                                    'order_time'=>($value['create_datetime'])?$value['create_datetime']:''
+                                ];
+                            }
+                        $response['status'] = 200;
+                        $response['message'] = 'Cancelled Order List';
+                } else {
+                        $response['status'] = 404;
+                        $response['message'] = 'Cancelled Order List';
+                }
+            /*}else{
+                $response['status'] = 401;
+                $response['message'] = 'Unauthenticated';
+            }*/
+        
+        $response['data']->content = $cancel;
+        
+        return decode_string($response, 200);
+    }
 }
