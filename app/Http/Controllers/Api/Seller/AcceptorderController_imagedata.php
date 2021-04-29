@@ -643,9 +643,9 @@ class AcceptorderController_imagedata extends Controller
             $data_array = $data_array['data']; 
         }
 
-      /*  $token =  $request->bearerToken();
+        $token =  $request->bearerToken();
         $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
-        if(count($user)>0){*/
+        if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
                                     $mutiple_data = multiple_prescription::where(['prescription_id'=>$value['prescription_id'],'is_delete'=>'0'])->get();
@@ -690,10 +690,10 @@ class AcceptorderController_imagedata extends Controller
                         $response['status'] = 404;
                         $response['message'] = 'Cancelled Order List';
                 }
-            /*}else{
+            }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
-            }*/
+            }
         
         $response['data']->content = $cancel;
         
