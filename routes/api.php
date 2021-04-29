@@ -137,6 +137,7 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 
 	Route::post('/checking_by', 'AcceptorderController@checking_by');
 	Route::post('/order_list', 'AcceptorderController@order_list');
+	Route::post('/order_list_imagedata', 'AcceptorderController_imagedata@order_list_imagedata');
 	Route::post('/acceptorderlist', 'AcceptorderController@accept_order_list');
 	Route::post('/deliveryboylist', 'AcceptorderController@deliveryboy_list');
 	Route::post('/outoforderlist', 'AcceptorderController@outof_order_list');
