@@ -1022,4 +1022,365 @@ class AcceptorderController_imagedata extends Controller
         
         return decode_string($response, 200);
     }
+
+    public function order_detail_imagedata(Request $request)
+    {
+        $response = array();
+		$data = $request->input('data');
+		$encode_string = encode_string($data);
+		$content = json_decode($encode_string);
+        
+        $user_id = isset($content->user_id) ? $content->user_id : '';
+        $order_id = isset($content->order_id) ? $content->order_id : '';
+        
+        $params = [
+            'user_id' => $user_id,
+            'order_id' => $order_id
+        ];
+        
+        $validator = Validator::make($params, [
+            'user_id' => 'required',
+            'order_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return validation_error($validator->errors()->first());  
+        }
+        $orders = [];
+        $response['status'] = 200;
+        $response['message'] = '';
+        $response['data'] = (object)array();
+
+        $token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+        if(!empty($user)){
+                $order_details =  new_orders::select('id','prescription_id','customer_id','address_id','deliveryboy_id','delivery_charges_id','order_number','order_note','order_type','total_days','reminder_days','return_confirmtime','accept_datetime','reject_cancel_reason','reject_datetime','order_amount','cancel_datetime','created_at','order_status','external_delivery_initiatedby','create_datetime','pickup_datetime','deliver_datetime')->where('id' , $order_id)->orderBy('id', 'DESC')->first(); 
+                $order_details_complete =  new_order_history::select('id','prescription_id','customer_id','address_id','deliveryboy_id','delivery_charges_id','order_number','order_note','order_type','total_days','reminder_days','return_confirmtime','accept_datetime','reject_cancel_reason','reject_datetime','order_amount','cancel_datetime','created_at','order_status','external_delivery_initiatedby','create_datetime','pickup_datetime','deliver_datetime')->where('order_id' , $order_id)->orderBy('order_id', 'DESC')->first();
+
+                if(!empty($order_details)){
+                                    $mutiple_data = multiple_prescription::where(['prescription_id'=>$order_details->prescription_id,'is_delete'=>'0'])->get();
+										$mutiple_images = [];
+										if(count($mutiple_data)>0){
+												foreach ($mutiple_data as $mutiple) {
+													$mutiple_images[]=[
+													'id'	=> $mutiple->id,
+													'image' => $mutiple->image,
+												];	
+											}
+										} 
+                                $invoice_images=[];
+                                $invoice_data = invoice::where('order_id',$order_id)->get();
+                                foreach ($invoice_data as $invoice) {
+                                     $invoice_image = '';
+                                        if (!empty($invoice->invoice)) {
+
+                                            $filename = storage_path('app/public/uploads/invoice/' .  $invoice->invoice);
+                                        
+                                            if (File::exists($filename)) {
+                                                $invoice_image = asset('storage/app/public/uploads/invoice/' .  $invoice->invoice);
+                                            } else {
+                                                $invoice_image = '';
+                                            }
+                                        }
+                                    $invoice_images[] =[
+                                        'id' => $invoice->id,
+                                        'invoice' => $invoice_image
+                                    ];
+                                }
+
+                               $user_data = new_users::where('id',$order_details->customer_id)->first();
+                               if(!empty($user_data)){
+                                    $name = $user_data->name;
+                                    $mobile = $user_data->mobile_number;
+                               }else{
+                                    $name = '';
+                                    $mobile = '';
+                               }
+                               
+                               $address_data = new_address::where('id',$order_details->address_id)->first();
+                               if(!empty($address_data)){
+                                     $destination_address[] = [
+                                        'address_id' => $address_data->id,
+                                        'user_id' => $address_data->user_id,
+                                        'locality'=>$address_data->locality,
+                                        'address' =>$address_data->address,
+                                        'name' => $address_data->name,
+                                        'mobileno' =>$address_data->mobileno,
+                                        'blockno' =>$address_data->blockno,
+                                        'streetname'=>$address_data->streetname,
+                                        'city'=>$address_data->city,
+                                        'pincode'=>$address_data->pincode,
+                                        'latitude'=>$address_data->latitude,
+                                        'longitude'=>$address_data->longitude
+                                    ];
+                               }
+                                   
+                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$order_details->deliveryboy_id)->first();
+                                if(!empty($deliveryboy_name)){
+                                     $deliveryboy = $deliveryboy_name->name;
+                                }else{
+                                    $deliveryboy ='';
+                                }
+                               
+                                $delivery_type_data = new_delivery_charges::where('id',$order_details->delivery_charges_id)->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type = $delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
+                                }
+                                
+                                 $pickup_images=[];
+                                 $pickup_date = '';
+                                 if($order_details->order_status == 'pickup'){
+                                     $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
+                                    foreach ($pickup_data as $pickup) {
+                                            $pickup_image = '';
+                                            if (!empty($pickup->image_name)) {
+
+                                                $filename = storage_path('app/public/uploads/pickup/' .  $pickup->image_name);
+                                            
+                                                if (File::exists($filename)) {
+                                                    $pickup_image = asset('storage/app/public/uploads/pickup/' .  $pickup->image_name);
+                                                } else {
+                                                    $pickup_image = '';
+                                                }
+                                            }
+                                        $pickup_images[] =[
+                                            'id' => $pickup->id,
+                                            'pickup_image' => $pickup_image
+                                        ];
+                                    }
+                                    $pickup_date = $order_details->pickup_datetime;
+                                 }
+                                
+                                $delivered_images=[];
+                                $deliver_date = '';
+                                 if($order_details->order_status == 'complete'){  
+                                     $deliver_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'deliver'])->get();
+                                    foreach ($deliver_data as $deliver) {
+                                            $deliver_image = '';
+                                            if (!empty($deliver->image_name)) {
+
+                                                $filename = storage_path('app/public/uploads/deliver/' .  $deliver->image_name);
+                                            
+                                                if (File::exists($filename)) {
+                                                    $deliver_image = asset('storage/app/public/uploads/deliver/' .  $deliver->image_name);
+                                                } else {
+                                                    $deliver_image = '';
+                                                }
+                                            }
+                                        $delivered_images[] =[
+                                            'id' => $deliver->id,
+                                            'deliver_image' => $deliver_image
+                                        ];
+                                    }
+                                    $deliver_date = $order_details->deliver_datetime;
+                                }
+                              
+                                    $orders[] = [
+                                    'order_id' => $order_details->id,
+                                    'order_number' => $order_details->order_number,
+                                    'prescription_image' => $mutiple_images,
+                                    'invoice'=> $invoice_images,
+                                    'order_note' => $order_details->order_note,
+                                    'order_type' => $order_details->order_type,
+                                    'total_days' => ($order_details->total_days)?$order_details->total_days:'',
+                                    'reminder_days' => ($order_details->reminder_days)?$order_details->reminder_days:'',
+                                    'customer_name' => $name,
+                                    'mobile_number' => $mobile,
+                                    'return_confirmtime' => ($order_details->return_confirmtime)?$order_details->return_confirmtime:'',
+                                    'location' => ($destination_address)?$destination_address:'',
+                                    'order_assign_to' => $deliveryboy,
+                                    'deliver_to' =>  $name,
+                                    'accept_date' => ($order_details->accept_datetime)?$order_details->accept_datetime:'',
+                                    'deliver_date' => $deliver_date,
+                                    'assign_date' => ($order_details->assign_datetime)?$order_details->assign_datetime:'',
+                                    'cancel_reason' => ($order_details->reject_cancel_reason) ? $order_details->reject_cancel_reason: '',
+                                    'return_reason' => ($order_details->reject_cancel_reason) ? $order_details->reject_cancel_reason: '',
+                                    'reject_reason' => ($order_details->reject_cancel_reason) ?$order_details->reject_cancel_reason: '',
+                                    'return_date' => ($order_details->reject_datetime)?$order_details->reject_datetime:'',
+                                    'order_amount' => ($order_details->order_amount)?$order_details->order_amount:'',
+                                    'delivery_type' => $delivery_type,
+                                    'pickup_images' => $pickup_images,
+                                    'pickup_date' => $pickup_date,
+                                    'drop_images' => $delivered_images,
+                                    'drop_date' => $deliver_date,
+                                    'reject_date' => ($order_details->reject_datetime)?$order_details->reject_datetime:'',
+                                    'cancel_date' => ($order_details->cancel_datetime)?$order_details->cancel_datetime:'',
+                                    'received_date' => (date_format($order_details->created_at,"Y-m-d H:i:s"))?(date_format($order_details->created_at,"Y-m-d H:i:s")):'',
+                                    'order_status' => $order_details->order_status,
+                                    'external_delivery_initiatedby' => ($order_details->external_delivery_initiatedby)?$order_details->external_delivery_initiatedby:'',
+                                    'order_time'=>($order_details->create_datetime)?$order_details->create_datetime:''
+                                ];
+                        $response['status'] = 200;
+                        $response['message'] = 'Order Details';
+                } elseif (!empty($order_details_complete)) {
+                               $mutiple_data = multiple_prescription::where(['prescription_id'=>$order_details_complete->prescription_id,'is_delete'=>'0'])->get();
+										$mutiple_images = [];
+										if(count($mutiple_data)>0){
+												foreach ($mutiple_data as $mutiple) {
+													$mutiple_images[]=[
+													'id'	=> $mutiple->id,
+													'image' => $mutiple->image,
+												];	
+											}
+										} 
+                                $invoice_images=[];
+                                $invoice_data = invoice::where('order_id',$order_id)->get();
+                                foreach ($invoice_data as $invoice) {
+                                     $invoice_image = '';
+                                        if (!empty($invoice->invoice)) {
+
+                                            $filename = storage_path('app/public/uploads/invoice/' .  $invoice->invoice);
+                                        
+                                            if (File::exists($filename)) {
+                                                $invoice_image = asset('storage/app/public/uploads/invoice/' .  $invoice->invoice);
+                                            } else {
+                                                $invoice_image = '';
+                                            }
+                                        }
+                                    $invoice_images[] =[
+                                        'id' => $invoice->id,
+                                        'invoice' => $invoice_image
+                                    ];
+                                }
+
+                              $user_data = new_users::where('id',$order_details_complete->customer_id)->first();
+                               if(!empty($user_data)){
+                                    $name = $user_data->name;
+                                    $mobile = $user_data->mobile_number;
+                               }else{
+                                    $name = '';
+                                    $mobile = '';
+                               }
+                               
+                               $address_data = new_address::where('id',$order_details_complete->address_id)->first();
+                               if(!empty($address_data)){
+                                     $destination_address[] = [
+                                        'address_id' => $address_data->id,
+                                        'user_id' => $address_data->user_id,
+                                        'locality'=>$address_data->locality,
+                                        'address' =>$address_data->address,
+                                        'name' => $address_data->name,
+                                        'mobileno' =>$address_data->mobileno,
+                                        'blockno' =>$address_data->blockno,
+                                        'streetname'=>$address_data->streetname,
+                                        'city'=>$address_data->city,
+                                        'pincode'=>$address_data->pincode,
+                                        'latitude'=>$address_data->latitude,
+                                        'longitude'=>$address_data->longitude
+                                    ];
+                               }
+                                   
+                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$order_details_complete->deliveryboy_id)->first();
+                                if(!empty($deliveryboy_name)){
+                                     $deliveryboy = $deliveryboy_name->name;
+                                }else{
+                                    $deliveryboy ='';
+                                }
+                               
+                                $delivery_type_data = new_delivery_charges::where('id',$order_details_complete->delivery_charges_id)->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type = $delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
+                                }
+
+                                $pickup_images=[];
+                                $pickup_date = '';
+                                if($order_details_complete->order_status == 'pickup'){
+                                    $pickup_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'pickup'])->get();
+                                    foreach ($pickup_data as $pickup) {
+                                            $pickup_image = '';
+                                            if (!empty($pickup->image_name)) {
+
+                                                $filename = storage_path('app/public/uploads/pickup/' .  $pickup->image_name);
+                                            
+                                                if (File::exists($filename)) {
+                                                    $pickup_image = asset('storage/app/public/uploads/pickup/' .  $pickup->image_name);
+                                                } else {
+                                                    $pickup_image = '';
+                                                }
+                                            }
+                                            $pickup_images[] =[
+                                                'id' => $pickup->id,
+                                                'pickup_image' => $pickup_image
+                                            ];
+                                        }
+                                    $pickup_date = $order_details_complete->pickup_datetime;
+                                }
+                                
+                                $delivered_images=[];
+                                $deliver_date = '';
+                                 if($order_details_complete->order_status == 'complete'){  
+                                     $deliver_data = new_order_images::where(['order_id'=>$order_id,'image_type'=>'deliver'])->get();
+                                    foreach ($deliver_data as $deliver) {
+                                            $deliver_image = '';
+                                            if (!empty($deliver->image_name)) {
+
+                                                $filename = storage_path('app/public/uploads/deliver/' .  $deliver->image_name);
+                                            
+                                                if (File::exists($filename)) {
+                                                    $deliver_image = asset('storage/app/public/uploads/deliver/' .  $deliver->image_name);
+                                                } else {
+                                                    $deliver_image = '';
+                                                }
+                                            }
+                                        $delivered_images[] =[
+                                            'id' => $deliver->id,
+                                            'deliver_image' => $deliver_image
+                                        ];
+                                    }
+                                    $deliver_date = $order_details_complete->deliver_datetime;
+                                }
+                              
+                                    $orders[] = [
+                                    'order_id' => $order_details_complete->id,
+                                    'order_number' => $order_details_complete->order_number,
+                                    'prescription_image' => $mutiple_images,
+                                    'invoice'=> $invoice_images,
+                                    'order_note' => $order_details_complete->order_note,
+                                    'order_type' => $order_details_complete->order_type,
+                                    'total_days' => ($order_details_complete->total_days)?$order_details_complete->total_days:'',
+                                    'reminder_days' => ($order_details_complete->reminder_days)?$order_details_complete->reminder_days:'',
+                                    'customer_name' => $name,
+                                    'mobile_number' => $mobile,
+                                    'return_confirmtime' => ($order_details_complete->return_confirmtime)?$order_details_complete->return_confirmtime:'',
+                                    'location' => ($destination_address)?$destination_address:'',
+                                    'order_assign_to' => $deliveryboy,
+                                    'deliver_to' =>  $name,
+                                    'accept_date' => ($order_details_complete->accept_datetime)?$order_details_complete->accept_datetime:'',
+                                    'deliver_date' => $deliver_date,
+                                    'assign_date' => ($order_details_complete->assign_datetime)?$order_details_complete->assign_datetime:'',
+                                    'cancel_reason' => ($order_details_complete->reject_cancel_reason) ? $order_details_complete->reject_cancel_reason: '',
+                                    'return_reason' => ($order_details_complete->reject_cancel_reason) ? $order_details_complete->reject_cancel_reason: '',
+                                    'reject_reason' => ($order_details_complete->reject_cancel_reason) ?$order_details_complete->reject_cancel_reason: '',
+                                    'return_date' => ($order_details_complete->reject_datetime)?$order_details_complete->reject_datetime:'',
+                                    'order_amount' => ($order_details_complete->order_amount)?$order_details_complete->order_amount:'',
+                                    'delivery_type' => $delivery_type,
+                                    'pickup_images' => $pickup_images,
+                                    'pickup_date' => $pickup_date,
+                                    'drop_images' => $delivered_images,
+                                    'drop_date' => $deliver_date,
+                                    'reject_date' => ($order_details_complete->reject_datetime)?$order_details_complete->reject_datetime:'',
+                                    'cancel_date' => ($order_details_complete->cancel_datetime)?$order_details_complete->cancel_datetime:'',
+                                    'received_date' => (date_format($order_details_complete->created_at,"Y-m-d H:i:s"))?(date_format($order_details_complete->created_at,"Y-m-d H:i:s")):'',
+                                    'order_status' => $order_details_complete->order_status,
+                                    'external_delivery_initiatedby' => ($order_details_complete->external_delivery_initiatedby)?$order_details_complete->external_delivery_initiatedby:'',
+                                    'order_time'=>($order_details_complete->create_datetime)?$order_details_complete->create_datetime:''
+                                ];
+                        $response['status'] = 200;
+                        $response['message'] = 'Order Details';
+                } else {
+                        $response['status'] = 404;
+                }
+            }else{
+                $response['status'] = 401;
+                $response['message'] = 'Unauthenticated';
+            }
+        
+        $response['data'] = $orders;
+        
+        return decode_string($response, 200);
+    }
 }

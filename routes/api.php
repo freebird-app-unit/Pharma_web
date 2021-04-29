@@ -153,6 +153,7 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 	Route::post('/upcoming_order_details', 'AcceptorderController@upcoming_order_details');
 	Route::post('/complete_order_details', 'AcceptorderController@complete_order_details');
 	Route::post('/order_detail', 'AcceptorderController@order_detail');
+	Route::post('/order_detail_imagedata', 'AcceptorderController_imagedata@order_detail_imagedata');
 	Route::post('/accept_upcoming', 'AcceptorderController@accept_upcoming');
 	Route::post('/reject_upcoming', 'AcceptorderController@reject_upcoming');
 	Route::post('/invoice', 'AcceptorderController@invoice');
