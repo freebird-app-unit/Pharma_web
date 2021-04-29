@@ -325,7 +325,7 @@ class VoucherController extends Controller
 		->leftJoin('new_users', 'new_users.id', '=', 'new_order_history.customer_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
 		->leftJoin('new_pharmacies', 'new_pharmacies.id', '=', 'new_order_history.pharmacy_id')
-		->whereIn('id', $orderid_array);
+		->whereIn('new_order_history.id', $orderid_array);
 
         $total = $order_detail->count();
 		$total_page = ceil($total/$per_page);
