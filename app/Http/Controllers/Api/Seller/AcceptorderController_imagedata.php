@@ -901,4 +901,125 @@ class AcceptorderController_imagedata extends Controller
         
         return decode_string($response, 200);
     }
+
+    public function return_order_list_imagedata(Request $request){
+        $response = array();
+    		$data = $request->input('data');
+    		$encode_string = encode_string($data);
+    		$content = json_decode($encode_string);
+        
+        $user_id = isset($content->user_id) ? $content->user_id : '';
+        $search_text = isset($content->search_text) ? $content->search_text : '';
+        $page = isset($content->page) ? $content->page : '';
+
+        $params = [
+            'user_id' => $user_id
+        ];
+        
+        $validator = Validator::make($params, [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return validation_error($validator->errors()->first());  
+        }
+        $return = [];
+        $response['status'] = 200;
+        $response['message'] = '';
+        $response['data'] = (object)array();
+
+        if (!empty($user_id) && !empty($search_text)) {
+          $return_list = new_orders::select('new_orders.process_user_id','new_orders.order_status','new_orders.customer_id','new_orders.order_number','new_orders.id','new_orders.prescription_id','new_orders.reject_cancel_reason','new_orders.external_delivery_initiatedby','new_orders.create_datetime','u1.name','new_orders.delivery_charges_id','new_orders.return_confirmtime','new_orders.logistic_user_id','new_orders.pharmacy_id')->where(['new_orders.process_user_id' => $user_id, 'new_orders.order_status' => 'incomplete'])->leftJoin('new_users as u1', 'u1.id', '=', 'new_orders.customer_id')->where('u1.name', 'like', $search_text.'%')->orWhere('new_orders.order_number', 'like', $search_text.'%')->orderBy('new_orders.id', 'DESC');
+
+            $total = $return_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $return_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+        }else{
+            $return_list =  new_orders::select('process_user_id','order_status','customer_id','order_number','id','prescription_id','reject_cancel_reason','external_delivery_initiatedby','create_datetime','delivery_charges_id','return_confirmtime','logistic_user_id','pharmacy_id')->where('process_user_id', $user_id)->where('order_status','incomplete')->orderBy('id', 'DESC');
+            $total = $return_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $return_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+        }
+        $token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){
+                    if(count($data_array)>0){
+                             foreach($data_array as $value) {
+                                         $mutiple_data = multiple_prescription::where(['prescription_id'=>$value['prescription_id'],'is_delete'=>'0'])->get();
+										$mutiple_images = [];
+										if(count($mutiple_data)>0){
+												foreach ($mutiple_data as $mutiple) {
+													$mutiple_images[]=[
+													'id'	=> $mutiple->id,
+													'image' => $mutiple->image,
+												];	
+											}
+										} 
+                                $user_data = new_users::where('id',$value['customer_id'])->first();
+                                if(!empty($user_data)){
+                                    $name =$user_data->name;
+                                }else{
+                                    $name = '';
+                                }
+
+
+                                $delivery_type_data = new_delivery_charges::where('id',$value['delivery_charges_id'])->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type =$delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
+                                }
+
+                                $is_redelivery_data = new_pharmacies::where('id',$value['pharmacy_id'])->first();
+                                   
+                                        $return[] = [
+                                        'order_id' => $value['id'],
+                                        'order_number' => $value['order_number'],
+                                        'delivery_type' => $delivery_type,
+                                        'prescription_image' => $mutiple_images,
+                                        'customer_name' => $name,
+                                        'reason' => $value['reject_cancel_reason'],
+                                        'return_confirmtime' => ($value['return_confirmtime'])?$value['return_confirmtime']:'',
+                                        'delivery_charges_id' => $value['delivery_charges_id'],
+                                        'is_redelivery' => $is_redelivery_data['is_redelivery'],
+                                        'logistic_id' => $value['logistic_user_id'],
+                                        'external_delivery_initiatedby' => ($value['external_delivery_initiatedby'])?$value['external_delivery_initiatedby']:'',
+                                        'order_time'=>($value['create_datetime'])?$value['create_datetime']:''
+                                    ];
+                                }
+                            $response['status'] = 200;
+                            $response['message'] = 'Returned Order List';
+                    } else {
+                            $response['status'] = 404;
+                            $response['message'] = 'Returned Order List';
+                    }
+             }else{
+                $response['status'] = 401;
+                $response['message'] = 'Unauthenticated';
+             }
+        
+        $response['data']->content = $return;
+        
+        return decode_string($response, 200);
+    }
 }

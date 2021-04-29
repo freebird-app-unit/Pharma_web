@@ -162,6 +162,7 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 	Route::get('/reasonlist', 'AcceptorderController@reason_list');
 	Route::post('/add_time', 'AcceptorderController@add_time');
 	Route::post('/return_order_list', 'AcceptorderController@return_order_list');
+	Route::post('/return_order_list_imagedata', 'AcceptorderController_imagedata@return_order_list_imagedata');
 	Route::post('/delivery_charges_list', 'AcceptorderController@delivery_charges_list');
 	Route::post('/set_delivery_charges', 'AcceptorderController@set_delivery_charges');
 	Route::post('/external_deliveryboy_list', 'AcceptorderController@external_deliveryboy_list');
