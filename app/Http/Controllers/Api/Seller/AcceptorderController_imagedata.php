@@ -46,22 +46,34 @@ class AcceptorderController_imagedata extends Controller
     public function order_list_imagedata(Request $request)
     {
         $response = array();
-    	$data = $request->input('data');
-    	$encode_string = encode_string($data);
-    	$content = json_decode($encode_string);
+            $data = $request->input('data');
+            $encode_string = encode_string($data);
+            $content = json_decode($encode_string);
+        
+        //without helper
+        //$content = json_decode($data);
+        $pharmacy_id = isset($content->pharmacy_id) ? $content->pharmacy_id : '';
+        $user_id = isset($content->user_id) ? $content->user_id : '';
+        $search_text = isset($content->search_text) ? $content->search_text : '';
+        $page = isset($content->page) ? $content->page : '';
 
-    	//without helper
-		//$content = json_decode($data);    	
+        $params = [
+            'pharmacy_id' => $pharmacy_id,
+            'user_id' => $user_id
+        ];
+        
+        $validator = Validator::make($params, [
+            'pharmacy_id' => 'required',
+            'user_id' => 'required'
+        ]);
 
+        if ($validator->fails()) {
+            return validation_error($validator->errors()->first());  
+        }
         $order = [];
         $response['status'] = 200;
         $response['message'] = '';
         $response['data'] = (object)array();
-
-        $pharmacy_id = isset($content->pharmacy_id) ? $content->pharmacy_id : '';
-        $search_text = isset($content->search_text) ? $content->search_text : '';
-        $user_id = isset($content->user_id) ? $content->user_id : '';
-        $page = isset($content->page) ? $content->page : '';
 
         if (!empty($pharmacy_id) && !empty($search_text)) {
          $order_list = new_orders::select('new_orders.id','new_orders.pharmacy_id','new_orders.order_status','new_orders.customer_id','new_orders.order_number','new_orders.checking_by','new_orders.delivery_charges_id','new_orders.order_note','new_orders.order_type','new_orders.total_days','new_orders.prescription_id','new_orders.external_delivery_initiatedby','new_orders.create_datetime','u1.name')->where(['new_orders.pharmacy_id' => $pharmacy_id, 'new_orders.order_status' => 'new'])->leftJoin('new_users as u1', 'u1.id', '=', 'new_orders.customer_id')->where('u1.name', 'like', $search_text.'%')->orWhere('new_orders.order_number', 'like', $search_text.'%')->orderBy('new_orders.id', 'DESC');
