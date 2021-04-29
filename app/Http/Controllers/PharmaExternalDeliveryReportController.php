@@ -197,7 +197,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 		        }elseif($record_display == 'custom_date'){
 		            $start_date = $filter_start_date;
 		            $end_date = $filter_end_date;
-		            $delivered_return_count = $delivered_return_count->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
+		            $delivered_return_count = $delivered_return_count->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date);  
 		        }else{
 		            if(date('D')!='Mon'){    
 		                $start_date = date('Y-m-d',strtotime('last Monday'));    
