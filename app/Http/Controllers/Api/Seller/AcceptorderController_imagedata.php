@@ -285,4 +285,182 @@ class AcceptorderController_imagedata extends Controller
         
         return decode_string($response, 200);
     }
+
+    public function outoforderlist_imagedata(Request $request){
+        $response = array();
+    		$data = $request->input('data');
+    		$encode_string = encode_string($data);
+    		$content = json_decode($encode_string);
+        
+        $user_id = isset($content->user_id) ? $content->user_id : '';
+        $search_text = isset($content->search_text) ? $content->search_text : '';
+        $delivery_boy = isset($content->delivery_boy) ? $content->delivery_boy : '';
+        $order_status = isset($content->order_status) ? $content->order_status : '';
+        $page = isset($content->page) ? $content->page : '';
+        
+        $params = [
+            'user_id' => $user_id
+        ];
+        
+        $validator = Validator::make($params, [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return validation_error($validator->errors()->first());  
+        }
+        $outof = [];
+        $response['status'] = 200;
+        $response['message'] = '';
+        $response['data'] = (object)array();
+
+        if (!empty($user_id) && !empty($search_text)) {
+          $outofdelivery_list = new_orders::select('new_orders.process_user_id','new_orders.order_status','new_orders.customer_id','new_orders.order_number','new_orders.assign_datetime','new_orders.deliveryboy_id','u1.name','new_orders.prescription_id','new_orders.delivery_charges_id','new_orders.id','new_orders.accept_datetime','new_orders.order_amount','new_orders.pickup_datetime','new_orders.external_delivery_initiatedby','new_orders.create_datetime')->where('process_user_id',$user_id)->where(function($query) {
+                        $query->where('order_status','assign')
+                            ->orWhere('order_status','pickup')
+                            ->orWhere('order_status','accept');
+                    })->leftJoin('new_users as u1', 'u1.id', '=', 'new_orders.customer_id')->where('u1.name', 'like', $search_text.'%')->orWhere('new_orders.order_number', 'like', $search_text.'%')->orderBy('new_orders.id', 'DESC');
+
+            $total = $outofdelivery_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $outofdelivery_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+
+        }elseif(!empty($user_id) && !empty($delivery_boy)){
+             $outofdelivery_list = new_orders::select('process_user_id','order_status','customer_id','order_number','assign_datetime','deliveryboy_id','prescription_id','delivery_charges_id','id','accept_datetime','order_amount','pickup_datetime','external_delivery_initiatedby','create_datetime')->where('process_user_id',$user_id)->where(function($query) {
+                        $query->where('order_status','assign')
+                            ->orWhere('order_status','pickup')
+                            ->orWhere('order_status','accept');
+                    })->where('deliveryboy_id', 'like', $delivery_boy.'%')->orderBy('new_orders.id', 'DESC');
+            $total = $outofdelivery_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $outofdelivery_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+             
+        }elseif(!empty($user_id) && !empty($order_status)){
+          $outofdelivery_list = new_orders::select('process_user_id','order_status','customer_id','order_number','assign_datetime','deliveryboy_id','prescription_id','delivery_charges_id','id','accept_datetime','order_amount','pickup_datetime','external_delivery_initiatedby','create_datetime')->where('process_user_id',$user_id)->where('order_status', 'like', $order_status.'%')->orderBy('new_orders.id', 'DESC')->get();
+
+            $total = $outofdelivery_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $outofdelivery_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+
+        }else{
+               $outofdelivery_list = new_orders::select('process_user_id','order_status','customer_id','order_number','assign_datetime','deliveryboy_id','prescription_id','delivery_charges_id','id','accept_datetime','order_amount','pickup_datetime','external_delivery_initiatedby','create_datetime')->where('process_user_id',$user_id)->where(function($query) {
+                        $query->where('order_status','assign')
+                            ->orWhere('order_status','pickup');
+                    })->orderBy('new_orders.id', 'DESC');
+
+            $total = $outofdelivery_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $outofdelivery_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+        }
+
+        /*$token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){*/
+                if(!empty($data_array)){
+                         foreach($data_array as $value) {
+                                    $mutiple_data = multiple_prescription::where(['prescription_id'=>$value['prescription_id'],'is_delete'=>'0'])->get();
+									$mutiple_images = [];
+									if(count($mutiple_data)>0){
+											foreach ($mutiple_data as $mutiple) {
+												$mutiple_images[]=[
+												'id'	=> $mutiple->id,
+												'image' => $mutiple->image,
+											];	
+										}
+									} 
+                                $user_data = new_users::where('id',$value['customer_id'])->first();
+                                if(!empty($user_data)){
+                                    $name =$user_data->name;
+                                    $mobile =$user_data->mobile_number;
+                                }else{
+                                    $name = '';
+                                    $mobile = '';
+                                }
+
+
+                                $delivery_type_data = new_delivery_charges::where('id',$value['delivery_charges_id'])->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type =$delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = 'free';
+                                }
+
+                                $delivery_name_data = new_pharma_logistic_employee::where('id', $value['deliveryboy_id'])->first();
+                                if(!empty($delivery_name_data)){
+                                    $delivery_name =$delivery_name_data->name;
+                                }else{
+                                    $delivery_name = '';
+                                }
+
+                                    $outof[] = [
+                                    'order_id' => $value['id'],
+                                    'order_number' => $value['order_number'],
+                                    'prescription_image' => $mutiple_images,
+                                    'customer_name' => $name,
+                                    'mobile_number' => $mobile,
+                                    'deliveryboy_id' => $value['deliveryboy_id'],
+                                    'deliveryboy_name' => $delivery_name,
+                                    'accepted_date' => ($value['accept_datetime'])?$value['accept_datetime']:'',
+                                    'assigned_date' => ($value['assign_datetime'])?$value['assign_datetime']:'',
+                                    'delivery_type' => $delivery_type,
+                                    'order_amount' => ($value['order_amount'])?$value['order_amount']:'',
+                                    'pickup_date'=> ($value['pickup_datetime'])?$value['pickup_datetime']:'',
+                                    'order_status' => $value['order_status'],
+                                    'external_delivery_initiatedby' => ($value['external_delivery_initiatedby'])?$value['external_delivery_initiatedby']:'',
+                                    'order_time'=>($value['create_datetime'])?$value['create_datetime']:''
+                                ];
+                            }
+                        $response['status'] = 200;
+                        $response['message'] = 'Out Of Delivery List';
+                } else {
+                        $response['status'] = 404;
+                        $response['message'] = 'Out Of Delivery List';
+                }
+        /* }else{
+                $response['status'] = 401;
+                $response['message'] = 'Unauthenticated';
+         }*/
+        $response['data']->content = $outof;
+        return decode_string($response, 200);
+    }
 }
