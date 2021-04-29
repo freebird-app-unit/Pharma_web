@@ -20,6 +20,7 @@ use App\new_orders;
 use App\new_users;
 use App\new_pharmacies;
 use App\new_delivery_charges;
+use Helper;
 
 class IncompleteController extends Controller
 {
@@ -360,7 +361,18 @@ class IncompleteController extends Controller
 			$assign->save();
 			// PHAR319451
 		}
-
+		
+		$user_id = Auth::user()->user_id;
+		$user_type = Auth::user()->user_type;
+		$delivery = new_pharma_logistic_employee::find($request->delivery_boy);
+		$ids = array();
+		$ids[] = $delivery->fcm_token;
+		$receiver_id = array();
+		$receiver_id[] = $delivery->id;
+		if (count($ids) > 0) {				
+			Helper::sendNotificationDeliveryboy($ids, 'Order Number '.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $delivery->id, 'delivery_boy', $delivery->fcm_token);
+		}
+		
 		return redirect(route('incomplete.index'))->with('success_message', trans('Order Successfully assign'));
 	}
 
