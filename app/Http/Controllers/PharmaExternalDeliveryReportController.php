@@ -297,8 +297,8 @@ class PharmaExternalDeliveryReportController extends Controller{
 				$html.='<tr>
 					<td>'.$delivery_code.'</td>
 					<td><a href="'.$url.'">'.$number_of_delivery_count.'</a></td>
-                    <td>'.$delivered_return_count.'</td>
-					<td>'.$total_amount.'</td>';
+                    <td>'.$total_amount.'</td>
+					<td>'.$delivered_return_count.'</td>';
 				$html.='</tr>';
 				
 			}
@@ -345,7 +345,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 		$data['page_condition'] = 'page_pharma_external_delivery_report';
         $data['site_title'] = 'External Delivery Report | ' . $this->data['site_title'];
 		
-		$number_of_delivery_new_order = new_orders::select('id','order_number','order_status','order_note','create_datetime','deliver_datetime','order_amount','accept_datetime')->where('deliveryboy_id','=',$delivery_id)->where('order_status','=','complete');
+		$number_of_delivery_new_order = new_orders::select('id','order_number','order_status','order_note','create_datetime','deliver_datetime','order_amount','accept_datetime')->where('logistic_user_id','=',$delivery_id)->where('order_status','=','complete');
         if($record_display == 'yearly'){
 			$record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 			$start_date = date('Y-01-01');
@@ -377,7 +377,7 @@ class PharmaExternalDeliveryReportController extends Controller{
 		    }
 		    $number_of_delivery_new_order = $number_of_delivery_new_order->whereDate('accept_datetime','>=',$start_date)->whereDate('accept_datetime','<=',$end_date); 
 		}
-        $number_of_delivery_count = new_order_history::select('id','order_number','order_status','order_note','create_datetime','deliver_datetime','order_amount','accept_datetime')->where('deliveryboy_id','=',$delivery_id)->where('order_status','=','complete');
+        $number_of_delivery_count = new_order_history::select('id','order_number','order_status','order_note','create_datetime','deliver_datetime','order_amount','accept_datetime')->where('logistic_user_id','=',$delivery_id)->where('order_status','=','complete');
         if($record_display == 'yearly'){
 			$record_yearly = (isset($_REQUEST['record_yearly']))?$_REQUEST['record_yearly']:'2000';
 		    $start_date = date('Y-01-01');
