@@ -148,6 +148,7 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 	Route::post('/cancelorderlist_seller', 'AcceptorderController@cancel_order_list');
 	Route::post('/cancelorderlist_seller_imagedata', 'AcceptorderController_imagedata@cancelorderlist_seller_imagedata');
 	Route::post('/completeorderlist', 'AcceptorderController@complete_order_list');
+	Route::post('/completeorderlist_imagedata', 'AcceptorderController_imagedata@completeorderlist_imagedata');
 	Route::post('/order_details', 'AcceptorderController@order_details');
 	Route::post('/upcoming_order_details', 'AcceptorderController@upcoming_order_details');
 	Route::post('/complete_order_details', 'AcceptorderController@complete_order_details');

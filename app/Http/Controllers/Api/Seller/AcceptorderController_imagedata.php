@@ -699,4 +699,206 @@ class AcceptorderController_imagedata extends Controller
         
         return decode_string($response, 200);
     }
+
+    public function completeorderlist_imagedata(Request $request){
+        $response = array();
+    		$data = $request->input('data');
+    		$encode_string = encode_string($data);
+    		$content = json_decode($encode_string);
+        
+        $user_id = isset($content->user_id) ? $content->user_id : '';
+        $search_text = isset($content->search_text) ? $content->search_text : '';
+        $delivery_boy = isset($content->delivery_boy) ? $content->delivery_boy : '';
+        $start_date = isset($content->start_date) ? $content->start_date : '';
+        $end_date   = isset($content->end_date) ? $content->end_date : '';
+        $logistic_id   = isset($content->logistic_id) ? $content->logistic_id : '';
+        $page = isset($content->page) ? $content->page : '';
+
+        $params = [
+            'user_id' => $user_id
+        ];
+        
+        $validator = Validator::make($params, [
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return validation_error($validator->errors()->first());  
+        }
+        $complete = [];
+        $response['status'] = 200;
+        $response['message'] = '';
+        $response['data'] = (object)array();
+
+        if (!empty($user_id) && !empty($search_text)) {
+          $complete_list = new_order_history::select('u1.name','new_order_history.process_user_id','new_order_history.customer_id','new_order_history.deliver_datetime','new_order_history.order_status','new_order_history.order_number','new_order_history.created_at','new_order_history.deliveryboy_id','new_order_history.prescription_id','new_order_history.delivery_charges_id','new_order_history.order_id','new_order_history.id','new_order_history.assign_datetime','new_order_history.external_delivery_initiatedby','new_order_history.create_datetime','new_order_history.logistic_user_id')->where(['new_order_history.process_user_id' => $user_id, 'new_order_history.order_status' => 'complete'])->leftJoin('new_users as u1', 'u1.id', '=', 'new_order_history.customer_id')->where('u1.name', 'like', $search_text.'%')->orWhere('new_order_history.order_number', 'like', $search_text.'%')->orderBy('new_order_history.deliver_datetime', 'DESC');
+
+            $total = $complete_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $complete_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+             
+        }else if(!empty($user_id) && !empty($start_date) && !empty($end_date) && !empty($delivery_boy)) { 
+             $complete_list= new_order_history::select('process_user_id','customer_id','deliver_datetime','order_status','order_number','created_at','deliveryboy_id','prescription_id','delivery_charges_id','order_id','id','assign_datetime','external_delivery_initiatedby','create_datetime','logistic_user_id')->whereBetween('created_at', [$start_date.' 00:00:00',$end_date.' 23:59:59'])->where(['process_user_id' => $user_id, 'order_status' => 'complete','deliveryboy_id'=> $delivery_boy])->orderBy('deliver_datetime', 'DESC');
+
+            $total = $complete_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $complete_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+        }else if(!empty($user_id) && !empty($start_date) && !empty($end_date)) { 
+            $complete_list= new_order_history::select('process_user_id','customer_id','deliver_datetime','order_status','order_number','created_at','deliveryboy_id','prescription_id','delivery_charges_id','order_id','id','assign_datetime','external_delivery_initiatedby','create_datetime','logistic_user_id')->whereBetween('created_at', [$start_date.' 00:00:00',$end_date.' 23:59:59'])->where(['process_user_id' => $user_id, 'order_status' => 'complete'])->orderBy('deliver_datetime', 'DESC');
+
+            $total = $complete_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $complete_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+        }else if(!empty($user_id) && !empty($delivery_boy)){
+            $complete_list = new_order_history::select('process_user_id','customer_id','deliver_datetime','order_status','order_number','created_at','deliveryboy_id','prescription_id','delivery_charges_id','order_id','id','assign_datetime','external_delivery_initiatedby','create_datetime','logistic_user_id')->where('deliveryboy_id', 'like', '%' .$search_text . '%')->where(['process_user_id' => $user_id, 'order_status' => 'complete','deliveryboy_id' => $delivery_boy])->orderBy('deliver_datetime', 'DESC');
+
+            $total = $complete_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $complete_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+        }else if(!empty($user_id) && !empty($logistic_id)){
+            $complete_list = new_order_history::select('process_user_id','customer_id','deliver_datetime','order_status','order_number','created_at','deliveryboy_id','prescription_id','delivery_charges_id','order_id','id','assign_datetime','external_delivery_initiatedby','create_datetime','logistic_user_id')->where('logistic_user_id', 'like', '%' .$search_text . '%')->where(['process_user_id' => $user_id, 'order_status' => 'complete','logistic_user_id' => $logistic_id])->orderBy('deliver_datetime', 'DESC');
+
+            $total = $complete_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $complete_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+        }else{
+               $complete_list =  new_order_history::select('process_user_id','customer_id','deliver_datetime','order_status','order_number','created_at','deliveryboy_id','prescription_id','delivery_charges_id','order_id','id','assign_datetime','external_delivery_initiatedby','create_datetime','logistic_user_id')->where('process_user_id', $user_id)->where('order_status','complete')->orderBy('deliver_datetime', 'DESC');
+
+            $total = $complete_list->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $complete_list->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data'];
+        }
+
+        $token =  $request->bearerToken();
+        $user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->get();
+        if(count($user)>0){
+                if(count($data_array)>0){
+                         foreach($data_array as $value) {
+                                    $mutiple_data = multiple_prescription::where(['prescription_id'=>$value['prescription_id'],'is_delete'=>'0'])->get();
+										$mutiple_images = [];
+										if(count($mutiple_data)>0){
+												foreach ($mutiple_data as $mutiple) {
+													$mutiple_images[]=[
+													'id'	=> $mutiple->id,
+													'image' => $mutiple->image,
+												];	
+											}
+										} 
+                                $user_data = new_users::where('id',$value['customer_id'])->first();
+                                if(!empty($user_data)){
+                                    $name =$user_data->name;
+                                    $mobile =$user_data->mobile_number;
+                                }else{
+                                    $name = '';
+                                    $mobile='';
+                                }
+
+                                $delivery_type_data = new_delivery_charges::where('id',$value['delivery_charges_id'])->first();
+                                if(!empty($delivery_type_data)){
+                                    $delivery_type =$delivery_type_data->delivery_type;
+                                }else{
+                                    $delivery_type = '';
+                                }
+
+                                $deliveryboy_name = new_pharma_logistic_employee::where('id',$value['deliveryboy_id'])->first();
+                                if(!empty($deliveryboy_name)){
+                                    $deliveryboy =$deliveryboy_name->name;
+                                    $deliveryboy_mobile =$deliveryboy_name->mobile_number;
+                                }else{
+                                    $deliveryboy='';
+                                    $deliveryboy_mobile='';
+                                }
+                                
+                                $complete[] = [
+                                    'order_id' => $value['order_id'],
+                                    'order_number' => $value['order_number'],
+                                    'prescription_image' => $mutiple_images,
+                                    'customer_name' => $name,
+                                    'customer_mobilenumber' =>$mobile,
+                                    'deliveryboy_id' => $value['deliveryboy_id'],
+                                    'deliveryboy_name' => $deliveryboy,
+                                    'deliveryboy_mobilenumber' =>$deliveryboy_mobile,
+                                    'order_assign_to' => $deliveryboy,
+                                    'date' => ($value['assign_datetime'])?$value['assign_datetime']:'',
+                                    'delivery_type' => $delivery_type,
+                                    'delivered_date' => ($value['deliver_datetime'])?$value['deliver_datetime']:'',
+                                    'external_delivery_initiatedby' => ($value['external_delivery_initiatedby'])?$value['external_delivery_initiatedby']:'',
+                                    'order_time'=>($value['create_datetime'])?$value['create_datetime']:''
+                                ];
+                            }
+                        $response['status'] = 200;
+                        $response['message'] = 'Completed Order List';
+                } else {
+                        $response['status'] = 404;
+                        $response['message'] = 'Completed Order List';
+                }
+            }else{
+                $response['status'] = 401;
+                $response['message'] = 'Unauthenticated';
+            }
+        
+        $response['data']->content = $complete;
+        
+        return decode_string($response, 200);
+    }
 }
