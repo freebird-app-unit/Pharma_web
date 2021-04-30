@@ -351,7 +351,10 @@
                             </li>
                            <!--  <li>
                                 <a href="{{ route('acceptorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_acceptorder')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Accept Orders Script') }}</span></a> 
-                            </li>  -->
+                            </li> 
+                            <li>
+                                <a href="{{ route('assignorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_assignorder')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Assign Orders Script') }}</span></a> 
+                            </li> -->
 							<li>
 								<a href="{{ route('adminupcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_adminacceptedorders' || $page_condition=='page_adminupcomingorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/></i> <span>{{ __('Live Orders') }}</span></a>
 							</li>
@@ -716,6 +719,9 @@
 	@endif
 	@if($page_condition=='page_termscondition')
 		<script src="{{ asset('public/admin/js/termscondition.js') }}"></script> 
+	@endif
+	@if($page_condition=='page_assignorder')
+		<script src="{{ asset('public/admin/js/assignorder.js') }}"></script>
 	@endif
 	@if($page_condition=='page_order_report')
 		<script src="{{ asset('public/admin/js/order_report.js') }}"></script>

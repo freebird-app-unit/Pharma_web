@@ -435,6 +435,14 @@ Route::get('get-order-list','Script_Acceptordercontroller@getorderList');
 Route::get('get-customer-list','Script_Acceptordercontroller@getcustomerList');
 Route::get('get-seller-list','Script_Acceptordercontroller@getsellerList');
 
+//assign order script
+Route::get('/assignorder/create', array('as' => 'assignorder.create', 'uses' => 'Script_assignordercontroller@create'));
+Route::post('/assignorder/create', array('as' => 'assignorder.create', 'uses' => 'Script_assignordercontroller@store'));
+Route::get('assign/get-order-list','Script_assignordercontroller@getorderList');
+Route::get('assign/get-customer-list','Script_assignordercontroller@getcustomerList');
+Route::get('assign/get-deliveryboy-list','Script_assignordercontroller@getdeliveryboyList');
+
+
 // packages
 Route::get('/packages', 'PackagesController@index');
 Route::post('package_add', 'PackagesController@save');
