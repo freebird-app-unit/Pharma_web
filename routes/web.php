@@ -431,6 +431,7 @@ Route::get('get-address-list','Createordercontroller@getaddressList');
 
 //accept and reject order script
 Route::get('/acceptorder/accept', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@create'));
+Route::post('/acceptorder/accept', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@store'));
 Route::get('get-order-list','Script_Acceptordercontroller@getorderList');
 Route::get('get-customer-list','Script_Acceptordercontroller@getcustomerList');
 Route::get('get-seller-list','Script_Acceptordercontroller@getsellerList');
