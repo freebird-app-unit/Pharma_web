@@ -121,7 +121,8 @@ Route::group(['namespace' => 'Api'], function () {
 	
 	Route::get('/webhook/notify', 'WebhooknotifyController@webhooknotify');
 	Route::post('/checkversion', 'CheckversionController@index');
-	Route::post('/add_records', 'OrderController@add_records');	
+	Route::post('/add_records', 'OrderController@add_records');
+	Route::post('/patient_report_add', 'PatientReportController@patient_report_add');	
 });
 
 
