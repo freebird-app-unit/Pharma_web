@@ -1433,8 +1433,8 @@ class OrderController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$is_completed = isset($content->is_completed) ? $content->is_completed : '';
@@ -1453,9 +1453,9 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
 		}
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 		$orders_arr_data1 = array();
 
 		if ($is_completed == 0) {
@@ -1529,7 +1529,7 @@ class OrderController extends Controller
 				$mutiple_images = [];
 				foreach ($mutiple_data as $value) {
 						$mutiple_images[]=[
-						'id'	=> $value->id,
+						'id'	=> $value->multiple_prescription_id,
 						'image' => $value->image,
 					];	
 				}
@@ -1566,14 +1566,14 @@ class OrderController extends Controller
 			$response['status'] = 404;
 		}
 		$response['data']->content = $orders_arr_data1;
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	}
 	public function mycartdetail_imagedata(Request $request)
 	{
@@ -1588,8 +1588,8 @@ class OrderController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$order_id = isset($content->order_id) ? $content->order_id : '';
@@ -1607,9 +1607,9 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 		$orders_data1 = new_orders::with('prescriptions')->where(['customer_id'=>$user_id,'id'=> $order_id])->get();
 		$orders_data2 = new_order_history::with('prescriptions')->where(['customer_id'=>$user_id,'id'=> $order_id])->get();
 
@@ -1623,7 +1623,7 @@ class OrderController extends Controller
 				$mutiple_images = [];
 				foreach ($mutiple_data as $value) {
 						$mutiple_images[]=[
-						'id'	=> $value->id,
+						'id'	=> $value->multiple_prescription_id,
 						'image' => $value->image,
 					];	
 				}	
@@ -1735,14 +1735,14 @@ class OrderController extends Controller
 		}
 		$response['message'] = 'My cart detail';
 		$response['data'] = $orders_arr1;
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);	
+        return response($response, 200);	
 	}
 	public function createorder_imagedata(Request $request)
 	{
@@ -1760,8 +1760,8 @@ class OrderController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id       = isset($content->user_id) ? $content->user_id : '';
 		$pharmacy_id   = isset($content->pharmacy_id) ? $content->pharmacy_id : '';
@@ -1779,6 +1779,7 @@ class OrderController extends Controller
 		$is_external_delivery = isset($content->is_external_delivery) ? $content->is_external_delivery : '';
 		$is_intersection = isset($content->is_intersection) ? $content->is_intersection : '';
 		$prescription = isset($content->prescription) ? implode(' ',$content->prescription) : '';
+
 		$params = [
 			'user_id' => $user_id,
 			'pharmacy_id' => $pharmacy_id,
@@ -1801,42 +1802,51 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
-		
+		/*
 		$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->first();
-		if(!empty($user)){
+		if(!empty($user)){*/
 			$userdata = new_users::find($user_id);
+			
 			if($userdata){
 				
 				$pre = Prescription::where('id','=',$prescription_id);
 				$prescriptions = new Prescription();
-				
 				if (($pre->count()) == 0) {
 					$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$prescription_name,"is_delete"=>"0"])->get();
 					if(count($find_name)>0){
 						$response['status'] = 404;
 						$response['message'] = 'Prescription name already exists';
 						$response = json_encode($response);
-						$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+						//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 						
-						return response($cipher, 200);
+						return response($response, 200);
 					}else{
 						if (!empty($prescription)) {
 							$prescriptions = new Prescription();
 							$prescriptions->user_id = $user_id;
 							$prescriptions->name = $prescription_name;
-							$prescriptions->image = $prescription;
+							//$prescriptions->image = $prescription;
 							$prescriptions->prescription_date = date('Y-m-d H:i:s');
 							$prescriptions->save();
-							$prescription = $prescriptions->id;
-							$code_data = explode(' ',$prescriptions->image);
+							$prescription_id = $prescriptions->id;
+							$code_data = explode(' ',$prescription);
 							foreach ($code_data as $value) {
+								$check_table_empty = multiple_prescription::all();
+								$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+								if(!empty($last_id)){
+									$update_id = $last_id->multiple_prescription_id + 1;	
+								}
 								$abc= new multiple_prescription();
+								$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
 								$abc->user_id = $prescriptions->user_id;
 								$abc->prescription_id = $prescriptions->id;
 								$abc->prescription_name = $prescriptions->name;
 								$abc->image = $value;
-								$abc->prescription_date = $prescriptions->prescription_date;				
+								$abc->prescription_date = $prescriptions->prescription_date;
+								$abc->is_delete = "0";
+								$abc->created_at = date('Y-m-d H:i:s');
+								$abc->updated_at = date('Y-m-d H:i:s');				
 								$abc->save();
 							}
 						} else {
@@ -1844,14 +1854,15 @@ class OrderController extends Controller
 							$response['message'] = 'Please upload prescription';
 							
 							$response = json_encode($response);
-							$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+							//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 							
-							return response($cipher, 200);
+							return response($response, 200);
 						}
 					}
 				} else {
 					$pre = $pre->get();
-					$prescription = $prescription_id;
+					$prescription_id = $prescription_id;
+
 					//$prescriptions->image = $pre[0]->image;
 				} 
 				
@@ -1879,7 +1890,7 @@ class OrderController extends Controller
 					$neworder->external_delivery_initiatedby = 'customer';
 					$neworder->order_status = 'payment_pending';
 				}
-				$neworder->prescription_id = $prescription;
+				$neworder->prescription_id = $prescription_id;
 				$neworder->order_type = $order_type;
 				$neworder->total_days = $total_days;
 				$neworder->reminder_days = $reminder_days;
@@ -1928,10 +1939,10 @@ class OrderController extends Controller
 								$notification->save();
 							}
 							
-							if (count($ids) > 0) {					
+							/*if (count($ids) > 0) {					
 								Helper::sendNotification($ids, $message, 'Order Created', $user->id, 'user', $seller_id, 'seller', $ids);
 
-							}
+							}*/
 						}
 					}
 
@@ -1971,15 +1982,15 @@ class OrderController extends Controller
 				$response['data']['payment_url'] = 'create_transaction/'.$neworder->id;
 			}
 
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
 		
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	}
 	// public function sendNotification($reg_ids, $message, $title) {
 		

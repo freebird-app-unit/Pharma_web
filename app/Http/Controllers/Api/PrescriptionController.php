@@ -378,8 +378,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id    = isset($content->user_id) ? $content->user_id : '';
 		$searchtext = isset($content->searchtext) ? trim($content->searchtext) : ''; 
@@ -396,9 +396,9 @@ class PrescriptionController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }		
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 		if (!empty($searchtext)) {
 			$prescription = Prescription::select('id', 'name', 'image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
@@ -440,7 +440,7 @@ class PrescriptionController extends Controller
 				$mutiple_images = [];
 				foreach ($mutiple_data as $value) {
 						$mutiple_images[]=[
-						'id'	=> $value->id,
+						'id'	=> $value->multiple_prescription_id,
 						'image' => $value->image,
 					];	
 				}
@@ -455,15 +455,15 @@ class PrescriptionController extends Controller
 		} 
 		$response['message'] = 'Prescription List';
 		$response['data']->content = $prescription_arr;
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
 	            $response['data'] = [];
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	
 	}
 
