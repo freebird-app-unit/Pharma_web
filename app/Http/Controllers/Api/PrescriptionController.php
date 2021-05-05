@@ -285,23 +285,25 @@ class PrescriptionController extends Controller
 			//$prescriptions->image = $prescription_image;
 			$prescriptions->prescription_date = date('Y-m-d H:i:s');
 			$prescriptions->save();
-			$check_table_empty = multiple_prescription::all();
-			if(!empty($check_table_empty)){
-				//$abcd = multiple_prescription::where('user_id','39')->first();
-				$abcd = db::connection('mongodb')->table('multiple_prescription')->where('prescription_name','kapilsharma511')->get();
-				dd($abcd);
 				$code_data = explode(' ',$prescription_image);
 				foreach ($code_data as $value) {
-
+					$check_table_empty = multiple_prescription::all();
+					$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+					if(!empty($last_id)){
+						$update_id = $last_id->multiple_prescription_id + 1;	
+					}
 					$abc= new multiple_prescription();
+					$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
 					$abc->user_id = $prescriptions->user_id;
 					$abc->prescription_id = $prescriptions->id;
 					$abc->prescription_name = $prescriptions->name;
 					$abc->image = $value;
-					$abc->prescription_date = $prescriptions->prescription_date;				
+					$abc->prescription_date = $prescriptions->prescription_date;
+					$abc->is_delete = "0";
+					$abc->created_at = date('Y-m-d H:i:s');
+					$abc->updated_at = date('Y-m-d H:i:s');				
 					$abc->save();
 				}
-			}
 			$response['status'] = 200;
 			$response['message'] = 'Prescription saved successfully!';
 			$response['data'] = (object)array();
@@ -348,10 +350,10 @@ class PrescriptionController extends Controller
             return $this->send_error($validator->errors()->first());  
         }
 		
-		$prescription = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>$prescription_id,'id'=>$id])->first();
+		$prescription = multiple_prescription::where(['user_id'=>(int)$user_id,'prescription_id'=>(int)$prescription_id,'multiple_prescription_id'=>(int)$id])->first();
 		$prescription->is_delete='1';
 		$prescription->save();
-		$all_delete = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>$prescription_id,'is_delete'=>'0'])->get();
+		$all_delete = multiple_prescription::where(['user_id'=>(int)$user_id,'prescription_id'=>(int)$prescription_id,'is_delete'=>'0'])->get();
 		if(count($all_delete) == 0){
 			$delete_pre = Prescription::where(['id'=>$prescription_id,'user_id'=>$user_id])->first();
 			$delete_pre->is_delete='1';
