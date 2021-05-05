@@ -242,8 +242,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText); 
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data); 
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$name = isset($content->name) ? $content->name : '';
@@ -266,9 +266,9 @@ class PrescriptionController extends Controller
             return $this->send_error($validator->errors()->first());  
         }	
 
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 
 		$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$name,"is_delete"=>"0"])->get();
 		if(count($find_name)>0){
@@ -281,32 +281,36 @@ class PrescriptionController extends Controller
 			$prescriptions = new Prescription();
 			$prescriptions->user_id = $user_id;
 			$prescriptions->name = $name;
-			$prescriptions->image = $prescription_image;
+			//$prescriptions->image = $prescription_image;
 			$prescriptions->prescription_date = date('Y-m-d H:i:s');
 			$prescriptions->save();
+			$check_table_empty = multiple_prescription::all();
+			if(!empty($check_table_empty)){
+				dd($check_table_empty);
+				$code_data = explode(' ',$prescription_image);
+				foreach ($code_data as $value) {
 
-			$code_data = explode(' ',$prescriptions->image);
-			foreach ($code_data as $value) {
-				$abc= new multiple_prescription();
-				$abc->user_id = $prescriptions->user_id;
-				$abc->prescription_id = $prescriptions->id;
-				$abc->prescription_name = $prescriptions->name;
-				$abc->image = $value;
-				$abc->prescription_date = $prescriptions->prescription_date;				
-				$abc->save();
+					$abc= new multiple_prescription();
+					$abc->user_id = $prescriptions->user_id;
+					$abc->prescription_id = $prescriptions->id;
+					$abc->prescription_name = $prescriptions->name;
+					$abc->image = $value;
+					$abc->prescription_date = $prescriptions->prescription_date;				
+					$abc->save();
+				}
 			}
 			$response['status'] = 200;
 			$response['message'] = 'Prescription saved successfully!';
 			$response['data'] = (object)array();
 		}
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	
 	}
 
