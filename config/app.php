@@ -163,7 +163,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 		Intervention\Image\ImageServiceProvider::class,
 		Yajra\DataTables\DataTablesServiceProvider::class,
-
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
         /*
          * Package Service Providers...
          */
