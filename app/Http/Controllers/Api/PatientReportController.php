@@ -98,4 +98,153 @@ class PatientReportController extends Controller
 		
         return response($response, 200);
     }
+
+    public function patient_report_delete(Request $request)
+    {
+		$response = array();
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');	
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
+		
+		$user_id  = isset($content->user_id) ? $content->user_id : 0;
+		$patient_report_id  = isset($content->patient_report_id) ? $content->patient_report_id : 0;
+		$id  = isset($content->id) ? $content->id : 0;
+		
+		$params = [
+			'user_id' => $user_id,
+			'patient_report_id'     => $patient_report_id,
+			'id'     => $id
+		]; 
+		
+		$validator = Validator::make($params, [
+			'user_id' => 'required',
+			'patient_report_id' => 'required',
+            'id' => 'required'
+        ]);
+ 
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+        }
+		
+		$report = patient_report_image::where(['user_id'=>(int)$user_id,'patient_report_id'=>(int)$patient_report_id,'patient_report_image_id'=>(int)$id])->first();
+		$report->is_delete='1';
+		$report->save();
+		$all_delete = patient_report_image::where(['user_id'=>(int)$user_id,'patient_report_id'=>(int)$patient_report_id,'is_delete'=>'0'])->get();
+		if(count($all_delete) == 0){
+			$delete_pre = patient_report::where(['id'=>$patient_report_id,'user_id'=>$user_id])->first();
+			$delete_pre->is_delete='1';
+			$delete_pre->save();
+		}
+		$response['status'] = 200;
+		$response['message'] = 'Report successfully deleted!';    
+		
+		$response = json_encode($response);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($response, 200);
+    }
+
+    public function patient_report_display(Request $request)
+	{
+		$response = array();
+		$response['status'] = 200;
+		$response['message'] = '';
+		$response['data'] = (object)array();
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');	
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
+		
+		$user_id    = isset($content->user_id) ? $content->user_id : '';
+		$searchtext = isset($content->searchtext) ? trim($content->searchtext) : ''; 
+		$page = isset($content->page) ? $content->page : '';
+
+		$params = [
+			'user_id' => $user_id
+		]; 
+		
+		$validator = Validator::make($params, [
+            'user_id' => 'required'
+        ]);
+ 
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+        }		
+		/*$token =  $request->bearerToken();
+		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
+		if(count($user)>0){*/
+		if (!empty($searchtext)) {
+			$report = patient_report::select('id', 'name', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+
+			$total = $report->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $report->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+		} else {
+			$report = patient_report::select('id', 'name', 'created_at')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+
+			$total = $report->count();
+            $page = $page;
+            if($total > ($page*10)){
+              $is_record_available = 1;
+            }else{
+              $is_record_available = 0;
+            }
+            $per_page = 10;
+            $response['data']->currentPageIndex = $page;
+            $response['data']->totalPage = ceil($total/$per_page);
+            $orders = $report->paginate($per_page,'','',$page);
+            $data_array = $orders->toArray();
+            $data_array = $data_array['data']; 
+		}
+		
+		$report_arr = array();
+		if(count($data_array)>0){
+			foreach($data_array as $key=>$val){
+				$mutiple_data = patient_report_image::where(['patient_report_id'=>$val['id'],'is_delete'=>'0'])->get();
+				$mutiple_images = [];
+				foreach ($mutiple_data as $value) {
+						$mutiple_images[]=[
+						'id'	=> $value->patient_report_image_id,
+						'image' => $value->image,
+					];	
+				}
+				$report_arr[$key]['id'] = $val['id'];
+				$report_arr[$key]['name'] = $val['name'];
+				$report_arr[$key]['date'] = date('d-m-Y', strtotime($val['created_at']));
+				$report_arr[$key]['image_array'] = $mutiple_images;
+			}
+			$response['status'] = 200;
+		} else {
+			$response['status'] = 404;
+		} 
+		$response['message'] = 'Report List';
+		$response['data']->content = $report_arr;
+		/*}else{
+	    		$response['status'] = 401;
+	            $response['message'] = 'Unauthenticated';
+	            $response['data'] = [];
+	   	}*/
+        $response = json_encode($response);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($response, 200);
+	
+	}
 }
