@@ -12,6 +12,7 @@ use Validator;
 use Storage;
 use Image;
 use File;
+use DB;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class PrescriptionController extends Controller
@@ -286,7 +287,9 @@ class PrescriptionController extends Controller
 			$prescriptions->save();
 			$check_table_empty = multiple_prescription::all();
 			if(!empty($check_table_empty)){
-				dd($check_table_empty);
+				//$abcd = multiple_prescription::where('user_id','39')->first();
+				$abcd = db::connection('mongodb')->table('multiple_prescription')->where('prescription_name','kapilsharma511')->get();
+				dd($abcd);
 				$code_data = explode(' ',$prescription_image);
 				foreach ($code_data as $value) {
 
