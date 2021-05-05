@@ -119,7 +119,7 @@ class AcceptorderController_imagedata extends Controller
 							if(count($mutiple_data)>0){
 									foreach ($mutiple_data as $mutiple) {
 										$mutiple_images[]=[
-										'id'	=> $mutiple->id,
+										'id'	=> $mutiple->multiple_prescription_id,
 										'image' => $mutiple->image,
 									];	
 								}
@@ -252,7 +252,7 @@ class AcceptorderController_imagedata extends Controller
 									if(count($mutiple_data)>0){
 											foreach ($mutiple_data as $mutiple) {
 												$mutiple_images[]=[
-												'id'	=> $mutiple->id,
+												'id'	=> $mutiple->multiple_prescription_id,
 												'image' => $mutiple->image,
 											];	
 										}
@@ -421,7 +421,7 @@ class AcceptorderController_imagedata extends Controller
 									if(count($mutiple_data)>0){
 											foreach ($mutiple_data as $mutiple) {
 												$mutiple_images[]=[
-												'id'	=> $mutiple->id,
+												'id'	=> $mutiple->multiple_prescription_id,
 												'image' => $mutiple->image,
 											];	
 										}
@@ -554,7 +554,7 @@ class AcceptorderController_imagedata extends Controller
 										if(count($mutiple_data)>0){
 												foreach ($mutiple_data as $mutiple) {
 													$mutiple_images[]=[
-													'id'	=> $mutiple->id,
+													'id'	=> $mutiple->multiple_prescription_id,
 													'image' => $mutiple->image,
 												];	
 											}
@@ -671,7 +671,7 @@ class AcceptorderController_imagedata extends Controller
 										if(count($mutiple_data)>0){
 												foreach ($mutiple_data as $mutiple) {
 													$mutiple_images[]=[
-													'id'	=> $mutiple->id,
+													'id'	=> $mutiple->multiple_prescription_id,
 													'image' => $mutiple->image,
 												];	
 											}
@@ -857,7 +857,7 @@ class AcceptorderController_imagedata extends Controller
 										if(count($mutiple_data)>0){
 												foreach ($mutiple_data as $mutiple) {
 													$mutiple_images[]=[
-													'id'	=> $mutiple->id,
+													'id'	=> $mutiple->multiple_prescription_id,
 													'image' => $mutiple->image,
 												];	
 											}
@@ -988,7 +988,7 @@ class AcceptorderController_imagedata extends Controller
 										if(count($mutiple_data)>0){
 												foreach ($mutiple_data as $mutiple) {
 													$mutiple_images[]=[
-													'id'	=> $mutiple->id,
+													'id'	=> $mutiple->multiple_prescription_id,
 													'image' => $mutiple->image,
 												];	
 											}
@@ -1081,7 +1081,7 @@ class AcceptorderController_imagedata extends Controller
 										if(count($mutiple_data)>0){
 												foreach ($mutiple_data as $mutiple) {
 													$mutiple_images[]=[
-													'id'	=> $mutiple->id,
+													'id'	=> $mutiple->multiple_prescription_id,
 													'image' => $mutiple->image,
 												];	
 											}
@@ -1238,7 +1238,7 @@ class AcceptorderController_imagedata extends Controller
 										if(count($mutiple_data)>0){
 												foreach ($mutiple_data as $mutiple) {
 													$mutiple_images[]=[
-													'id'	=> $mutiple->id,
+													'id'	=> $mutiple->multiple_prescription_id,
 													'image' => $mutiple->image,
 												];	
 											}
