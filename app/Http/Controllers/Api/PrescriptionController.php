@@ -13,6 +13,7 @@ use Storage;
 use Image;
 use File;
 use DB;
+use Illuminate\Support\Str;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class PrescriptionController extends Controller
@@ -170,6 +171,7 @@ class PrescriptionController extends Controller
 			
 			return response($response, 200);
 		}
+
 		$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$name,"is_delete"=>"0"])->get();
 		if(count($find_name)>0){
 			$response['status'] = 404;
@@ -179,11 +181,38 @@ class PrescriptionController extends Controller
 			$prescriptions->user_id = $user_id;
 			$prescriptions->name = $name;
 			$prescriptions->image = $prescription_image;
+			$prescriptions->prescription_date = $prescription_date;
 			$prescriptions->save();
+
+			$check_table_empty = multiple_prescription::all();
+			$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+			if(!empty($last_id)){
+				$update_id = $last_id->multiple_prescription_id + 1;	
+			}
+			$abc= new multiple_prescription();
+			$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
+			$abc->user_id = $prescriptions->user_id;
+			$abc->prescription_id = $prescriptions->id;
+			$abc->prescription_name = $prescriptions->name;
+			$abc->image = base64_encode(file_get_contents($request->file('prescription')));
+			$abc->path = asset('storage/app/public/uploads/prescription/' . $prescription_image);
+			$abc->prescription_date = $prescriptions->prescription_date;
+			$abc->is_delete = "0";
+			$abc->created_at = date('Y-m-d H:i:s');
+			$abc->updated_at = date('Y-m-d H:i:s');				
+			$abc->save();
+
+			//restore image
+			$image = $abc->image;  // your base64 encoded
+		    $image = str_replace('data:image/png;base64,', '', $image);
+		    $image = str_replace(' ', '+', $image);
+		    $imageName = str::random(10) . '.png';
+			Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+
 			$response['status'] = 200;
 			$response['message'] = 'Prescription saved successfully!';
 			$response['data'] = (object)array();
-		}
+			}
 		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
