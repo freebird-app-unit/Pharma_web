@@ -448,6 +448,31 @@ class OrderController extends Controller
 						$prescriptions->image = $prescription_image;
 						$prescriptions->save();
 						$prescription = $prescriptions->id;
+
+						$check_table_empty = multiple_prescription::all();
+						$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+						if(!empty($last_id)){
+							$update_id = $last_id->multiple_prescription_id + 1;	
+						}
+						$abc= new multiple_prescription();
+						$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
+						$abc->user_id = $prescriptions->user_id;
+						$abc->prescription_id = $prescriptions->id;
+						$abc->prescription_name = $prescriptions->name;
+						$abc->image = base64_encode(file_get_contents($request->file('prescription')));
+						$abc->path = asset('storage/app/public/uploads/prescription/' . $prescription_image);
+						$abc->prescription_date = $prescriptions->prescription_date;
+						$abc->is_delete = "0";
+						$abc->created_at = date('Y-m-d H:i:s');
+						$abc->updated_at = date('Y-m-d H:i:s');				
+						$abc->save();
+
+						//restore image
+						$image = $abc->image;  // your base64 encoded
+					    $image = str_replace('data:image/png;base64,', '', $image);
+					    $image = str_replace(' ', '+', $image);
+					    $imageName = str::random(10) . '.png';
+						Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
 					}
 				} else {
 					$pre = $pre->get();
@@ -528,10 +553,10 @@ class OrderController extends Controller
 								$notification->save();
 							}
 							
-							if (count($ids) > 0) {					
+							/*if (count($ids) > 0) {					
 								Helper::sendNotification($ids, $message, 'Order Created', $user->id, 'user', $seller_id, 'seller', $ids);
 
-							}
+							}*/
 						}
 					}
 
