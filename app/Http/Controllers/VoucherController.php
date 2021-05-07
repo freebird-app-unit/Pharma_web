@@ -85,7 +85,7 @@ class VoucherController extends Controller
 		
 		$order_detail= $order_detail->where(function ($query) use($user_type,$user_id) {
                 $query->where('vouchers.payer_type',$user_type)
-				->orWhere('vouchers.payer_id',$user_id);
+				->orWhere('vouchers.payer_id',$user_id); 
             });
 		
 		if($search_text!=''){
