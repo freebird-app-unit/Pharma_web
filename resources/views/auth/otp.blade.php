@@ -27,12 +27,11 @@
 							</span>
 						</div>
 					</div>
-					<div class="text-danger" id="otp_timer">OTP Experied <span id="time">01:00</span> minutes!</div>
-					<div class="form-group text-center m-t-40" id="resend" style="display: none;">
-						<div class="col-xs-12">
-							<button class="btn btn-warning btn-block text-uppercase waves-effect waves-light" type="submit">{{ __('Resend') }}</button>			
-						</div>
-					</div>
+							<div class="text-danger" id="otp_timer">OTP Experied <span id="time">01:00</span> minutes!
+							</div>
+							<div class="text-danger" id="otp_timer_after" style="display: none;">OTP Experied <span id="time">00:00</span> minutes!
+							</div>
+							<button class="btn btn-white btn-block waves-effect waves-light col-xs-4" type="submit" id="resend" disabled><div style="text-align: right;">{{ __('Resend OTP') }}</div></button>			
 					<div class="form-group text-center m-t-40" id="verify">
 						<div class="col-xs-12">
 							<button class="btn btn-info btn-block text-uppercase waves-effect waves-light" type="submit">{{ __('Verify') }}</button>			
@@ -63,10 +62,11 @@
         display.textContent = minutes + ":" + seconds;
 
         if (--timer < 0) {
+        	var bt = document.getElementById('resend');
+        	bt.disabled = false;
             timer = duration;
-            $("#verify").hide();
-            $("#resend").show();
             $("#otp_timer").hide();
+            $("#otp_timer_after").show();
         }
     }, 1000);
 }

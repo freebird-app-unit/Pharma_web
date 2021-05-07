@@ -121,7 +121,7 @@ class LogisticupcomingController extends Controller
 					<td style="text-align:center;">'.$order->sellername.'</td>
 					<td style="text-align:center;">'.$order->order_amount.'</td>
 					<td style="text-align:center;">'.$order->assign_datetime.'</td>';
-				$html.='<td style="text-align:center;"><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a><a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a></td>';
+				$html.='<td style="white-space: nowrap"><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a><a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a></td>';
 				$html.='</tr>';
 			}
 			if($page==1){
