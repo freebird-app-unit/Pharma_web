@@ -7,7 +7,11 @@ use App\patient_report_image;
 use App\patient_report;
 use Illuminate\Validation\ValidationException;
 use Validator;
-
+use Storage;
+use Image;
+use File;
+use DB;
+use Illuminate\Support\Str;
 class PatientReportController extends Controller
 {
     public function patient_report_add(Request $request)
@@ -28,7 +32,6 @@ class PatientReportController extends Controller
 		$name = isset($content->name) ? $content->name : '';
 		$date = isset($content->date) ? $content->date : '';
 		$remarks = isset($content->remarks) ? $content->remarks : '';
-		$image = isset($content->image) ? implode(' ',$content->image) : '';
 
 		$params = [
 			'user_id' => $user_id,
@@ -52,17 +55,31 @@ class PatientReportController extends Controller
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
 		if(count($user)>0){*/
 
+		$patient_report_image = '';
+		if ($request->hasFile('patient_report')) {
+			
+			$image         = $request->file('patient_report');
+			$patient_report_image = time() . '.' . $image->getClientOriginalExtension();
+
+			$img = Image::make($image->getRealPath());
+			$img->stream(); // <-- Key point
+
+			Storage::disk('public')->put('uploads/patient_report/'.$patient_report_image, $img, 'public');
+		} else {
+			$response['status'] = 404;
+			$response['message'] = 'Please upload patient_report';
+			
+			return response($response, 200);
+		}
 		$find_name = patient_report::where(['user_id'=>$user_id,'name'=>$name,"is_delete"=>"0"])->get();
 		if(count($find_name)>0){
 			$response['status'] = 404;
 			$response['message'] = 'Report name already exists';
-		}elseif (empty($image)) {
-			$response['status'] = 404;
-			$response['message'] = 'Please upload report';
 		}else{
 			$reports = new patient_report();
 			$reports->user_id = $user_id;
 			$reports->name = $name;
+			$reports->image = $patient_report_image;
 			$reports->date = date('Y-m-d H:i:s');
 			$reports->remarks = $remarks;
 			$reports->save();
@@ -78,12 +95,20 @@ class PatientReportController extends Controller
 					$abc->user_id = $reports->user_id;
 					$abc->patient_report_id = $reports->id;
 					$abc->name = $reports->name;
-					$abc->image = $value;
+					$abc->image = base64_encode(file_get_contents($request->file('patient_report')));
+					$abc->path = asset('storage/app/public/uploads/patient_report/' . $patient_report_image);
 					$abc->date = $reports->date;
 					$abc->is_delete = "0";
 					$abc->created_at = date('Y-m-d H:i:s');
 					$abc->updated_at = date('Y-m-d H:i:s');				
 					$abc->save();
+
+					//restore image
+					$image = $abc->image;  // your base64 encoded
+				    $image = str_replace('data:image/png;base64,', '', $image);
+				    $image = str_replace(' ', '+', $image);
+				    $imageName = str::random(10) . '.png';
+					Storage::disk('public')->put('uploads/patient_report_restore/'.$imageName, base64_decode($image), 'public');
 				}
 			$response['status'] = 200;
 			$response['message'] = 'Report saved successfully!';
