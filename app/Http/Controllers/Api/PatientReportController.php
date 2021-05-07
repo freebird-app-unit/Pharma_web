@@ -202,7 +202,7 @@ class PatientReportController extends Controller
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
 		if(count($user)>0){*/
 		if (!empty($searchtext)) {
-			$report = patient_report::select('id', 'name', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+			$report = patient_report::select('id', 'name','image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
 			$total = $report->count();
             $page = $page;
@@ -218,7 +218,7 @@ class PatientReportController extends Controller
             $data_array = $orders->toArray();
             $data_array = $data_array['data']; 
 		} else {
-			$report = patient_report::select('id', 'name', 'created_at')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+			$report = patient_report::select('id', 'name','image', 'created_at')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
 			$total = $report->count();
             $page = $page;
@@ -238,18 +238,16 @@ class PatientReportController extends Controller
 		$report_arr = array();
 		if(count($data_array)>0){
 			foreach($data_array as $key=>$val){
-				$mutiple_data = patient_report_image::where(['patient_report_id'=>$val['id'],'is_delete'=>'0'])->get();
-				$mutiple_images = [];
-				foreach ($mutiple_data as $value) {
-						$mutiple_images[]=[
-						'id'	=> $value->patient_report_image_id,
-						'image' => $value->image,
-					];	
+				$file_name = '';
+				if (!empty($val['image'])) {
+					if (file_exists(storage_path('app/public/uploads/patient_report/'.$val['image']))){
+						$file_name = asset('storage/app/public/uploads/patient_report/' . $val['image']);
+					}
 				}
 				$report_arr[$key]['id'] = $val['id'];
 				$report_arr[$key]['name'] = $val['name'];
 				$report_arr[$key]['date'] = date('d-m-Y', strtotime($val['created_at']));
-				$report_arr[$key]['image_array'] = $mutiple_images;
+				$report_arr[$key]['image'] = $file_name;
 			}
 			$response['status'] = 200;
 		} else {
