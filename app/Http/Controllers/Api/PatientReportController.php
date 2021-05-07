@@ -136,18 +136,15 @@ class PatientReportController extends Controller
 		$content = json_decode($data);
 		
 		$user_id  = isset($content->user_id) ? $content->user_id : 0;
-		$patient_report_id  = isset($content->patient_report_id) ? $content->patient_report_id : 0;
 		$id  = isset($content->id) ? $content->id : 0;
 		
 		$params = [
 			'user_id' => $user_id,
-			'patient_report_id'     => $patient_report_id,
 			'id'     => $id
 		]; 
 		
 		$validator = Validator::make($params, [
 			'user_id' => 'required',
-			'patient_report_id' => 'required',
             'id' => 'required'
         ]);
  
@@ -155,15 +152,14 @@ class PatientReportController extends Controller
             return $this->send_error($validator->errors()->first());  
         }
 		
-		$report = patient_report_image::where(['user_id'=>(int)$user_id,'patient_report_id'=>(int)$patient_report_id,'patient_report_image_id'=>(int)$id])->first();
-		$report->is_delete='1';
-		$report->save();
-		$all_delete = patient_report_image::where(['user_id'=>(int)$user_id,'patient_report_id'=>(int)$patient_report_id,'is_delete'=>'0'])->get();
-		if(count($all_delete) == 0){
-			$delete_pre = patient_report::where(['id'=>$patient_report_id,'user_id'=>$user_id])->first();
-			$delete_pre->is_delete='1';
-			$delete_pre->save();
-		}
+		$patient_report = patient_report::where(['id'=>$id,'user_id'=>$user_id])->first();
+		$patient_report->is_delete='1';
+		$patient_report->save();
+
+		$delete_pre = patient_report_image::where(['patient_report_id'=>(int)$id,'user_id'=>(int)$user_id])->first();
+		$delete_pre->is_delete='1';
+		$delete_pre->save();
+
 		$response['status'] = 200;
 		$response['message'] = 'Report successfully deleted!';    
 		

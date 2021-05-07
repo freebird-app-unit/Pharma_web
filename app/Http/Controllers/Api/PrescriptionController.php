@@ -253,6 +253,10 @@ class PrescriptionController extends Controller
 		$prescription->is_delete="1";
 		$prescription->save();
 		
+		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id])->first();
+		$delete_pre->is_delete='1';
+		$delete_pre->save();
+
 		$response['status'] = 200;
 		$response['message'] = 'prescription successfully deleted!';    
 		
