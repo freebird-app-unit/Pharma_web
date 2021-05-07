@@ -19,6 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::group(['namespace' => 'Api'], function () {
+	Route::get('/get_test', 'bookcontroller@get_test');
+	Route::post('/add_test', 'bookcontroller@add_test');
 	Route::get('/event', 'EventController@event');
 	Route::post('/registration_otp', 'LoginController@registration_otp');
 	Route::post('/createaccount', 'LoginController@createaccount');
@@ -121,7 +123,10 @@ Route::group(['namespace' => 'Api'], function () {
 	
 	Route::get('/webhook/notify', 'WebhooknotifyController@webhooknotify');
 	Route::post('/checkversion', 'CheckversionController@index');
-	Route::post('/add_records', 'OrderController@add_records');	
+	Route::post('/add_records', 'OrderController@add_records');
+	Route::post('/patient_report_add', 'PatientReportController@patient_report_add');	
+	Route::post('/patient_report_delete', 'PatientReportController@patient_report_delete');	
+	Route::post('/patient_report_display', 'PatientReportController@patient_report_display');	
 });
 
 
@@ -153,6 +158,7 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 	Route::post('/upcoming_order_details', 'AcceptorderController@upcoming_order_details');
 	Route::post('/complete_order_details', 'AcceptorderController@complete_order_details');
 	Route::post('/order_detail', 'AcceptorderController@order_detail');
+	Route::post('/order_detail_imagedata', 'AcceptorderController_imagedata@order_detail_imagedata');
 	Route::post('/accept_upcoming', 'AcceptorderController@accept_upcoming');
 	Route::post('/reject_upcoming', 'AcceptorderController@reject_upcoming');
 	Route::post('/invoice', 'AcceptorderController@invoice');

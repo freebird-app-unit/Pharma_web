@@ -12,6 +12,8 @@ use Validator;
 use Storage;
 use Image;
 use File;
+use DB;
+use Illuminate\Support\Str;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class PrescriptionController extends Controller
@@ -169,6 +171,7 @@ class PrescriptionController extends Controller
 			
 			return response($response, 200);
 		}
+
 		$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$name,"is_delete"=>"0"])->get();
 		if(count($find_name)>0){
 			$response['status'] = 404;
@@ -178,11 +181,38 @@ class PrescriptionController extends Controller
 			$prescriptions->user_id = $user_id;
 			$prescriptions->name = $name;
 			$prescriptions->image = $prescription_image;
+			$prescriptions->prescription_date = $prescription_date;
 			$prescriptions->save();
+
+			$check_table_empty = multiple_prescription::all();
+			$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+			if(!empty($last_id)){
+				$update_id = $last_id->multiple_prescription_id + 1;	
+			}
+			$abc= new multiple_prescription();
+			$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
+			$abc->user_id = $prescriptions->user_id;
+			$abc->prescription_id = $prescriptions->id;
+			$abc->prescription_name = $prescriptions->name;
+			$abc->image = base64_encode(file_get_contents($request->file('prescription')));
+			$abc->path = asset('storage/app/public/uploads/prescription/' . $prescription_image);
+			$abc->prescription_date = $prescriptions->prescription_date;
+			$abc->is_delete = "0";
+			$abc->created_at = date('Y-m-d H:i:s');
+			$abc->updated_at = date('Y-m-d H:i:s');				
+			$abc->save();
+
+			//restore image
+			$image = $abc->image;  // your base64 encoded
+		    $image = str_replace('data:image/png;base64,', '', $image);
+		    $image = str_replace(' ', '+', $image);
+		    $imageName = str::random(10) . '.png';
+			Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+
 			$response['status'] = 200;
 			$response['message'] = 'Prescription saved successfully!';
 			$response['data'] = (object)array();
-		}
+			}
 		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
@@ -223,6 +253,10 @@ class PrescriptionController extends Controller
 		$prescription->is_delete="1";
 		$prescription->save();
 		
+		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id])->first();
+		$delete_pre->is_delete='1';
+		$delete_pre->save();
+
 		$response['status'] = 200;
 		$response['message'] = 'prescription successfully deleted!';    
 		
@@ -242,8 +276,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText); 
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data); 
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$name = isset($content->name) ? $content->name : '';
@@ -266,9 +300,9 @@ class PrescriptionController extends Controller
             return $this->send_error($validator->errors()->first());  
         }	
 
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 
 		$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$name,"is_delete"=>"0"])->get();
 		if(count($find_name)>0){
@@ -281,32 +315,40 @@ class PrescriptionController extends Controller
 			$prescriptions = new Prescription();
 			$prescriptions->user_id = $user_id;
 			$prescriptions->name = $name;
-			$prescriptions->image = $prescription_image;
+			//$prescriptions->image = $prescription_image;
 			$prescriptions->prescription_date = date('Y-m-d H:i:s');
 			$prescriptions->save();
-
-			$code_data = explode(' ',$prescriptions->image);
-			foreach ($code_data as $value) {
-				$abc= new multiple_prescription();
-				$abc->user_id = $prescriptions->user_id;
-				$abc->prescription_id = $prescriptions->id;
-				$abc->prescription_name = $prescriptions->name;
-				$abc->image = $value;
-				$abc->prescription_date = $prescriptions->prescription_date;				
-				$abc->save();
-			}
+				$code_data = explode(' ',$prescription_image);
+				foreach ($code_data as $value) {
+					$check_table_empty = multiple_prescription::all();
+					$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+					if(!empty($last_id)){
+						$update_id = $last_id->multiple_prescription_id + 1;	
+					}
+					$abc= new multiple_prescription();
+					$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
+					$abc->user_id = $prescriptions->user_id;
+					$abc->prescription_id = $prescriptions->id;
+					$abc->prescription_name = $prescriptions->name;
+					$abc->image = $value;
+					$abc->prescription_date = $prescriptions->prescription_date;
+					$abc->is_delete = "0";
+					$abc->created_at = date('Y-m-d H:i:s');
+					$abc->updated_at = date('Y-m-d H:i:s');				
+					$abc->save();
+				}
 			$response['status'] = 200;
 			$response['message'] = 'Prescription saved successfully!';
 			$response['data'] = (object)array();
 		}
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	
 	}
 
@@ -341,10 +383,10 @@ class PrescriptionController extends Controller
             return $this->send_error($validator->errors()->first());  
         }
 		
-		$prescription = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>$prescription_id,'id'=>$id])->first();
+		$prescription = multiple_prescription::where(['user_id'=>(int)$user_id,'prescription_id'=>(int)$prescription_id,'multiple_prescription_id'=>(int)$id])->first();
 		$prescription->is_delete='1';
 		$prescription->save();
-		$all_delete = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>$prescription_id,'is_delete'=>'0'])->get();
+		$all_delete = multiple_prescription::where(['user_id'=>(int)$user_id,'prescription_id'=>(int)$prescription_id,'is_delete'=>'0'])->get();
 		if(count($all_delete) == 0){
 			$delete_pre = Prescription::where(['id'=>$prescription_id,'user_id'=>$user_id])->first();
 			$delete_pre->is_delete='1';
@@ -369,8 +411,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id    = isset($content->user_id) ? $content->user_id : '';
 		$searchtext = isset($content->searchtext) ? trim($content->searchtext) : ''; 
@@ -387,9 +429,9 @@ class PrescriptionController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }		
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 		if (!empty($searchtext)) {
 			$prescription = Prescription::select('id', 'name', 'image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
@@ -431,7 +473,7 @@ class PrescriptionController extends Controller
 				$mutiple_images = [];
 				foreach ($mutiple_data as $value) {
 						$mutiple_images[]=[
-						'id'	=> $value->id,
+						'id'	=> $value->multiple_prescription_id,
 						'image' => $value->image,
 					];	
 				}
@@ -446,15 +488,15 @@ class PrescriptionController extends Controller
 		} 
 		$response['message'] = 'Prescription List';
 		$response['data']->content = $prescription_arr;
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
 	            $response['data'] = [];
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	
 	}
 

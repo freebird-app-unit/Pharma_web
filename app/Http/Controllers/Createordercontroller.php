@@ -36,9 +36,6 @@ class Createordercontroller extends Controller
     }
    public function create()
     {
-		if(Auth::user()->user_type!='admin'){
-			return redirect(route('home'));
-		}
 		$data = array();
 		$data['page_title'] = 'Create order';
 		$data['page_condition'] = 'page_createorder';

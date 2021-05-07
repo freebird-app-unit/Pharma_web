@@ -431,9 +431,29 @@ Route::get('get-address-list','Createordercontroller@getaddressList');
 
 //accept and reject order script
 Route::get('/acceptorder/accept', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@create'));
+Route::post('/acceptorder/accept', array('as' => 'acceptorder.create', 'uses' => 'Script_Acceptordercontroller@store'));
 Route::get('get-order-list','Script_Acceptordercontroller@getorderList');
 Route::get('get-customer-list','Script_Acceptordercontroller@getcustomerList');
 Route::get('get-seller-list','Script_Acceptordercontroller@getsellerList');
+
+//assign order script
+Route::get('/assignorder/create', array('as' => 'assignorder.create', 'uses' => 'Script_assignordercontroller@create'));
+Route::post('/assignorder/create', array('as' => 'assignorder.create', 'uses' => 'Script_assignordercontroller@store'));
+Route::get('assign/get-order-list','Script_assignordercontroller@getorderList');
+Route::get('assign/get-customer-list','Script_assignordercontroller@getcustomerList');
+Route::get('assign/get-deliveryboy-list','Script_assignordercontroller@getdeliveryboyList');
+
+//Accept order From deliveryboy script
+Route::get('/deliveryboyacceptorder/create', array('as' => 'deliveryboyacceptorder.create', 'uses' => 'Script_Deliveryboyacceptorder@create'));
+Route::post('/deliveryboyacceptorder/create', array('as' => 'deliveryboyacceptorder.create', 'uses' => 'Script_Deliveryboyacceptorder@store'));
+Route::get('deliveryboyacceptorder/get-order-list','Script_Deliveryboyacceptorder@getorderList');
+Route::get('deliveryboyacceptorder/get-deliveryboy-list','Script_Deliveryboyacceptorder@getdeliveryboyList');
+Route::get('deliveryboyacceptorder/get-customer-list','Script_Deliveryboyacceptorder@getcustomerList');
+Route::get('deliveryboyacceptorder/getDeliveryLocation','Script_Deliveryboyacceptorder@getDeliveryLocation');
+Route::get('deliveryboyacceptorder/getPikcupLocation','Script_Deliveryboyacceptorder@getPikcupLocation');
+Route::get('deliveryboyacceptorder/getleaveWithNeighbourLocation','Script_Deliveryboyacceptorder@getleaveWithNeighbourLocation');
+Route::get('deliveryboyacceptorder/getOrderAssign','Script_Deliveryboyacceptorder@getOrderAssign');
+Route::get('deliveryboyacceptorder/getOrderFreePaid','Script_Deliveryboyacceptorder@getOrderFreePaid');
 
 // packages
 Route::get('/packages', 'PackagesController@index');
