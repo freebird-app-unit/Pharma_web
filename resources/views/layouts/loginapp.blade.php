@@ -19,7 +19,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 	
-	<link rel="shortcut icon" href="assets/images/favicon_1.ico">
+	<link rel="shortcut icon" href="{{ asset('public/uploads/site_logo.png') }}">
     <!--Morris Chart CSS -->
 	<link rel="stylesheet" href="{{ asset('public/admin/plugins/morris/morris.css') }}">
     <link href="{{ asset('public/admin/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
