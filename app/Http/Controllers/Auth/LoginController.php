@@ -8,7 +8,8 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
-
+use App\User;
+use DB;
 class LoginController extends Controller
 {
     /*
@@ -106,7 +107,10 @@ class LoginController extends Controller
 			$message = "OTP to verify your account is " . $mobile_otp ." Team My Health Chart";
 			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HLTCHT&mobileNos='".$request->mobile_number."'&message=" . urlencode($message);
 			$sms = file_get_contents($api);
-			
+            $users = DB::table('admin_panel_creds')->where('mobile_number',$request->mobile_number)->first();
+			$user = User::find($users->id);
+            $user->otp = $mobile_otp;
+            $user->save();
 			Auth::logout();
 			$data = array();
 			$data['mobile_number'] = $request->mobile_number;
