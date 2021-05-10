@@ -371,6 +371,9 @@
                           <!--   <li>
                                 <a href="{{ route('deliveryboyacceptorder.create') }}" class="waves-effect <?php echo ($page_condition=='page_deliveryboyacceptorder')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Accept Order From Deliveryboy Script') }}</span></a> 
                             </li> -->
+                            <li>
+                                <a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
+                            </li>
 							<li>
 								<a href="{{ route('adminupcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_adminacceptedorders' || $page_condition=='page_adminupcomingorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/></i> <span>{{ __('Live Orders') }}</span></a>
 							</li>
