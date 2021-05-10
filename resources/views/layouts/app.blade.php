@@ -387,13 +387,13 @@
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
 							</li>
                    			<li>
-                                <a href="{{ route('pharmacy.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharmacy')?'active':''; ?>"><img src="{{ asset('public/images/pharmacy.png') }}"/><span>{{ __('pharmacy') }}</span></a>
+                                <a href="{{ route('pharmacy.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharmacy')?'active':''; ?>"><img src="{{ asset('public/images/pharmacy.png') }}"/><span>{{ __('Pharmacy') }}</span></a>
                             </li>
                 			<li>
-                                <a href="{{ route('seller.index') }}" class="waves-effect <?php echo ($page_condition=='page_sellers')?'active':''; ?>"><img src="{{ asset('public/images/seller.png') }}"/><span>{{ __('sellers') }}</span></a>
+                                <a href="{{ route('seller.index') }}" class="waves-effect <?php echo ($page_condition=='page_sellers')?'active':''; ?>"><img src="{{ asset('public/images/seller.png') }}"/><span>{{ __('Sellers') }}</span></a>
                             </li>
 							<li>
-                                <a href="{{ route('logistic.index') }}" class="waves-effect <?php echo ($page_condition=='page_logistic')?'active':''; ?>"><img src="{{ asset('public/images/logistic.png') }}"/><span>{{ __('logistic') }}</span></a>
+                                <a href="{{ route('logistic.index') }}" class="waves-effect <?php echo ($page_condition=='page_logistic')?'active':''; ?>"><img src="{{ asset('public/images/logistic.png') }}"/><span>{{ __('Logistic') }}</span></a>
                             </li>
                 <li>
                                 <a href="{{ route('deliveryboy.index') }}" class="waves-effect <?php echo ($page_condition=='page_deliveryboy')?'active':''; ?>"><img src="{{ asset('public/images/delivery_boy.png') }}"/><span>{{ __('Delivery boy') }}</span></a>
@@ -442,7 +442,7 @@
 							<?php } ?>
 							<?php if(Auth::user()->user_type=='pharmacy'){ ?> 
 							<li>
-                                <a href="{{ route('seller.index') }}" class="waves-effect <?php echo ($page_condition=='page_sellers')?'active':''; ?>"><img src="{{ asset('public/images/seller.png') }}"/><span>{{ __('sellers') }}</span></a>
+                                <a href="{{ route('seller.index') }}" class="waves-effect <?php echo ($page_condition=='page_sellers')?'active':''; ?>"><img src="{{ asset('public/images/seller.png') }}"/><span>{{ __('Sellers') }}</span></a>
                             </li>
 							<?php } ?>
 							<?php if(Auth::user()->user_type=='pharmacy' || Auth::user()->user_type=='seller'){ ?>
