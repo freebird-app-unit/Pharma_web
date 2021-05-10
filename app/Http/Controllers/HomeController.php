@@ -114,6 +114,12 @@ class HomeController extends Controller
 			$total_res = $total_res->count();
 			$data['total_orders'] = $total_res;
 			//orders
+
+			//logistic
+			$total_res = DB::table('new_logistics');
+			$total_res = $total_res->count();
+			$data['total_logistic'] = $total_res;
+			//logistic
 			
 			//pharmacy
 			$total_res = DB::table('new_pharmacies');
