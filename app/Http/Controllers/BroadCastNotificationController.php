@@ -107,7 +107,7 @@ class BroadCastNotificationController extends Controller
             $img->stream(); // <-- Key point
             Storage::disk('public')->put('uploads/broad_cast_notification/'.$image_file, $img, 'public');
         }
-        $customer_list =  new_users::where('is_active',"1")->get();
+        $customer_list =  new_users::where('is_active',"1")->whereNotNull('fcm_token')->get();
         $fcm_token = array();
         $ids = array();
         $insert_data = array();
@@ -129,7 +129,7 @@ class BroadCastNotificationController extends Controller
         $msg_body = $params['description'];
         $msg_title = $params['name'];
         if (count($fcm_token) > 0) {                  
-            Helper::sendNotification($fcm_token, $msg_body, $msg_title, $admin_id, 'admin', $ids, 'user', $fcm_token);
+            Helper::sendNotificationUser($fcm_token, $msg_body, $msg_title, $admin_id, 'admin', $customerdetail->id, 'user', $customerdetail->fcm_token);
         }
         $msg = 'Record saved successfully';
         return response()->json([
