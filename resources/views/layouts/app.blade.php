@@ -383,6 +383,9 @@
 							<li>
 									<a href="{{ route('admincomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_admincomplete')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
 								</li>
+								<li>
+                                <a href="{{ route('admin.index') }}" class="waves-effect <?php echo ($page_condition=='page_admin')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Admin') }}</span></a>
+							</li>
 							<li>
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
 							</li>
@@ -766,6 +769,9 @@
 	@if($page_condition=='page_users' || $page_condition=='page_user_create' || $page_condition=='page_client_create')
 		<script src="{{ asset('public/admin/js/users.js') }}"></script>
 	@endif
+	@if($page_condition=='page_admin')
+	<script src="{{ asset('public/admin/js/admin.js') }}"></script>
+  @endif
    @if($page_condition=='page_pharmacy')
 	<script src="{{ asset('public/admin/js/pharmacy.js') }}"></script>
   @endif

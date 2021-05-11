@@ -52,6 +52,7 @@ Route::post('/otpverify', array('as' => 'otpverify', 'uses' => 'PasswordControll
 Route::get('/passwordreset/{slug}', array('as' => 'passwordreset', 'uses' => 'PasswordController@passwordreset'));
 Route::post('/passwordreset', array('as' => 'passwordreset', 'uses' => 'PasswordController@savepassword'));
 
+
 //Users
 Route::get('/user', array('as' => 'user.index', 'uses' => 'UsersController@index'));
 Route::post('/getuserlist', array('as' => 'user.getlist', 'uses' => 'UsersController@getlist'));
@@ -71,6 +72,15 @@ Route::post('/verifyprescriptionotp', array('as' => 'user.verifyprescriptionotp'
 Route::post('/getstatelist', array('as' => 'user.getstatelist', 'uses' => 'UsersController@getstatelist'));
 Route::post('/getcitylist', array('as' => 'user.getcitylist', 'uses' => 'UsersController@getcitylist'));
 
+//admin
+Route::get('/admin', array('as' => 'admin.index', 'uses' => 'AdminController@index'));
+Route::post('/getadminlist', array('as' => 'admin.getlist', 'uses' => 'AdminController@getlist'));
+Route::get('/admin/create', array('as' => 'admin.create', 'uses' => 'AdminController@create'));
+Route::post('/admin/create', array('as' => 'admin.create', 'uses' => 'AdminController@store'));
+Route::get('/admin/edit/{id}', array('as' => 'admin.edit', 'uses' => 'AdminController@edit'));
+Route::post('/admin/edit/{id}', array('as' => 'admin.edit', 'uses' => 'AdminController@update'));
+Route::get('/admin/delete/{id}', array('as' => 'admin.delete', 'uses' => 'AdminController@delete'));
+Route::post('/admin/delete_image', 'AdminController@delete_image');
 
 //Seller
 Route::get('/seller', array('as' => 'seller.index', 'uses' => 'SellersController@index'));
