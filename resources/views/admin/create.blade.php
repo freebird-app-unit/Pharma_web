@@ -85,11 +85,10 @@
 @endsection
 
 @section('script')
-<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.js"></script>
-	<script type="text/javascript">
+<script type="text/javascript">
 
 	$(document).ready(function() {
-		$(document).on('keydown', '.only_number', function(e) {
+		 $(document).on('keydown', '.only_number', function(e) {
 			// Allow: backspace, delete, tab, escape, enter and .
 			if ($.inArray(e.keyCode, [32,46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 					// Allow: Ctrl+A, Command+A
@@ -104,26 +103,15 @@
 				e.preventDefault();
 			}
 		 });
-		$(function () {
-			$('#start_time').datetimepicker({  format: 'HH:mm:ss' });
-			$('#close_time').datetimepicker({ format: 'HH:mm:ss' });
 
-			$("#start_time").on("dp.change", function (e) {
-				$('#close_time').data("DateTimePicker").minDate(e.date);
-			});
-			
-			$("#close_time").on("dp.change", function (e) {
-				$('#start_time').data("DateTimePicker").maxDate(e.date);
-			});
-		});
-		 
 		$("#user_detail-form").validate({
 			rules: {
-				name : 'required',
+				pharmacy: 'required',
 				email : {
 					email:true,
 					required : true
 				},
+				name : 'required',
 				mobile_number : {
 					required:true,
 					minlength:10,
@@ -147,19 +135,7 @@
 			  $(element).removeClass('is-invalid').addClass('is-valid');
 			},
 		});
-
-		@if(!isset($user_detail))
-			$( "#profile_image" ).rules( "add", {
-				// required: true,
-				extension: "jpg|jpeg|png|ico|bmp",
-				messages: {
-					required: "Please upload file.",
-					extension: "Please upload file in these format only (jpg, jpeg, png, ico, bmp)."
-				}
-			});
-
-		@endif
-
+		
 		var ajax_request = null;
 		$(document.body).on('click','.save_btn',function(e) {
 			e.preventDefault();
@@ -169,9 +145,8 @@
 			}
 		});
 	});
-    
 
-  $(".deleteImage").click(function(){
+	$(".deleteImage").click(function(){
 		edit_id = $('#edit_id').val();
             $.ajax({
                 headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
@@ -184,8 +159,8 @@
                 }
             });
         });
-
- 
+     
  </script>
+
 	
 @endsection
