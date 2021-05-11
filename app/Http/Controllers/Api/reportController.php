@@ -370,7 +370,7 @@ class reportController extends Controller
                 $mobile_number=$contactreport->mobile_number;
                 $description=$contactreport->description;
                 $image= $profile_image;
-                $subject='Pharma - Report Problem';
+                $subject='Pharma - Conatct Report Problem';
                 Helper::sendContact($name,$email,$mobile_number,$description,$image,$subject);
            /* $data = [
                 'name' => $contactreport->name,
