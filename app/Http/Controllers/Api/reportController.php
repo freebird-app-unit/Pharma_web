@@ -353,19 +353,26 @@ class reportController extends Controller
                     $contactimages->save();
                 }
             }
-            
+            $image_contact = contact_images::where('contact_report_id',$contactreport->id)->first();
             $profile_image = '';
-            if (!empty($contactimages->image)) {
+            if (!empty($image_contact->image)) {
 
-                $filename = storage_path('app/public/uploads/contact_report/' . $contactimages->image);
+                $filename = storage_path('app/public/uploads/contact_report/' . $image_contact->image);
                     
                 if (File::exists($filename)) {
-                    $profile_image = asset('storage/app/public/uploads/contact_report/' . $contactimages->image);
+                    $profile_image = asset('storage/app/public/uploads/contact_report/' . $image_contact->image);
                 } else {
                     $profile_image = '';
                 }
             }
-            $data = [
+                $name = $contactreport->name;
+                $email=$contactreport->email;
+                $mobile_number=$contactreport->mobile_number;
+                $description=$contactreport->description;
+                $image= $profile_image;
+                $subject='Pharma - Report Problem';
+                Helper::sendContact($name,$email,$mobile_number,$description,$image,$subject);
+           /* $data = [
                 'name' => $contactreport->name,
                 'email'=>$contactreport->email,
                 'mobile_number'=>$contactreport->mobile_number,
@@ -375,7 +382,7 @@ class reportController extends Controller
             $email = ['bhavik@thefreebirdtech.com','ravi@thefreebirdtech.com'];
             $result = Mail::send('email.contactus', $data, function ($message) use ($email) {
                      $message->to($email)->subject('Pharma - ContactUs');
-            });
+            });*/
         $response['status'] = 200;
         $response['message'] = 'Contact Report Added Successfully';
         }else{
