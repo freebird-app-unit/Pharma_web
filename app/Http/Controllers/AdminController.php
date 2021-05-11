@@ -60,7 +60,7 @@ class AdminController extends Controller
 		//count total
 
 		// $total_res = DB::table('users')->where('user_type','pharmacy')->where('parentuser_id',$user_id);
-		$total_new_pharmacies = User::select('admin_panel_creds.*')->where('user_type','admin');
+		$total_new_pharmacies = User::select('admin_panel_creds.*')->where('user_type','admin')->where('email', '<>', '')->where('mobile_number', '<>', '');
 
 		if($searchtxt!=''){
 			$total_new_pharmacies= $total_new_pharmacies->where(function ($query) use($searchtxt) {
