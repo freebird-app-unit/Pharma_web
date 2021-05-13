@@ -185,7 +185,7 @@ class ProfileController extends Controller
 				}
 				$user->save();
 				$response['status'] = 200;
-				$response['message'] = 'Profile updated';
+				$response['message'] = 'Your profile has been successfully updated';
             } 
 			else 
 			{
