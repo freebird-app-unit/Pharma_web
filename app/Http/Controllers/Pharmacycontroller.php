@@ -60,9 +60,9 @@ class Pharmacycontroller extends Controller
 		$data = array();
 		$pharmacy_city = new_pharmacies::select('city')->groupby('city')->get();
 		$data['pharmacy_city'] = $pharmacy_city;
-		$data['page_title'] = 'pharmacy';
+		$data['page_title'] = 'Pharmacy';
 		$data['page_condition'] = 'page_pharmacy';
-		$data['site_title'] = 'pharmacy | ' . $this->data['site_title'];
+		$data['site_title'] = 'Pharmacy | ' . $this->data['site_title'];
         return view('pharmacy.index', $data);
     }
 	public function getlist()
