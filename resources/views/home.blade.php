@@ -77,24 +77,24 @@ if($user->user_type=='admin'){
 			<div class="text-muted m-t-5">Total Seller</div>
 		</div>
 	</div>
-	</a>
-	<a href="{{ route('deliveryboy.index') }}">
+</a>
+<a href="{{ route('deliveryboy.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_deliveryboy; ?></h2>
 			<div class="text-muted m-t-5">Total Delivery boy</div>
 		</div>
 	</div>
-	</a>
-	<a href="{{ route('user.index') }}">
+</a>
+<a href="{{ route('user.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_customer; ?></h2>
 			<div class="text-muted m-t-5">Total Customer</div>
 		</div>
 	</div>
-	</a>
-	<a href="{{ route('logistic.index') }}">
+</a>
+<a href="{{ route('logistic.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_logistic; ?></h2>
