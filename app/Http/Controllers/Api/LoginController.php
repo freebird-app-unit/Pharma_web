@@ -321,7 +321,7 @@ class LoginController extends Controller
 			$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HJENTP&mobileNos='".$login->mobile_number."'&message=" . urlencode($message);
 			$sms = file_get_contents($api);
 			$status = 200;
-			$message = 'Your password successfully changed!';
+			$message = 'Your password has been successfully changed';
 			
 		} catch (Exception $ex) {
             $message = $ex->getMessage();
@@ -408,7 +408,7 @@ class LoginController extends Controller
 				$sms = file_get_contents($api);
 				$success = true;
 				$status = 200;
-				$message = 'Your password successfully changed!';
+				$message = 'Your password has been successfully changed';
 			}else{
 	    		$status = 401;
 	            $message = 'Unauthenticated';
