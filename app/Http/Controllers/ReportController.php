@@ -22,9 +22,9 @@ class ReportController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-        }
+        }*/
         
 		$data = array();
 		$data['page_title'] = 'Report';
@@ -146,9 +146,9 @@ class ReportController extends Controller
     }
     public function resolveindex()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-        }
+        }*/
         
 		$data = array();
 		$data['page_title'] = 'Report';
