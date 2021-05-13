@@ -54,9 +54,9 @@ class Pharmacycontroller extends Controller
      }
     public function index()
     {	
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$pharmacy_city = new_pharmacies::select('city')->groupby('city')->get();
 		$data['pharmacy_city'] = $pharmacy_city;
@@ -169,9 +169,9 @@ class Pharmacycontroller extends Controller
 
 	public function create()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Create pharmacy';
 		$data['page_condition'] = 'page_user_pharmacy';
@@ -183,9 +183,9 @@ class Pharmacycontroller extends Controller
 	
 	public function detail($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = new_pharmacies::where('id',$id)->first();
 		$data['user_detail'] = $user_detail;
@@ -296,9 +296,9 @@ class Pharmacycontroller extends Controller
 
 		$user_id = Auth::user()->id;
 		
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = new_pharmacies::where('id',$id)->first();
 
@@ -416,9 +416,9 @@ class Pharmacycontroller extends Controller
 	public function delete($id)
     {
     	$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user_detail = new_pharmacies::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
@@ -434,9 +434,9 @@ class Pharmacycontroller extends Controller
 	}
 	public function setActivate($id){
 		$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user_detail = new_pharmacies::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
@@ -448,9 +448,9 @@ class Pharmacycontroller extends Controller
     }
     public function setInactivate($id) {
     	$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user_detail = new_pharmacies::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
