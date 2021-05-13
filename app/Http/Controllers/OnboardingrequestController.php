@@ -25,9 +25,9 @@ class OnboardingrequestController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Onboarding Request';
 		$data['page_condition'] = 'page_onboarfingrequest';
@@ -97,9 +97,9 @@ class OnboardingrequestController extends Controller
 		$Onboardingrequest->save();
 	}
 	public function view($id){
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$Onboardingrequest = Onboardingrequest::find($id);
 		$data = array();
 		$data['onboardingrequest'] = $Onboardingrequest;
