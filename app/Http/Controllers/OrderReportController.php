@@ -31,9 +31,9 @@ class OrderReportController extends Controller
         $user_id = Auth::user()->user_id;
         $user_type = Auth::user()->user_type;
 
-		if($user_type != 'pharmacy' && $user_type != 'admin'){
+		/*if($user_type != 'pharmacy' && $user_type != 'admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$data = array();
 		$data['user_type'] = $user_type;
@@ -59,9 +59,9 @@ class OrderReportController extends Controller
     {
         $user_id = Auth::user()->user_id;
 
-        if(Auth::user()->user_type!='logistic'){
+        /*if(Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Order report';
 		$data['page_condition'] = 'page_order_report_logistic';
