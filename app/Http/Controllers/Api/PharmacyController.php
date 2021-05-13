@@ -333,9 +333,9 @@ class PharmacyController extends Controller
 				
 				$profile_image = '';
 				if (!empty($val->profile_image)) {
-					$filename = storage_path('app/public/uploads/users/' . $val->profile_image);
+					$filename = storage_path('app/public/uploads/new_pharmacy/' . $val->profile_image);
 					if (File::exists($filename)) {
-						$profile_image = asset('storage/app/public/uploads/users/' . $val->profile_image);
+						$profile_image = asset('storage/app/public/uploads/new_pharmacy/' . $val->profile_image);
 					}
 				}
 				

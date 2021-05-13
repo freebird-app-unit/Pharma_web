@@ -107,9 +107,9 @@ class Pharmacycontroller extends Controller
 				$created_at = ($user->created_at!='')?date('d-M-Y',strtotime($user->created_at)):'';
 				$image_url = '';
 				if($user->profile_image!=''){
-					$destinationPath = base_path() . '/storage/app/public/uploads/new_users/'.$user->profile_image;
+					$destinationPath = base_path() . '/storage/app/public/uploads/new_pharmacy/'.$user->profile_image;
 					if(file_exists($destinationPath)){
-						$image_url = url('/').'/storage/app/public/uploads/new_users/'.$user->profile_image;
+						$image_url = url('/').'/storage/app/public/uploads/new_pharmacy/'.$user->profile_image;
 					}else{
 						$image_url = url('/').'/uploads/placeholder.png';
 					}
@@ -226,7 +226,7 @@ class Pharmacycontroller extends Controller
 			if ($request->hasFile('profile_image')) {
 				$file2 = $request->file('profile_image');
 				$fileName2 = time().'lic.'.$file2->getClientOriginalExtension();  
-				$destinationPath = 'storage/app/public/uploads/new_users';
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
 				$file2->move($destinationPath, $fileName2);
 				$user->profile_image = $fileName2;
 			}else{
@@ -344,7 +344,7 @@ class Pharmacycontroller extends Controller
 			if ($request->hasFile('profile_image')) {
 				$file2 = $request->file('profile_image');
 				$fileName2 = time().'pro.'.$file2->getClientOriginalExtension();  
-				$destinationPath = 'storage/app/public/uploads/new_users';
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
 				$file2->move($destinationPath, $fileName2);
 				$user->profile_image = $fileName2;
 			}else{
@@ -499,7 +499,7 @@ class Pharmacycontroller extends Controller
 		$user = new_pharmacies::find($id);
 		if (!empty($user->profile_image)) {
 
-            $filename = 'storage/app/public/uploads/new_users' . $user->profile_image;
+            $filename = 'storage/app/public/uploads/new_pharmacy' . $user->profile_image;
                 
             if (File::exists($filename)) {
                 File::delete($filename);
