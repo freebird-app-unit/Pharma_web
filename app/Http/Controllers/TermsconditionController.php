@@ -29,9 +29,9 @@ class TermsconditionController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Terms & condition';
 		$data['page_condition'] = 'page_termscondition';
@@ -107,9 +107,9 @@ class TermsconditionController extends Controller
 	}
 	public function create()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Create Terms & condition';
 		$data['page_condition'] = 'page_termscondition_create';
@@ -163,9 +163,9 @@ class TermsconditionController extends Controller
 	}
 	public function edit($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$termscondition = Termscondition::find($id);
 		$data = array();
 		$data['page_title'] = 'Edit Terms & condition';
@@ -214,9 +214,9 @@ class TermsconditionController extends Controller
 
 	public function delete($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$Termscondition = Termscondition::find($id);
 		$Termscondition->delete();
 		return redirect(route('user.index'))->with('success_message', trans('Deleted Successfully'));
