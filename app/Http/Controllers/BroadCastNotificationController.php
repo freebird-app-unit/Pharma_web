@@ -27,9 +27,9 @@ class BroadCastNotificationController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Announcement';
 		$data['page_condition'] = 'page_broad_cast_notification';
@@ -68,9 +68,9 @@ class BroadCastNotificationController extends Controller
 	}
 	public function loadForm()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
         $data = [];
         $html = view('broad_cast_notification.create')->with(["data" => $data])->render();
         return response()->json([
