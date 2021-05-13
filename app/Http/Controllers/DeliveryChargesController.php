@@ -31,9 +31,9 @@ class DeliveryChargesController extends Controller
         $user_id = Auth::user()->user_id;
         $user_type = Auth::user()->user_type;
 
-		if($user_type != 'admin'){
+		/*if($user_type != 'admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$data = array();
 		$data['user_type'] = $user_type;
