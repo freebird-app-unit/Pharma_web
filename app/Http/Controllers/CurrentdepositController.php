@@ -23,9 +23,9 @@ class CurrentdepositController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
+		/*if(Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		
 		$logistic_user = new_logistics::find(Auth::user()->user_id);
