@@ -38,9 +38,9 @@ class UsersController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$user_city = new_address::select('city')->groupby('city')->get();
 		$data['user_city'] = $user_city;
@@ -197,9 +197,9 @@ class UsersController extends Controller
 	}
 	public function create()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Create User';
 		$data['page_condition'] = 'page_user_create';
@@ -337,9 +337,9 @@ class UsersController extends Controller
 	}
 	public function edit($id, $user_type)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		switch ($user_type) {
 			case 'pharmacy':
@@ -551,9 +551,9 @@ class UsersController extends Controller
 
 	public function delete($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user = new_users::where('id',$id)->first();
 		$pharmacy = new_pharmacies::where('id',$id)->first();
 		$seller_deliveryboy = new_pharma_logistic_employee::where('id',$id)->first();
@@ -579,9 +579,9 @@ class UsersController extends Controller
 		return redirect(route('user.index'))->with('success_message', trans('Deleted Successfully'));
 	}
 	public function setActivate($id, $user_type){
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		switch ($user_type) {
 			case 'pharmacy':
 				$status_change = new_pharmacies::where('id',$id)->first();
@@ -607,9 +607,9 @@ class UsersController extends Controller
         return redirect(route('user.index'))->with('success_message', trans('Active Successfully'));
     }
     public function setInactivate($id, $user_type) {
-    	if(Auth::user()->user_type!='admin'){
+    	/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
         switch ($user_type) {
 			case 'pharmacy':
 				$status_change = new_pharmacies::where('id',$id)->first();
@@ -666,9 +666,9 @@ class UsersController extends Controller
 	}
 	public function detail($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user = new_users::where('id',$id)->first();
 		$data['user_detail'] = $user;
 		$data['page_title'] = 'Detail User';
