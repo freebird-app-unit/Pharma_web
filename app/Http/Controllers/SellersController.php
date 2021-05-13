@@ -30,9 +30,9 @@ class SellersController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$pharmacy_list = new_pharmacies::select('new_pharmacies.id','new_pharmacies.name')->get();
 		$data['pharmacy_list'] = $pharmacy_list;
@@ -150,9 +150,9 @@ class SellersController extends Controller
 	}
 	public function create()
     {
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Create Sellers';
 		$data['page_condition'] = 'page_user_sellers';
@@ -210,9 +210,9 @@ class SellersController extends Controller
     {
 		$user_id = Auth::user()->user_id;
 		
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		if(!$user_detail){
@@ -272,9 +272,9 @@ class SellersController extends Controller
 
 	public function detail($id)
     {
-		if(Auth::user()->user_type!='admin' && Auth::user()->user_type!='pharmacy'){
+		/*if(Auth::user()->user_type!='admin' && Auth::user()->user_type!='pharmacy'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		$user_detail->pharmacy_name = '';
@@ -294,9 +294,9 @@ class SellersController extends Controller
 	public function delete($id)
     {
 		$user_id = Auth::user()->user_id;
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
@@ -310,9 +310,9 @@ class SellersController extends Controller
 	}
 	public function setActivate($id){
 		$user_id = Auth::user()->user_id;
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$status_change = new_pharma_logistic_employee::where('id',$id)->first();
 		$status_change->is_active=1;
 		$status_change->save();
@@ -320,9 +320,9 @@ class SellersController extends Controller
     }
     public function setInactivate($id) {
     	$user_id = Auth::user()->user_id;
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$status_change = new_pharma_logistic_employee::where('id',$id)->first();
 		$status_change->is_active=0;
 		$status_change->save();
