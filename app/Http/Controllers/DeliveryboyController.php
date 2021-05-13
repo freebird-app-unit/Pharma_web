@@ -30,9 +30,9 @@ class DeliveryboyController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' &&  Auth::user()->user_type!='logistic'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' &&  Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$pharmacy_list = new_pharmacies::select('new_pharmacies.id','new_pharmacies.name')->get();
 		$data['pharmacy_list'] = $pharmacy_list;
@@ -166,9 +166,9 @@ class DeliveryboyController extends Controller
 	}
 	public function create()
     {
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Create delivery boy';
 		$data['page_condition'] = 'page_deliveryboy';
@@ -229,9 +229,9 @@ class DeliveryboyController extends Controller
 	public function edit($id)
     {
 		$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
@@ -300,9 +300,9 @@ class DeliveryboyController extends Controller
 
 	public function detail($id)
     {
-		if(Auth::user()->user_type!='admin' && Auth::user()->user_type!='pharmacy'){
+		/*if(Auth::user()->user_type!='admin' && Auth::user()->user_type!='pharmacy'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		$user_detail->pharmacy_name = '';
@@ -329,9 +329,9 @@ class DeliveryboyController extends Controller
 	public function delete($id)
     {
 		$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		//$user_detail = User::where('id',$id)->where('parentuser_id',$user_id)->first();
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		if(!$user_detail){
@@ -346,9 +346,9 @@ class DeliveryboyController extends Controller
 	}
 	public function setActivate($id){
 		$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		//$user_detail = User::where('id',$id)->where('parentuser_id',$user_id)->first();
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		if(!$user_detail){
@@ -361,9 +361,9 @@ class DeliveryboyController extends Controller
     }
     public function setInactivate($id) {
     	$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
+		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='seller' && Auth::user()->user_type!='admin' && Auth::user()->user_type!='logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 		//$user_detail = User::where('id',$id)->where('parentuser_id',$user_id)->first();
 		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
 		if(!$user_detail){
