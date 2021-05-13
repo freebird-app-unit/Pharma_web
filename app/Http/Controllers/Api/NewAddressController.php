@@ -269,7 +269,7 @@ class NewAddressController extends Controller
                 $add['latitude']   = $address_data->latitude;
                 $add['longitude']  = $address_data->longitude;
                 $response['data']=$add;
-                $response['message'] = 'Address Added Successfully';
+                $response['message'] = 'Your address preference has been successfully added ';
             }else{
                 $response['status'] = 401;
                 $response['message'] = 'Unauthenticated';
@@ -549,7 +549,7 @@ class NewAddressController extends Controller
             $data->is_delete = '0';
             $data->save();
 
-            $response['message'] = 'Address Deleted Successfully';
+            $response['message'] = 'Your address has been successfully deleted';
            
             $response = json_encode($response);
             $cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
