@@ -140,40 +140,58 @@ if($user->user_type=='superadmin'){
 ?>
 <p class="text-muted page-title-alt">Welcome to super admin panel !</p>
 <div class="row">
+	<a href="{{ route('pharmacy.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_pharmacy; ?></h2>
-			<div class="text-muted m-t-5">Total pharmacy</div>
+			<div class="text-muted m-t-5">Total Pharmacy</div>
 		</div>
 	</div>
+	</a>
+	<a href="{{ route('seller.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_seller; ?></h2>
-			<div class="text-muted m-t-5">Total seller</div>
+			<div class="text-muted m-t-5">Total Seller</div>
 		</div>
 	</div>
+	</a>
+	<a href="{{ route('deliveryboy.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_deliveryboy; ?></h2>
-			<div class="text-muted m-t-5">Total delivery boy</div>
+			<div class="text-muted m-t-5">Total Delivery boy</div>
 		</div>
 	</div>
+	</a>
+	<a href="{{ route('user.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_customer; ?></h2>
 			<div class="text-muted m-t-5">Total Customer</div>
 		</div>
 	</div>
+	</a>
+	<a href="{{ route('logistic.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_logistic; ?></h2>
+			<div class="text-muted m-t-5">Total Logistic</div>
+		</div>
+	</div>
+	</a>
+	<a href="{{ route('admin.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_admin; ?></h2>
 			<div class="text-muted m-t-5">Total Admin</div>
 		</div>
 	</div>
+</a>
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_users; ?></h2>
-			<div class="text-muted m-t-5">Total users</div>
+			<div class="text-muted m-t-5">Total Users</div>
 		</div>
 	</div>
 	<div class="col-lg-3 col-sm-6">
