@@ -246,7 +246,7 @@ class LoginController extends Controller
 			if (($diff > 0) && ($minutes <= 10)) {
 				$success = true;
 				$status = 200;
-				$message = 'OTP verify successfully!';
+				$message = 'Your mobile number has been verified successfully.';
 			}else{
 				throw new Exception("OTP expired");
 			} 
@@ -481,7 +481,7 @@ class LoginController extends Controller
 					
 				$response['status'] = 200;
 				$response['data']->otp=$user->otp;
-				$response['message'] = 'verification code successfully sent';
+				$response['message'] = 'Verification code has been sent to your mobile number'.$mobile_number;
 			
 			} else {
 				$response['status'] = 404;
@@ -514,7 +514,7 @@ class LoginController extends Controller
 
 			$response['status'] = 200;
 			$response['data']->otp=$user->otp;
-			$response['message'] = 'verification code successfully sent';
+			$response['message'] = 'Verification code has been sent to your mobile number'.$mobile_number;
 		
         }
 		
@@ -652,7 +652,7 @@ class LoginController extends Controller
 					$response['data']->fcm_token=($user->fcm_token)?$user->fcm_token:'';
 
 					$response['status'] = 200;
-					$response['message'] = 'Account successfully created!';
+					$response['message'] = 'Congratulations, your account has been successfully created.';
 				} else {
 					$response['status'] = 404;
 					$response['message'] = 'OTP Expired';
