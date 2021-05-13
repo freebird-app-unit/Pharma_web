@@ -29,10 +29,10 @@ class VoucherController extends Controller
         $user_id = Auth::user()->user_id;
         $user_type = Auth::user()->user_type;
 
-		if($user_type != 'pharmacy' && $user_type != 'admin' && $user_type != 'logistic'){
+		/*if($user_type != 'pharmacy' && $user_type != 'admin' && $user_type != 'logistic'){
 			return redirect(route('home'));
 		}
-
+*/
 		$data = array();
 		$data['page_title'] = 'Voucher';
 		$data['page_condition'] = 'page_voucher';
@@ -46,9 +46,9 @@ class VoucherController extends Controller
         $user_id = Auth::user()->user_id;
         $user_type = Auth::user()->user_type;
 
-		if($user_type != 'pharmacy' && $user_type != 'admin' && $user_type != 'logistic'){
+		/*if($user_type != 'pharmacy' && $user_type != 'admin' && $user_type != 'logistic'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$data = array();
 		$data['page_title'] = 'Voucher History';
@@ -287,10 +287,10 @@ class VoucherController extends Controller
         $user_id = Auth::user()->user_id;
         $user_type = Auth::user()->user_type;
 
-		if($user_type != 'pharmacy' && $user_type != 'admin' && $user_type != 'logistic'){
+		/*if($user_type != 'pharmacy' && $user_type != 'admin' && $user_type != 'logistic'){
 			return redirect(route('home'));
 		}
-
+*/
         $data = array();
 		$data['id'] = $request->id;
 		$data['page_title'] = 'Voucher Detail';
