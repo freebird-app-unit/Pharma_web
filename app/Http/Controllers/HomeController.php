@@ -108,6 +108,54 @@ class HomeController extends Controller
 			//rejected
 		
 		}
+		if($user->user_type=='superadmin'){
+			//orders
+			$total_res = DB::table('new_orders');
+			$total_res = $total_res->count();
+			$data['total_orders'] = $total_res;
+			//orders
+			
+			//pharmacy
+			$total_res = DB::table('new_pharmacies');
+			//->where('user_type','pharmacy');
+			$total= $total_res->count();
+			$data['total_pharmacy'] = $total;
+			//pharmacy
+			
+			//seller
+			$total_res = DB::table('new_pharma_logistic_employee')
+			->where('user_type','seller');
+			$total= $total_res->count();
+			$data['total_seller'] = $total;
+			//seller
+			
+			//delivery boy
+			$total_res = DB::table('new_pharma_logistic_employee')
+			->where('user_type','delivery_boy');
+			$total= $total_res->count();
+			$data['total_deliveryboy'] = $total;
+			//delivery boy
+
+			//customer
+			$total_res = DB::table('new_users');
+			//->where('user_type','customer');
+			$total= $total_res->count();
+			$data['total_customer'] = $total;
+			//customer
+
+			//admin
+			$total_res = DB::table('admin_panel_creds')
+			->where('user_type','admin');
+			$total= $total_res->count();
+			$data['total_admin'] = $total;
+			//admin
+			
+			//users
+			$total_res = DB::table('admin_panel_creds');
+			$total= $total_res->count();
+			$data['total_users'] = $total;
+			//users
+		}
 		if($user->user_type=='admin'){
 			//orders
 			$total_res = DB::table('new_orders');

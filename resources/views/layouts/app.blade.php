@@ -304,7 +304,91 @@
 									<a href="{{ route('pharma_order_report.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharma_order_report')?'active':''; ?>"><img src="{{ asset('public/images/order_report.png') }}"/><span>{{ __('Orders Report') }}</span></a>
 								</li>
 							<?php } ?>
+							<?php if(Auth::user()->user_type=='superadmin'){ ?>
+								<li>
+									<a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
+								</li>
+							<li>
+								<a href="{{ route('adminupcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_adminacceptedorders' || $page_condition=='page_adminupcomingorders')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/></i> <span>{{ __('Live Orders') }}</span></a>
+							</li>
+							<li>
+								<a href="{{ route('adminrejected.index') }}" class="waves-effect <?php echo ($page_condition=='page_adminrejected')?'active':''; ?>"><img src="{{ asset('public/images/incomplete_order.png') }}"/><span>{{ __('Incomplete Order') }}</span></a>
+							</li>
+							<li>
+									<a href="{{ route('admincomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_admincomplete')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
+								</li>
+							<li>
+                                <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
+							</li>
+                   			<li>
+                                <a href="{{ route('pharmacy.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharmacy')?'active':''; ?>"><img src="{{ asset('public/images/pharmacy.png') }}"/><span>{{ __('pharmacy') }}</span></a>
+                            </li>
+                			<li>
+                                <a href="{{ route('seller.index') }}" class="waves-effect <?php echo ($page_condition=='page_sellers')?'active':''; ?>"><img src="{{ asset('public/images/seller.png') }}"/><span>{{ __('sellers') }}</span></a>
+                            </li>
+							<li>
+                                <a href="{{ route('logistic.index') }}" class="waves-effect <?php echo ($page_condition=='page_logistic')?'active':''; ?>"><img src="{{ asset('public/images/logistic.png') }}"/><span>{{ __('logistic') }}</span></a>
+                            </li>
+                <li>
+                                <a href="{{ route('deliveryboy.index') }}" class="waves-effect <?php echo ($page_condition=='page_deliveryboy')?'active':''; ?>"><img src="{{ asset('public/images/delivery_boy.png') }}"/><span>{{ __('Delivery boy') }}</span></a>
+                            </li>
+							<li>
+                                <a href="{{ url('slider') }}" class="waves-effect <?php echo ($page_condition=='page_slider')?'active':''; ?>"><img src="{{ asset('public/images/slider.png') }}"/><span>{{ __('Sliders') }}</span></a>
+                            </li>
+						<!-- 	<li>
+                                <a href="{{ url('pill_shape') }}" class="waves-effect <?php echo ($page_condition=='page_pill_shape')?'active':''; ?>"><i class="glyphicon glyphicon-gift"></i> <span>{{ __('Pill Shape') }}</span></a>
+                            </li>
+							<li>
+                                <a href="{{ url('pill_color') }}" class="waves-effect <?php echo ($page_condition=='page_pill_color')?'active':''; ?>"><i class="glyphicon glyphicon-text-color"></i> <span>{{ __('Pill Color') }}</span></a>
+                            </li> -->
+                            <li>
+                                <a href="{{ url('broad_cast_notification') }}" class="waves-effect <?php echo ($page_condition=='page_broad_cast_notification')?'active':''; ?>"><img src="{{ asset('public/images/annoucement.png') }}"/><span>{{ __('Announcement') }}</span></a>
+                            </li>
+							<li>
+                                <a href="{{ url('disease') }}" class="waves-effect <?php echo ($page_condition=='page_disease')?'active':''; ?>"><img src="{{ asset('public/images/disese.png') }}"/><span>{{ __('Disease') }}</span></a>
+                            </li>
+							<li>
+                                <a href="{{ url('allergy') }}" class="waves-effect <?php echo ($page_condition=='page_allergy')?'active':''; ?>"><img src="{{ asset('public/images/allergy.png') }}"/><span>{{ __('Allergy') }}</span></a>
+							</li>
+							
+							<li>
+                                <a href="{{ url('report') }}" class="waves-effect <?php echo ($page_condition=='page_report' || $page_condition=='page_resolveindex')?'active':''; ?>"><img src="{{ asset('public/images/report.png') }}"/><span>{{ __('Report') }}</span></a>
+							</li>
+							
+                			<li>
+                                <a href="{{ route('settings') }}" class="waves-effect <?php echo ($page_condition=='page_settings')?'active':''; ?>"><img src="{{ asset('public/images/setting.png') }}"/><span>{{ __('Settings') }}</span></a>
+                            </li>
+							<li>
+								<a href="{{ route('order_report.index') }}" class="waves-effect <?php echo ($page_condition=='page_order_report')?'active':''; ?>"><img src="{{ asset('public/images/order_report.png') }}"/><span>{{ __('Order Report') }}</span></a>
+							</li>
 
+							<li>
+								<a href="{{ route('order_filter.index') }}" class="waves-effect <?php echo ($page_condition=='page_order_filter')?'active':''; ?>"><img src="{{ asset('public/images/order_filter.png') }}"/><span>{{ __('Order Filter') }}</span></a>
+							</li>
+							
+							
+							<li>
+								<a href="{{ route('voucher.index') }}" class="waves-effect <?php echo ($page_condition=='page_order_voucher')?'active':''; ?>"><img src="{{ asset('public/images/vouchers.png') }}"/><span>{{ __('Voucher') }}</span></a>
+							</li>
+							<li>
+								<a href="{{ route('voucher.history') }}" class="waves-effect <?php echo ($page_condition=='page_order_voucher_history')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Voucher History') }}</span></a>
+							</li>
+							<li>
+								<a href="{{ url('/deposit') }}" class="waves-effect <?php echo ($page_condition=='page_deposittransaction')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Deposit Transaction') }}</span></a>
+							</li>
+							<li>
+								<a href="{{ url('/currentdeposit') }}" class="waves-effect <?php echo ($page_condition=='page_currentdeposit')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Current Deposits') }}</span></a>
+							</li>
+							<li>
+								<a href="{{ url('/deliverycharges') }}" class="waves-effect <?php echo ($page_condition=='page_delivery_charges')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Delivery Charges') }}</span></a>
+							</li>
+							<li>
+								<a href="{{ url('/onboardingrequest') }}" class="waves-effect <?php echo ($page_condition=='page_onboarfingrequest')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('On Boarding request') }}</span></a>
+							</li>
+							<li>
+								<a href="{{ url('/termscondition') }}" class="waves-effect <?php echo ($page_condition=='page_termscondition')?'active':''; ?>"><img src="{{ asset('public/images/voucher_history.png') }}"/><span>{{ __('Terms & condition') }}</span></a>
+							</li>
+							<?php } ?>
                 			<?php if(Auth::user()->user_type=='logistic'){ ?>
                    			<li>
                                 <a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
