@@ -30,9 +30,9 @@ class LogisticsController extends Controller
 
     public function index()
     {	
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-        }
+        }*/
         
 		$data = array();
 		$logistic_city = new_logistics::select('city')->groupby('city')->get();
@@ -141,9 +141,9 @@ class LogisticsController extends Controller
     
     public function create()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Create Logistic';
 		$data['countries'] = new_countries::all();
@@ -255,9 +255,9 @@ class LogisticsController extends Controller
     public function edit($id)
     {
 		$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = new_logistics::where('id',$id)->first();
 		
@@ -377,9 +377,9 @@ class LogisticsController extends Controller
 
 	public function detail($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = new_logistics::where('id',$id)->first();
 
@@ -393,9 +393,9 @@ class LogisticsController extends Controller
 	public function delete($id)
     {
 		$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user = new_logistics::where('id', $id)->first();
 		if(!$user){
@@ -413,9 +413,9 @@ class LogisticsController extends Controller
 	}
 	public function setActivate($id){
 		$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user = new_logistics::where('id', $id)->first();
 		if(!$user){
@@ -428,9 +428,9 @@ class LogisticsController extends Controller
     }
     public function setInactivate($id) {
     	$user_id = Auth::user()->id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user = new_logistics::where('id', $id)->first();
 		if(!$user){
