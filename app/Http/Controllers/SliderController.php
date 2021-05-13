@@ -24,9 +24,9 @@ class SliderController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Slider';
 		$data['page_condition'] = 'page_slider';
@@ -57,9 +57,9 @@ class SliderController extends Controller
 	}
 	public function loadForm()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		 
         $data = [];
 		
