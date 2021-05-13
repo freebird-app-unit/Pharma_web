@@ -24,9 +24,9 @@ class DepositController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Deposite transaction';
 		$data['page_condition'] = 'page_deposittransaction';
@@ -53,10 +53,10 @@ class DepositController extends Controller
 	}
 	public function loadForm($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
 		}
-		 
+		 */
         $data = Deposit::find($id);
 		$delivery_boy_list = new_logistics::where('is_available',1)->where('is_approve',1)->where('is_active',1)->get();
 		
@@ -126,9 +126,9 @@ class DepositController extends Controller
 	
 	public function delete($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$Packages = Packages::find($id);
 		if($Packages){
 			$Packages->is_delete = 1;
