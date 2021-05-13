@@ -213,7 +213,7 @@ class AllergyController extends Controller
 		
 		if($allergy->save()){
 			$response['status'] = 200;
-			$response['message'] = 'Allergy successfully added!';
+			$response['message'] = 'Your allergy has been successfully added';
 		}else{
 			$response['status'] = 404;
 			$response['message'] = 'Error occured!';
