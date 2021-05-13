@@ -22,9 +22,9 @@ class AllergyController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Allergy';
 		$data['page_condition'] = 'page_allergy';
@@ -47,9 +47,9 @@ class AllergyController extends Controller
 	}
 	public function loadForm($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		 
         $data = Allergy::find($id);
 		
@@ -102,9 +102,9 @@ class AllergyController extends Controller
 	
 	public function delete($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$allergy = Allergy::find($id);
 		if($allergy){
 			$allergy->delete();
