@@ -273,7 +273,7 @@ class PillreminderController extends Controller
 			$toBeToken = toBeToken::where(['pill_reminder_id'=>$pill_reminder_id,'user_id'=>$user_id]);
 			$toBeToken->delete();
 		$response['status'] = 200;
-		$response['message'] = 'Dose successfully removed';
+		$response['message'] = 'Your reminder for pill has been successfully deleted';
 		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
@@ -553,7 +553,7 @@ class PillreminderController extends Controller
 				    $toBeTaken->save();	
 				}
 				$response['status'] = 200;
-				$response['message'] = 'Pill Reminder successfully saved';
+				$response['message'] = 'Your reminder for pill has been successfully added';
 				
 				$pill = [];
 
