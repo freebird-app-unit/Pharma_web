@@ -320,6 +320,9 @@
 							<li>
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
 							</li>
+							<li>
+                                <a href="{{ route('admin.index') }}" class="waves-effect <?php echo ($page_condition=='page_admin')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Admin') }}</span></a>
+							</li>
                    			<li>
                                 <a href="{{ route('pharmacy.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharmacy')?'active':''; ?>"><img src="{{ asset('public/images/pharmacy.png') }}"/><span>{{ __('pharmacy') }}</span></a>
                             </li>
@@ -467,9 +470,6 @@
 							<li>
 									<a href="{{ route('admincomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_admincomplete')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
 								</li>
-								<li>
-                                <a href="{{ route('admin.index') }}" class="waves-effect <?php echo ($page_condition=='page_admin')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Admin') }}</span></a>
-							</li>
 							<li>
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
 							</li>
