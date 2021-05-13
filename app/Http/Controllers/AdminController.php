@@ -130,9 +130,9 @@ class AdminController extends Controller
 	}
 	public function create()
     {
-    	if(Auth::user()->user_type!='admin'){
+    	/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Create Admin';
 		$data['page_condition'] = 'page_admin';
@@ -163,7 +163,7 @@ class AdminController extends Controller
 			}else{
 				$user->profile_image = (isset($request->profile_image))?$request->profile_image:'';
 			}
-
+			$user->user_type = 'admin';
 			$user->name = $request->name;
 			$user->email = $request->email;
 			$user->mobile_number  = $request->mobile_number;
@@ -177,9 +177,9 @@ class AdminController extends Controller
     {
 		$user_id = Auth::user()->user_id;
 		
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 
 		$user_detail = User::where('id',$id)->first();
 		if(!$user_detail){
@@ -214,6 +214,7 @@ class AdminController extends Controller
 			}else{
 				$user->profile_image = (isset($request->profile_image))?$request->profile_image:$user->profile_image;
 			}
+			$user->user_type = 'admin';
 			$user->name = $request->name;
 			$user->email = $request->email;
 			$user->mobile_number  = $request->mobile_number;
@@ -229,9 +230,9 @@ class AdminController extends Controller
 	public function delete($id)
     {
 		$user_id = Auth::user()->user_id;
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$user_detail = User::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
