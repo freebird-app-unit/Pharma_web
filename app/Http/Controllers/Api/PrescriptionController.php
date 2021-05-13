@@ -210,7 +210,7 @@ class PrescriptionController extends Controller
 			Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
 
 			$response['status'] = 200;
-			$response['message'] = 'Prescription saved successfully!';
+			$response['message'] = 'Your prescription has been successfully added';
 			$response['data'] = (object)array();
 			}
 		}else{
@@ -258,7 +258,7 @@ class PrescriptionController extends Controller
 		$delete_pre->save();
 
 		$response['status'] = 200;
-		$response['message'] = 'prescription successfully deleted!';    
+		$response['message'] = 'Your prescription has been successfully deleted';    
 		
 		$response = json_encode($response);
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
