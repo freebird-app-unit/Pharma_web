@@ -581,7 +581,7 @@ class OrderController extends Controller
 					
 					
 					$response['status'] = 200;
-					$response['message'] = 'Your order successfully submitted';
+					$response['message'] = 'Your order has been successfully placed';
 
 				} else {
 					$response['status'] = 404;
@@ -777,7 +777,7 @@ class OrderController extends Controller
             $order_delete = new_orders::find($order->id);
             $order_delete->delete();
 			$response['status'] = 200;
-			$response['message'] = 'Your order successfully canceled';
+			$response['message'] = 'Your order has been successfully cancelled';
 		}else{
 			$response['status'] = 404;
 			$response['message'] = 'Order not found';
