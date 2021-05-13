@@ -22,9 +22,9 @@ class DiseaseController extends Controller
     }
     public function index()
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Disease';
 		$data['page_condition'] = 'page_disease';
@@ -47,9 +47,9 @@ class DiseaseController extends Controller
 	}
 	public function loadForm($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		 
         $data = Disease::find($id);
 		
@@ -101,9 +101,9 @@ class DiseaseController extends Controller
 	
 	public function delete($id)
     {
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$disease = Disease::find($id);
 		if($disease){
 			$disease->delete();
