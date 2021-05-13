@@ -25,12 +25,12 @@ class OrderfilterController extends Controller{
         $user_id = Auth::user()->user_id;
         $user_type = Auth::user()->user_type;
 
-		if(Auth::user()->user_type!='admin'){
+		/*if(Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
         }
         if($user_type != 'pharmacy' && $user_type != 'admin'){
 			return redirect(route('home'));
-		}
+		}*/
 		$data = array();
 		$data['page_title'] = 'Order Filter';
 		$data['page_condition'] = 'page_order_filter';
