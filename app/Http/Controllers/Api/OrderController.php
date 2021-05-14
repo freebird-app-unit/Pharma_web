@@ -46,6 +46,7 @@ use DateInterval;
 use Illuminate\Support\Str;
 use Helper;
 use App\multiple_prescription;
+use App\prescription_multiple_image;
 class OrderController extends Controller
 {
 	public function cancelorderlist(Request $request)
@@ -830,7 +831,7 @@ class OrderController extends Controller
 		$orders_arr_data1 = array();
 
 		if ($is_completed == 0) {
-			$raw_query = new_orders::query()->select('new_orders.order_status','new_orders.create_datetime','new_orders.external_delivery_initiatedby','new_orders.delivery_charges_id','new_orders.is_external_delivery', 'new_orders.pharmacy_id','new_orders.id AS ID', 'new_orders.order_number')
+			$raw_query = new_orders::query()->select('new_orders.order_status','new_orders.prescription_id','new_orders.create_datetime','new_orders.external_delivery_initiatedby','new_orders.delivery_charges_id','new_orders.is_external_delivery', 'new_orders.pharmacy_id','new_orders.id AS ID', 'new_orders.order_number')
 				->with(
 				[
 					'prescriptions' => function($query) {
@@ -855,7 +856,7 @@ class OrderController extends Controller
 			$data_array = $raw_query->paginate($per_page,'','',$page);
 			
 		}else{
-			$raw_query = new_order_history::query()->select('new_order_history.order_status','new_order_history.create_datetime','new_order_history.external_delivery_initiatedby','new_order_history.delivery_charges_id','new_order_history.is_external_delivery', 'new_order_history.pharmacy_id','new_order_history.id AS ID', 'new_order_history.order_number')
+			$raw_query = new_order_history::query()->select('new_order_history.order_status','new_order_history.prescription_id','new_order_history.create_datetime','new_order_history.external_delivery_initiatedby','new_order_history.delivery_charges_id','new_order_history.is_external_delivery', 'new_order_history.pharmacy_id','new_order_history.id AS ID', 'new_order_history.order_number')
 				->with(
 				[
 					'prescriptions' => function($query) {
@@ -896,7 +897,8 @@ class OrderController extends Controller
 			);
 
 			foreach($data_array as $key=>$val){
-				$image_url = '';
+				//old code
+				/*$image_url = '';
 				$image_url = url('/').'/uploads/placeholder.png';
 				if (!empty($val->prescriptions->image)) {
 
@@ -905,13 +907,32 @@ class OrderController extends Controller
 					if (File::exists($filename)) {
 						$image_url = asset('storage/app/public/uploads/prescription/' . $val->prescriptions->image);
 					}
-				}	
-				
+				}*/	
+				//new code
+				$images_array=[];
+                    $image_data = prescription_multiple_image::where('prescription_id',$val->prescription_id)->get();
+                    foreach ($image_data as $pres) {
+                         $pres_image = '';
+                            if (!empty($pres->image)) {
+
+                                $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                if (File::exists($filename)) {
+                                    $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                } else {
+                                    $pres_image = '';
+                                }
+                            }
+                        $images_array[] =[
+                            'id' => $pres->id,
+                            'image' => $pres_image
+                        ];
+                    }
 				$orders_arr_data1[$key]['id'] = $val->ID;
 				$orders_arr_data1[$key]['pharmacy_id'] = $val->pharmacy_id;
 				$orders_arr_data1[$key]['prescription_name'] = !empty($val->prescriptions->name) ? $val->prescriptions->name : '';
 				$orders_arr_data1[$key]['order_number'] = ($val->order_number)?$val->order_number:'';
-				$orders_arr_data1[$key]['prescription'] = $image_url;
+				$orders_arr_data1[$key]['prescription'] = $images_array;
 				$orders_arr_data1[$key]['pharmacy'] = isset($val->pharmacy->name) ? $val->pharmacy->name : '';
 				$orders_arr_data1[$key]['pharmacy_address'] = isset($val->pharmacy->address) ? $val->pharmacy->address : '';
 				/*$orders_arr[$key]['logistic_id'] = 	$val->logistic_user_id;*/
