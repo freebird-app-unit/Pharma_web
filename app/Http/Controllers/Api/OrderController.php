@@ -1015,7 +1015,8 @@ class OrderController extends Controller
 		$audio_url = '';
 		if(count($orders)>0){
 			//$order = new_orders::with('prescriptions')->find($order_id);
-			$image_url = '';
+			//old code
+			/*$image_url = '';
 			$image_url = url('/').'/uploads/placeholder.png';
 			if (!empty($orders[0]->prescriptions->image)) {
 
@@ -1024,8 +1025,28 @@ class OrderController extends Controller
 				if (File::exists($filename)) {
 					$image_url = asset('storage/app/public/uploads/prescription/' . $orders[0]->prescriptions->image);
 				}
-			}
+			}*/
 
+			//new code
+			$images_array=[];
+                    $image_data = prescription_multiple_image::where('prescription_id',$orders[0]->prescription_id)->get();
+                    foreach ($image_data as $pres) {
+                         $pres_image = '';
+                            if (!empty($pres->image)) {
+
+                                $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                if (File::exists($filename)) {
+                                    $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                } else {
+                                    $pres_image = '';
+                                }
+                            }
+                        $images_array[] =[
+                            'id' => $pres->id,
+                            'image' => $pres_image
+                        ];
+                    }
 			if (!empty($orders[0]->audio)) {
 				$filename = storage_path('app/public/uploads/audio/' . $orders[0]->audio);
 				if (File::exists($filename)) {
@@ -1110,7 +1131,7 @@ class OrderController extends Controller
 			$orders_arr1[0]['destination_user_name'] = $userdata->name;
 			$orders_arr1[0]['destination_address'] = ($destination_address)?$destination_address:'';
 			
-			$orders_arr1[0]['order_detail_image'] = $image_url;
+			$orders_arr1[0]['order_detail_image'] = $images_array;
 			$orders_arr1[0]['audio'] = $audio_url;
 			$orders_arr1[0]['audio_info'] = date('d-m-Y h:i A',strtotime($orders[0]->audio_info));
 			$orders_arr1[0]['order_type'] = ($orders[0]->order_type!='')?$orders[0]->order_type:'';
