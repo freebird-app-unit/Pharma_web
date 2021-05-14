@@ -272,27 +272,36 @@ class PrescriptionController extends Controller
 		$content = json_decode($plainText);
 		
 		$id  = isset($content->id) ? $content->id : 0;
+		$sub_prescription_id  = isset($content->sub_prescription_id) ? $content->sub_prescription_id : 0;
 		
 		$params = [
-			'id'     => $id
+			'id'     => $id,
+			'sub_prescription_id' => $sub_prescription_id
 		]; 
 		
 		$validator = Validator::make($params, [
-            'id' => 'required'
+            'id' => 'required',
+            'sub_prescription_id' =>'required'
         ]);
  
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
 		
-		$prescription = Prescription::where('id',$id)->first();
-		$prescription->is_delete="1";
-		$prescription->save();
-		
-		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id])->first();
+		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id,'multiple_prescription_id'=>(int)$sub_prescription_id])->first();
 		$delete_pre->is_delete='1';
 		$delete_pre->save();
 
+		$sub_prescription_id = prescription_multiple_image::where(['prescription_id'=>$id,'id'=>$sub_prescription_id])->first();
+		$sub_prescription_id->is_delete='1';
+		$sub_prescription_id->save();
+
+		$multiple_data = prescription_multiple_image::where(['prescription_id'=>$id,'is_delete'=>'0'])->get();
+		if(count($multiple_data) == 0){
+			$prescription = Prescription::where('id',$id)->first();
+			$prescription->is_delete="1";
+			$prescription->save();
+		}
 		$response['status'] = 200;
 		$response['message'] = 'Your prescription has been successfully deleted';    
 		
