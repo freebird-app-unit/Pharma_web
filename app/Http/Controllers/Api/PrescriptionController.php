@@ -89,16 +89,30 @@ class PrescriptionController extends Controller
 		$prescription_arr = array();
 		if(count($data_array)>0){
 			foreach($data_array as $key=>$val){
-				$file_name = '';
-				if (!empty($val['image'])) {
-					if (file_exists(storage_path('app/public/uploads/prescription/'.$val['image']))){
-						$file_name = asset('storage/app/public/uploads/prescription/' . $val['image']);
-					}
-				}
+				
+				$images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$val['id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
 				$prescription_arr[$key]['id'] = $val['id'];
 				$prescription_arr[$key]['name'] = $val['name'];
-				$prescription_arr[$key]['image'] = $file_name;
 				$prescription_arr[$key]['date'] = date('d-m-Y', strtotime($val['created_at']));
+				$prescription_arr[$key]['image'] = $images_array;
 			}
 			$response['status'] = 200;
 		} else {
