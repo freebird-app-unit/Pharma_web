@@ -532,8 +532,8 @@ class LoginController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$name = isset($content->name) ? $content->name : '';
 		$email = isset($content->email) ? $content->email : '';
@@ -669,9 +669,9 @@ class LoginController extends Controller
         }
 		
        $response = json_encode($response);
-	   //$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+	   $cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
     }
 
     public function logout(Request $request){
