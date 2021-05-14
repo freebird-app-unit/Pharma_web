@@ -12,6 +12,7 @@ use Image;
 use File;
 use DB;
 use Illuminate\Support\Str;
+use App\patient_report_multiple_image;
 class PatientReportController extends Controller
 {
     public function patient_report_add(Request $request)
@@ -55,7 +56,7 @@ class PatientReportController extends Controller
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
 		if(count($user)>0){*/
 
-		$patient_report_image = '';
+		/*$patient_report_image = '';
 		if ($request->hasFile('patient_report')) {
 			
 			$image         = $request->file('patient_report');
@@ -70,7 +71,7 @@ class PatientReportController extends Controller
 			$response['message'] = 'Please upload patient_report';
 			
 			return response($response, 200);
-		}
+		}*/
 		$find_name = patient_report::where(['user_id'=>$user_id,'name'=>$name,"is_delete"=>"0"])->get();
 		if(count($find_name)>0){
 			$response['status'] = 404;
@@ -79,37 +80,74 @@ class PatientReportController extends Controller
 			$reports = new patient_report();
 			$reports->user_id = $user_id;
 			$reports->name = $name;
-			$reports->image = $patient_report_image;
+			//$reports->image = $patient_report_image;
 			$reports->date = date('Y-m-d H:i:s');
 			$reports->remarks = $remarks;
 			$reports->save();
-				$code_data = explode(' ',$image);
-				foreach ($code_data as $value) {
-					$check_table_empty = patient_report_image::all();
-					$last_id = patient_report_image::latest('patient_report_image_id')->first();
-					if(!empty($last_id)){
-						$update_id = $last_id->patient_report_image_id + 1;	
-					}
-					$abc= new patient_report_image();
-					$abc->patient_report_image_id=(count($check_table_empty)==0)?1:$update_id;
-					$abc->user_id = $reports->user_id;
-					$abc->patient_report_id = $reports->id;
-					$abc->name = $reports->name;
-					$abc->image = base64_encode(file_get_contents($request->file('patient_report')));
-					$abc->path = asset('storage/app/public/uploads/patient_report/' . $patient_report_image);
-					$abc->date = $reports->date;
-					$abc->is_delete = "0";
-					$abc->created_at = date('Y-m-d H:i:s');
-					$abc->updated_at = date('Y-m-d H:i:s');				
-					$abc->save();
+			
+			$prescription_image = '';
+			if ($request->hasFile('patient_report')) {
+				
+				$destinationPath = 'storage/app/public/uploads/patient_report/' ; 
+				$images=array();
+				if($files=$request->file('patient_report')){
+					
+					foreach($files as $key => $file){
+						$check_table_empty = patient_report_image::all();
+						$last_id = patient_report_image::latest('patient_report_image_id')->first();
+						if(!empty($last_id)){
+							$update_id = $last_id->patient_report_image_id + 1;	
+						}
+						$abc= new patient_report_image();
+						$abc->patient_report_image_id=(count($check_table_empty)==0)?1:$update_id;
+						$abc->user_id = $reports->user_id;
+						$abc->patient_report_id = $reports->id;
+						$abc->name = $reports->name;
+						$abc->image = base64_encode(file_get_contents($file));
+						$abc->path = asset('storage/app/public/uploads/patient_report/' . $file);
+						$abc->date = $reports->date;
+						$abc->is_delete = "0";
+						$abc->created_at = date('Y-m-d H:i:s');
+						$abc->updated_at = date('Y-m-d H:i:s');				
+						$abc->save();
 
-					//restore image
-					$image = $abc->image;  // your base64 encoded
-				    $image = str_replace('data:image/png;base64,', '', $image);
-				    $image = str_replace(' ', '+', $image);
-				    $imageName = str::random(10) . '.png';
-					Storage::disk('public')->put('uploads/patient_report_restore/'.$imageName, base64_decode($image), 'public');
+						//restore image and PDF
+						/*$image = $abc->image;  // your base64 encoded
+						if(str_replace('data:image/png;base64,', '', $image)){
+							$image = str_replace('data:image/png;base64,', '', $image);
+						    $image = str_replace(' ', '+', $image);
+						    $imageName = str::random(10) . '.png';
+							Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+						}
+
+
+						if(str_replace('data:pdf/pdf;base64,', '', $image)){
+							 $image = str_replace('data:pdf/pdf;base64,', '', $image);
+					    	 $image = str_replace(' ', '+', $image);
+						     $imageName = str::random(10) . '.pdf';
+							 Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+						}*/
+					    
+
+						$filename= time().'-'.$file->getClientOriginalName();
+						$tesw = $file->move($destinationPath, $filename);
+						$reports_multiple_image = new patient_report_multiple_image();
+						$reports_multiple_image->patient_report_id = $reports->id;
+						$reports_multiple_image->user_id = $reports->user_id;
+						$reports_multiple_image->name = $reports->name;
+						$reports_multiple_image->image = $filename;
+						$reports_multiple_image->date = $reports->date;
+						$reports_multiple_image->is_delete = '0';
+						$reports_multiple_image->save();
+					}
 				}
+			} else {
+				$response['status'] = 404;
+				$response['message'] = 'Please upload prescription';
+				
+				return response($response, 200);
+			}
+				
 			$response['status'] = 200;
 			$response['message'] = 'Report saved successfully!';
 			$response['data'] = (object)array();
@@ -137,28 +175,38 @@ class PatientReportController extends Controller
 		
 		$user_id  = isset($content->user_id) ? $content->user_id : 0;
 		$id  = isset($content->id) ? $content->id : 0;
-		
+		$sub_report_id  = isset($content->sub_report_id) ? $content->sub_report_id : 0;
+
 		$params = [
 			'user_id' => $user_id,
-			'id'     => $id
+			'id'     => $id,
+			'sub_report_id' =>$sub_report_id
 		]; 
 		
 		$validator = Validator::make($params, [
 			'user_id' => 'required',
-            'id' => 'required'
+            'id' => 'required',
+            'sub_report_id' => 'required'
         ]);
  
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
-		
-		$patient_report = patient_report::where(['id'=>$id,'user_id'=>$user_id])->first();
-		$patient_report->is_delete='1';
-		$patient_report->save();
 
-		$delete_pre = patient_report_image::where(['patient_report_id'=>(int)$id,'user_id'=>(int)$user_id])->first();
-		$delete_pre->is_delete='1';
-		$delete_pre->save();
+		$delete_re = patient_report_image::where(['patient_report_id'=>(int)$id,'user_id'=>(int)$user_id,'patient_report_image_id'=>(int)$sub_report_id])->first();
+		$delete_re->is_delete='1';
+		$delete_re->save();
+
+		$sub_report_data = patient_report_multiple_image::where(['patient_report_id'=>$id,'id'=>$sub_report_id])->first();
+		$sub_report_data->is_delete='1';
+		$sub_report_data->save();
+
+		$multiple_data = patient_report_multiple_image::where(['patient_report_id'=>$id,'is_delete'=>'0'])->get();
+		if(count($multiple_data) == 0){
+			$patient_report = patient_report::where(['id'=>$id,'user_id'=>$user_id])->first();
+			$patient_report->is_delete='1';
+			$patient_report->save();
+		}
 
 		$response['status'] = 200;
 		$response['message'] = 'Report successfully deleted!';    
@@ -238,16 +286,35 @@ class PatientReportController extends Controller
 		$report_arr = array();
 		if(count($data_array)>0){
 			foreach($data_array as $key=>$val){
-				$file_name = '';
+				/*$file_name = '';
 				if (!empty($val['image'])) {
 					if (file_exists(storage_path('app/public/uploads/patient_report/'.$val['image']))){
 						$file_name = asset('storage/app/public/uploads/patient_report/' . $val['image']);
 					}
-				}
+				}*/
+				$images_array=[];
+                                $image_data = patient_report_multiple_image::where('patient_report_id',$val['id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/patient_report/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/patient_report/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
 				$report_arr[$key]['id'] = $val['id'];
 				$report_arr[$key]['name'] = $val['name'];
 				$report_arr[$key]['date'] = date('d-m-Y', strtotime($val['created_at']));
-				$report_arr[$key]['image'] = $file_name;
+				$report_arr[$key]['image'] = $images_array;
 			}
 			$response['status'] = 200;
 		} else {
