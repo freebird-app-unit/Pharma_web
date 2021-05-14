@@ -362,8 +362,8 @@ class OrderController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$user_id       = isset($content->user_id) ? $content->user_id : '';
 		$pharmacy_id   = isset($content->pharmacy_id) ? $content->pharmacy_id : '';
@@ -402,10 +402,10 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
-		/*
+		
 		$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->first();
-		if(!empty($user)){*/
+		if(!empty($user)){
 			$userdata = new_users::find($user_id);
 			
 			if($userdata){
@@ -640,15 +640,15 @@ class OrderController extends Controller
 				$response['data']['payment_url'] = 'create_transaction/'.$neworder->id;
 			}
 
-		/*}else{
+		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}*/
+	   	}
 		
         $response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
 	}
 	  
 	public function cancelorder(Request $request)
