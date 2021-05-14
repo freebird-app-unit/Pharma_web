@@ -362,8 +362,8 @@ class OrderController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id       = isset($content->user_id) ? $content->user_id : '';
 		$pharmacy_id   = isset($content->pharmacy_id) ? $content->pharmacy_id : '';
@@ -402,10 +402,10 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
-		
+		/*
 		$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->first();
-		if(!empty($user)){
+		if(!empty($user)){*/
 			$userdata = new_users::find($user_id);
 			
 			if($userdata){
@@ -424,7 +424,8 @@ class OrderController extends Controller
 						
 						return response($cipher, 200);
 					}else{
-						$prescription_image = '';
+						//old code
+						/*$prescription_image = '';
 						if ($request->hasFile('prescription')) {
 							
 							$image         = $request->file('prescription');
@@ -442,38 +443,80 @@ class OrderController extends Controller
 							$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 							
 							return response($cipher, 200);
-						}
+						}*/
 
+						//new code
 						$prescriptions->user_id = $user_id;
 						$prescriptions->name = $prescription_name;
-						$prescriptions->image = $prescription_image;
+						//$prescriptions->image = $prescription_image;
 						$prescriptions->save();
 						$prescription = $prescriptions->id;
 
-						$check_table_empty = multiple_prescription::all();
-						$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
-						if(!empty($last_id)){
-							$update_id = $last_id->multiple_prescription_id + 1;	
-						}
-						$abc= new multiple_prescription();
-						$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
-						$abc->user_id = $prescriptions->user_id;
-						$abc->prescription_id = $prescriptions->id;
-						$abc->prescription_name = $prescriptions->name;
-						$abc->image = base64_encode(file_get_contents($request->file('prescription')));
-						$abc->path = asset('storage/app/public/uploads/prescription/' . $prescription_image);
-						$abc->prescription_date = $prescriptions->prescription_date;
-						$abc->is_delete = "0";
-						$abc->created_at = date('Y-m-d H:i:s');
-						$abc->updated_at = date('Y-m-d H:i:s');				
-						$abc->save();
+						$prescription_image = '';
+						if ($request->hasFile('prescription')) {
+							
+							$destinationPath = 'storage/app/public/uploads/prescription/' ; 
+							$images=array();
+							if($files=$request->file('prescription')){
+								
+								foreach($files as $key => $file){
+									$check_table_empty = multiple_prescription::all();
+									$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+									if(!empty($last_id)){
+										$update_id = $last_id->multiple_prescription_id + 1;	
+									}
+									$abc= new multiple_prescription();
+									$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
+									$abc->user_id = $prescriptions->user_id;
+									$abc->prescription_id = $prescriptions->id;
+									$abc->prescription_name = $prescriptions->name;
+									$abc->image = base64_encode(file_get_contents($file));
+									$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
+									$abc->prescription_date = $prescriptions->prescription_date;
+									$abc->is_delete = "0";
+									$abc->created_at = date('Y-m-d H:i:s');
+									$abc->updated_at = date('Y-m-d H:i:s');				
+									$abc->save();
 
-						//restore image
-						$image = $abc->image;  // your base64 encoded
-					    $image = str_replace('data:image/png;base64,', '', $image);
-					    $image = str_replace(' ', '+', $image);
-					    $imageName = str::random(10) . '.png';
-						Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+									//restore image and PDF
+									/*$image = $abc->image;  // your base64 encoded
+									if(str_replace('data:image/png;base64,', '', $image)){
+										$image = str_replace('data:image/png;base64,', '', $image);
+									    $image = str_replace(' ', '+', $image);
+									    $imageName = str::random(10) . '.png';
+										Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+									}
+
+
+									if(str_replace('data:pdf/pdf;base64,', '', $image)){
+										 $image = str_replace('data:pdf/pdf;base64,', '', $image);
+								    	 $image = str_replace(' ', '+', $image);
+									     $imageName = str::random(10) . '.pdf';
+										 Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+									}*/
+								    
+
+									$filename= time().'-'.$file->getClientOriginalName();
+									$tesw = $file->move($destinationPath, $filename);
+									$prescription_multiple_image = new prescription_multiple_image();
+									$prescription_multiple_image->prescription_id = $prescriptions->id;
+									$prescription_multiple_image->user_id = $prescriptions->user_id;
+									$prescription_multiple_image->name = $prescriptions->name;
+									$prescription_multiple_image->image = $filename;
+									$prescription_multiple_image->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d H:i:s');
+									$prescription_multiple_image->is_delete = '0';
+									$prescription_multiple_image->save();
+								}
+							}
+						} else {
+							$response['status'] = 404;
+							$response['message'] = 'Please upload prescription';
+							
+							$response = json_encode($response);
+							$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+							
+							return response($cipher, 200);
+						}
 					}
 				} else {
 					$pre = $pre->get();
@@ -597,15 +640,15 @@ class OrderController extends Controller
 				$response['data']['payment_url'] = 'create_transaction/'.$neworder->id;
 			}
 
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
 		
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	}
 	  
 	public function cancelorder(Request $request)
