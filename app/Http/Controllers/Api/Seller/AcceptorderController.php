@@ -38,7 +38,7 @@ use DateTime;
 use DatePeriod;
 use DateInterval;
 use Helper;
-
+use App\prescription_multiple_image;
 class AcceptorderController extends Controller
 {
     /**
@@ -148,7 +148,7 @@ class AcceptorderController extends Controller
         if(count($user)>0){
             if(count($data_array)>0){
                 foreach($data_array as $value) { 
-                    $prescription_image = '';
+                    /*$prescription_image = '';
                         $p_img = Prescription::where('id',$value['prescription_id'])->first();
                         if (!empty($p_img->image)) {
 
@@ -159,7 +159,26 @@ class AcceptorderController extends Controller
                             } else {
                                 $prescription_image = '';
                             }
-                        }
+                        }*/
+                        $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value['prescription_id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
                     $user_data = new_users::where('id',$value['customer_id'])->first();
                     if(!empty($user_data)){
                         $name =$user_data->name;
@@ -187,7 +206,7 @@ class AcceptorderController extends Controller
                                  'order_type' => $value['order_type'],
                                  'total_days' => ($value['total_days'])?$value['total_days']:'',
                                  'customer_name' => $name,
-                                 'prescription_image' => $prescription_image,
+                                 'prescription_image' => $images_array,
                                  'order_note' => ($value['order_note'])?$value['order_note']:'',
                                  'checking_by' => $checking_by,
                                  'checking_by_user_id' => ($value['checking_by'])?$value['checking_by']:'',
@@ -277,7 +296,7 @@ class AcceptorderController extends Controller
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
-                                    $prescription_image = '';
+                                   /* $prescription_image = '';
                                     $p_img = Prescription::where('id',$value['prescription_id'])->first();
                                     if (!empty($p_img->image)) {
 
@@ -288,7 +307,26 @@ class AcceptorderController extends Controller
                                         } else {
                                             $prescription_image = '';
                                         }
-                                    }
+                                    }*/
+                                     $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value['prescription_id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -306,7 +344,7 @@ class AcceptorderController extends Controller
                                     $accept[] = [
                                     'order_id' => $value['id'],
                                     'order_number' => $value['order_number'],
-                                    'prescription_image' => $prescription_image,
+                                    'prescription_image' => $images_array,
                                     'customer_name' => $name,
                                     'accepted_date' => $value['accept_datetime'],
                                     'delivery_type' => $delivery_type,
@@ -581,7 +619,7 @@ class AcceptorderController extends Controller
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
-                                    $prescription_image = '';
+                                   /* $prescription_image = '';
                                     $p_img = Prescription::where('id',$value['prescription_id'])->first();
                                     if (!empty($p_img->image)) {
                                         $filename = storage_path('app/public/uploads/prescription/' .  $p_img->image);
@@ -590,8 +628,26 @@ class AcceptorderController extends Controller
                                         } else {
                                             $prescription_image = '';
                                         }
-                                    }
-                                
+                                    }*/
+                                 $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value['prescription_id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
 
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
@@ -620,7 +676,7 @@ class AcceptorderController extends Controller
                                     $outof[] = [
                                     'order_id' => $value['id'],
                                     'order_number' => $value['order_number'],
-                                    'prescription_image' => $prescription_image,
+                                    'prescription_image' => $images_array,
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
                                     'deliveryboy_id' => $value['deliveryboy_id'],
@@ -716,7 +772,7 @@ class AcceptorderController extends Controller
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
-                                        $prescription_image = '';
+                                        /*$prescription_image = '';
                                         $p_img = Prescription::where('id',$value['prescription_id'])->first();
                                         if (!empty($p_img->image)) {
 
@@ -727,7 +783,26 @@ class AcceptorderController extends Controller
                                             } else {
                                                 $prescription_image = '';
                                             }
+                                        }*/
+                                         $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value['prescription_id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
                                         }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -745,7 +820,7 @@ class AcceptorderController extends Controller
                                 $reject[] = [
                                     'order_id' => $value['id'],
                                     'order_number' => $value['order_number'],
-                                    'prescription_image' => $prescription_image,
+                                    'prescription_image' => $images_array,
                                     'customer_name' => $name,
                                     'reason' =>  ($value['reject_cancel_reason'])?$value['reject_cancel_reason']:'',
                                     'delivery_type' => $delivery_type,
@@ -834,7 +909,7 @@ class AcceptorderController extends Controller
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
-                                    $prescription_image = '';
+                                    /*$prescription_image = '';
                                     $p_img = Prescription::where('id',$value['prescription_id'])->first();
                                     if (!empty($p_img->image)) {
 
@@ -846,7 +921,26 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
-                                
+                                */
+                                    $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value['prescription_id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
                                $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -864,7 +958,7 @@ class AcceptorderController extends Controller
                                     $cancel[] = [
                                     'order_id' => $value['order_id'],
                                     'order_number' => $value['order_number'],
-                                    'prescription_image' => $prescription_image,
+                                    'prescription_image' => $images_array,
                                     'customer_name' => $name,
                                     'reason' =>($value['reject_cancel_reason'])?$value['reject_cancel_reason']:'',
                                     'delivery_type' => $delivery_type,
@@ -1022,7 +1116,7 @@ class AcceptorderController extends Controller
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
-                                    $prescription_image = '';
+                                    /*$prescription_image = '';
                                     $image_list = Prescription::where('id',$value['prescription_id'])->first();
                                     if (!empty($p_img->image)) {
 
@@ -1033,7 +1127,26 @@ class AcceptorderController extends Controller
                                         } else {
                                             $prescription_image = '';
                                         }
-                                    }
+                                    }*/
+                                    $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value['prescription_id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -1062,7 +1175,7 @@ class AcceptorderController extends Controller
                                 $complete[] = [
                                     'order_id' => $value['order_id'],
                                     'order_number' => $value['order_number'],
-                                    'prescription_image' => $prescription_image,
+                                    'prescription_image' => $images_array,
                                     'customer_name' => $name,
                                     'customer_mobilenumber' =>$mobile,
                                     'deliveryboy_id' => $value['deliveryboy_id'],
@@ -1927,7 +2040,7 @@ class AcceptorderController extends Controller
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
-                                        $prescription_image = '';
+                                       /* $prescription_image = '';
                                         $p_img = Prescription::where('id',$value['prescription_id'])->first();
                                         if (!empty($p_img->image)) {
 
@@ -1938,7 +2051,26 @@ class AcceptorderController extends Controller
                                             } else {
                                                 $prescription_image = '';
                                             }
+                                        }*/
+                                        $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value['prescription_id'])->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
                                         }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
+                                }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -1960,7 +2092,7 @@ class AcceptorderController extends Controller
                                         'order_id' => $value['id'],
                                         'order_number' => $value['order_number'],
                                         'delivery_type' => $delivery_type,
-                                        'prescription_image' => $prescription_image,
+                                        'prescription_image' => $images_array,
                                         'customer_name' => $name,
                                         'reason' => $value['reject_cancel_reason'],
                                         'return_confirmtime' => ($value['return_confirmtime'])?$value['return_confirmtime']:'',
@@ -3197,7 +3329,7 @@ class AcceptorderController extends Controller
                 $order_details_complete =  new_order_history::where('order_id' , $order_id)->orderBy('order_id', 'DESC')->get();
                 if(count($order_details)>0){
                          foreach($order_details as $value) {
-                                    $prescription_image = '';
+                                    /*$prescription_image = '';
                                     $image_list = Prescription::where('id',$value->prescription_id)->get();
                                     foreach ($image_list as $p_img) {
                                     if (!empty($p_img->image)) {
@@ -3210,6 +3342,25 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
+                                }*/
+                                 $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value->prescription_id)->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
                                 }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
@@ -3317,7 +3468,7 @@ class AcceptorderController extends Controller
                                     $orders[] = [
                                     'order_id' => $value->id,
                                     'order_number' => $value->order_number,
-                                    'prescription_image' => $prescription_image,
+                                    'prescription_image' => $images_array,
                                     'invoice'=> $invoice_images,
                                     'order_note' => $value->order_note,
                                     'order_type' => $value->order_type,
@@ -3354,7 +3505,7 @@ class AcceptorderController extends Controller
                         $response['message'] = 'Order Details';
                 } elseif (count($order_details_complete)>0) {
                     foreach($order_details_complete as $value) {
-                                    $prescription_image = '';
+                                    /*$prescription_image = '';
                                     $image_list = Prescription::where('id',$value->prescription_id)->get();
                                     foreach ($image_list as $p_img) {
                                     if (!empty($p_img->image)) {
@@ -3367,6 +3518,25 @@ class AcceptorderController extends Controller
                                             $prescription_image = '';
                                         }
                                     }
+                                }*/
+                                 $images_array=[];
+                                $image_data = prescription_multiple_image::where('prescription_id',$value->prescription_id)->get();
+                                foreach ($image_data as $pres) {
+                                     $pres_image = '';
+                                        if (!empty($pres->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $pres->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $pres->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+                                    $images_array[] =[
+                                        'id' => $pres->id,
+                                        'image' => $pres_image
+                                    ];
                                 }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
@@ -3474,7 +3644,7 @@ class AcceptorderController extends Controller
                                     $orders[] = [
                                     'order_id' => $value->order_id,
                                     'order_number' => $value->order_number,
-                                    'prescription_image' => $prescription_image,
+                                    'prescription_image' => $images_array,
                                     'invoice'=> $invoice_images,
                                     'order_note' => $value->order_note,
                                     'order_type' => $value->order_type,
