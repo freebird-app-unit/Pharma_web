@@ -532,14 +532,15 @@ class LoginController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$name = isset($content->name) ? $content->name : '';
 		$email = isset($content->email) ? $content->email : '';
 		$mobile_number = isset($content->mobile_number) ? $content->mobile_number : '';
 		$password = isset($content->password) ? $content->password : '';
 		$dob = isset($content->dob) ? $content->dob : '';
+		$fcm_token = isset($content->fcm_token) ? $content->fcm_token : '';
 		/*$address = isset($content->address) ? $content->address : '';
 		$block = isset($content->block) ? $content->block : '';
 		$street = isset($content->street) ? $content->street : '';
@@ -556,6 +557,7 @@ class LoginController extends Controller
 			'mobile_number' => $mobile_number,
 			'password' => $password,
 			'dob' => $dob,
+			'fcm_token' => $fcm_token
 			/*'address' => $address,
 			'block' => $block,
 			'street' => $street,
@@ -574,6 +576,7 @@ class LoginController extends Controller
             'password' => 'required',
             'dob' => 'required|date_format:Y-m-d',
             'profile_image' => 'image|max:1024',
+            'fcm_token' => 'required'
             /*'address' => 'required',
             'block' => 'required',
             'street' => 'required',
@@ -648,8 +651,14 @@ class LoginController extends Controller
 					$response['data']->mobile_number=$user->mobile_number;
 					$response['data']->profile_image=$profile_image;
 					$response['data']->dob=($user->dob)?$user->dob:'';
-					$response['data']->api_token=($user->api_token)?$user->api_token:'';
-					$response['data']->fcm_token=($user->fcm_token)?$user->fcm_token:'';
+					$data = new_users::find($login->id);
+					$data->api_token = $login->createToken('MyApp')-> accessToken;
+					$data->save();
+					$response['data']->api_token =  $data->api_token;
+
+					$token = new_users::find($login->id);
+					$token->fcm_token = $fcm_token;
+					$token->save();
 
 					$response['status'] = 200;
 					$response['message'] = 'Congratulations, your account has been successfully created.';
@@ -660,9 +669,9 @@ class LoginController extends Controller
         }
 		
        $response = json_encode($response);
-	   $cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+	   //$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
     }
 
     public function logout(Request $request){
