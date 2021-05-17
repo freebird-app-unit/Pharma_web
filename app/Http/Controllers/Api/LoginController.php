@@ -576,7 +576,6 @@ class LoginController extends Controller
             'password' => 'required',
             'dob' => 'required|date_format:Y-m-d',
             'profile_image' => 'image|max:1024',
-            'fcm_token' => 'required'
             /*'address' => 'required',
             'block' => 'required',
             'street' => 'required',
