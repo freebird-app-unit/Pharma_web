@@ -71,7 +71,7 @@ class OnboardingrequestController extends Controller
 			$new_pharmacies->pincode = $Onboardingrequest->pincode;
 			$new_pharmacies->start_time = $Onboardingrequest->open_time;
 			$new_pharmacies->close_time = $Onboardingrequest->close_time;
-			$new_pharmacies->radius = '';
+			$new_pharmacies->radius = $Onboardingrequest->radius;
 			$new_pharmacies->created_at = date('Y-m-d H:i:s');
 			$new_pharmacies->save();
 			
