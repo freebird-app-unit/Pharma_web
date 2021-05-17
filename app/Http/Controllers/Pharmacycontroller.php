@@ -234,7 +234,8 @@ class Pharmacycontroller extends Controller
 			if ($request->hasFile('license_image')) {
 				$file2 = $request->file('license_image');
 				$fileName2 = time().'lic.'.$file2->getClientOriginalExtension();  
-				$destinationPath = 'storage/app/public/uploads/new_pharmacy/license';
+				//$destinationPath = 'storage/app/public/uploads/new_pharmacy/license';
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
 				$file2->move($destinationPath, $fileName2);
 				$user->license_image = $fileName2;
 			}else{
@@ -244,7 +245,8 @@ class Pharmacycontroller extends Controller
 			if ($request->hasFile('pancard_image')) {
 				$file3 = $request->file('pancard_image');
 				$fileName3 = time().'pan.'.$file3->getClientOriginalExtension();  
-				$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
+				//$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
 				$file3->move($destinationPath, $fileName3);
 				$user->pancard_image = $fileName3;
 				
