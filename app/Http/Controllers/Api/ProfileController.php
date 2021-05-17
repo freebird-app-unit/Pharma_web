@@ -101,7 +101,8 @@ class ProfileController extends Controller
 		$name = isset($content->name) ? $content->name : '';
 		$mobile_number = isset($content->mobile_number) ? $content->mobile_number : ''; 
 		$email = isset($content->email) ? $content->email : ''; 
-		$dob = isset($content->dob) ? $content->dob : ''; 
+		$dob = isset($content->dob) ? $content->dob : '';
+		$referral_code = isset($content->referral_code) ? $content->referral_code : ''; 
 		$params = [
 			'user_id' => $user_id
 		];
@@ -183,6 +184,7 @@ class ProfileController extends Controller
 				if (!empty($profile_image)) {
 					$user->profile_image = $profile_image;
 				}
+				$user->referral_code = $referral_code;
 				$user->save();
 				$response['status'] = 200;
 				$response['message'] = 'Your profile has been successfully updated';
