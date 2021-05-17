@@ -233,31 +233,31 @@ class Pharmacycontroller extends Controller
 			}
 
 			if ($request->hasFile('adharcard_image')) {
-				$file2 = $request->file('adharcard_image');
-				$fileName2 = time().'adharcard.'.$file2->getClientOriginalExtension();  
+				$file3 = $request->file('adharcard_image');
+				$fileName3 = time().'adharcard.'.$file3->getClientOriginalExtension();  
 				$destinationPath = 'storage/app/public/uploads/new_pharmacy/adharcard';
-				$file2->move($destinationPath, $fileName2);
-				$user->adharcard_image = $fileName2;
+				$file3->move($destinationPath, $fileName3);
+				$user->adharcard_image = $fileName3;
 			}else{
 				$user->adharcard_image = (isset($request->adharcard_image))?$request->adharcard_image:'';
 			}
 
 			if ($request->hasFile('pancard_image')) {
-				$file3 = $request->file('pancard_image');
-				$fileName3 = time().'pancard.'.$file3->getClientOriginalExtension();  
+				$file4 = $request->file('pancard_image');
+				$fileName4 = time().'pancard.'.$file4->getClientOriginalExtension();  
 				$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
-				$file3->move($destinationPath, $fileName3);
-				$user->pancard_image = $fileName3;	
+				$file4->move($destinationPath, $fileName4);
+				$user->pancard_image = $fileName4;	
 			}else{
 				$user->pancard_image = (isset($request->pancard_image))?$request->pancard_image:'';
 			}
 
 			if ($request->hasFile('druglicense_image')) {
-				$file3 = $request->file('druglicense_image');
-				$fileName3 = time().'druglicense.'.$file3->getClientOriginalExtension();  
+				$file5 = $request->file('druglicense_image');
+				$fileName5 = time().'druglicense.'.$file5->getClientOriginalExtension();  
 				$destinationPath = 'storage/app/public/uploads/new_pharmacy/druglicense';
-				$file3->move($destinationPath, $fileName3);
-				$user->druglicense_image = $fileName3;	
+				$file5->move($destinationPath, $fileName5);
+				$user->druglicense_image = $fileName5;	
 			}else{
 				$user->druglicense_image = (isset($request->druglicense_image))?$request->druglicense_image:'';
 			}
