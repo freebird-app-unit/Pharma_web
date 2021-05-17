@@ -558,7 +558,8 @@ class LoginController extends Controller
 			'mobile_number' => $mobile_number,
 			'password' => $password,
 			'dob' => $dob,
-			'fcm_token' => $fcm_token
+			'fcm_token' => $fcm_token,
+			'referral_code'=>$referral_code
 			/*'address' => $address,
 			'block' => $block,
 			'street' => $street,
@@ -628,6 +629,7 @@ class LoginController extends Controller
 					$user->dob = $dob;
 					$user->profile_image = $profile_image; 
 					$user->password = Hash::make($password);
+					$user->referral_code = $referral_code;
 					$user->save();
 					
 					$family_member = new FamilyMember();
