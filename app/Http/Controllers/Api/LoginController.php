@@ -541,6 +541,7 @@ class LoginController extends Controller
 		$password = isset($content->password) ? $content->password : '';
 		$dob = isset($content->dob) ? $content->dob : '';
 		$fcm_token = isset($content->fcm_token) ? $content->fcm_token : '';
+		$referral_code = isset($content->referral_code) ? $content->referral_code : '';
 		/*$address = isset($content->address) ? $content->address : '';
 		$block = isset($content->block) ? $content->block : '';
 		$street = isset($content->street) ? $content->street : '';

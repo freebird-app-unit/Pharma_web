@@ -72,6 +72,7 @@ class OnboardingrequestController extends Controller
 			$new_pharmacies->start_time = $Onboardingrequest->open_time;
 			$new_pharmacies->close_time = $Onboardingrequest->close_time;
 			$new_pharmacies->radius = $Onboardingrequest->delivery_range;
+			$new_pharmacies->referral_code = $Onboardingrequest->referral_code;
 			$new_pharmacies->pancard_image = $Onboardingrequest->pan_card;
 			$new_pharmacies->profile_image = $Onboardingrequest->photo;
 			$new_pharmacies->created_at = date('Y-m-d H:i:s');
