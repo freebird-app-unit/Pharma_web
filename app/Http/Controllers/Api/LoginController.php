@@ -652,6 +652,7 @@ class LoginController extends Controller
 					$response['data']->email=$user->email;
 					$response['data']->mobile_number=$user->mobile_number;
 					$response['data']->profile_image=$profile_image;
+					$response['data']->referral_code=($user->referral_code)?$user->referral_code:'';
 					$response['data']->dob=($user->dob)?$user->dob:'';
 					$data = new_users::find($login->id);
 					$data->api_token = $login->createToken('MyApp')-> accessToken;
