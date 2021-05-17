@@ -162,7 +162,7 @@
 						if (res.status_code == '400') {
 							swal('Cancelled',"Something went wrong)", "error");
 						} else {
-							swal('Deleted!', 'Request has been approved.', "success");
+							swal('Approved!', 'Request has been approved.', "success");
 							obj.parents('tr').fadeOut();
 						}
 					},
