@@ -68,6 +68,7 @@ class ProfileController extends Controller
 				$response['data']->email=$login->email;
 				$response['data']->mobile_number=$login->mobile_number;
 				$response['data']->profile_image=$profile_image;
+				$response['data']->referral_code=$login->referral_code;
 				$response['data']->dob=($login->dob)?$login->dob:'';
             } 
 			else 
@@ -154,9 +155,16 @@ class ProfileController extends Controller
 		$login = new_users::find($user_id);
         if($login) 
 		{
-			if($login->count() > 0) 
-			{
-				$profile_image = '';
+			if(!empty($referral_code)){
+				$pharmacy_code =  new_pharmacies::where('referral_code',$referral_code)->first();
+			    if(empty($pharmacy_code)){
+				    $response['status'] = 404;
+				    $response['message'] = 'Referral Code is not available';
+			    }
+			} else{
+			    	if($login->count() > 0) 
+					{
+						$profile_image = '';
 						if ($request->hasFile('profile_image')) {
 							
 							$filename = storage_path('app/public/uploads/new_user/' . $login->profile_image);
@@ -173,29 +181,27 @@ class ProfileController extends Controller
 
 							Storage::disk('public')->put('uploads/new_user/'.$profile_image, $img, 'public');
 						}
-				$user = new_users::find($user_id);
-				$user_data = new_users::where('id',$user_id)->get();
-				foreach ($user_data as $u_data) {
-					$user->mobile_number = ($mobile_number)?$mobile_number:$u_data->mobile_number;
-				}
-				$user->name = $name;
-				$user->email = $email; 
-				$user->dob = $dob; 
-				if (!empty($profile_image)) {
-					$user->profile_image = $profile_image;
-				}
-				$user->referral_code = $referral_code;
-				$user->save();
-				$response['status'] = 200;
-				$response['message'] = 'Your profile has been successfully updated';
-            } 
-			else 
-			{
-				$response['status'] = 404;
-				$response['message'] = 'User not found';
-            }
-        } 
-		else 
+						$user = new_users::find($user_id);
+						$user_data = new_users::where('id',$user_id)->get();
+						foreach ($user_data as $u_data) {
+							$user->mobile_number = ($mobile_number)?$mobile_number:$u_data->mobile_number;
+						}
+						$user->name = $name;
+						$user->email = $email; 
+						$user->dob = $dob; 
+						$user->referral_code = $referral_code;
+						if (!empty($profile_image)) {
+							$user->profile_image = $profile_image;
+						}
+						$user->save();
+						$response['status'] = 200;
+						$response['message'] = 'Your profile has been successfully updated';
+		            } else {
+						$response['status'] = 404;
+						$response['message'] = 'User not found';
+		            }
+			    }
+		} else 
 		{
 			$response['status'] = 404;
             $response['message'] = 'User not found';

@@ -203,8 +203,9 @@ class Pharmacycontroller extends Controller
 			'mobile_number' => 'required|digits:10|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,mobile_number',
 			'address' => 'required',
 			'profile_image' => 'image|max:1024',
-			'license_image' => 'image|max:1024',
+			'adharcard_image' => 'image|max:1024',
 			'pancard_image' => 'image|max:1024',
+			'druglicense_image' => 'image|max:1024',
 			'lat' => 'required', 
 			'lon' => 'required', 
 			'start_time' => 'required', 
@@ -231,31 +232,42 @@ class Pharmacycontroller extends Controller
 				$user->profile_image = (isset($request->profile_image))?$request->profile_image:'';
 			}
 
-			if ($request->hasFile('license_image')) {
-				$file2 = $request->file('license_image');
-				$fileName2 = time().'lic.'.$file2->getClientOriginalExtension();  
-				//$destinationPath = 'storage/app/public/uploads/new_pharmacy/license';
-				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
+			if ($request->hasFile('adharcard_image')) {
+				$file2 = $request->file('adharcard_image');
+				$fileName2 = time().'adharcard.'.$file2->getClientOriginalExtension();  
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy/adharcard';
 				$file2->move($destinationPath, $fileName2);
-				$user->license_image = $fileName2;
+				$user->adharcard_image = $fileName2;
 			}else{
-				$user->license_image = (isset($request->license_image))?$request->license_image:'';
+				$user->adharcard_image = (isset($request->adharcard_image))?$request->adharcard_image:'';
 			}
 
 			if ($request->hasFile('pancard_image')) {
 				$file3 = $request->file('pancard_image');
-				$fileName3 = time().'pan.'.$file3->getClientOriginalExtension();  
-				//$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
-				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
+				$fileName3 = time().'pancard.'.$file3->getClientOriginalExtension();  
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
 				$file3->move($destinationPath, $fileName3);
-				$user->pancard_image = $fileName3;
-				
+				$user->pancard_image = $fileName3;	
 			}else{
-				$user->pancard_image = (isset($request->old_pancard_image))?$request->old_pancard_image:'';
+				$user->pancard_image = (isset($request->pancard_image))?$request->pancard_image:'';
+			}
+
+			if ($request->hasFile('druglicense_image')) {
+				$file3 = $request->file('druglicense_image');
+				$fileName3 = time().'druglicense.'.$file3->getClientOriginalExtension();  
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy/druglicense';
+				$file3->move($destinationPath, $fileName3);
+				$user->druglicense_image = $fileName3;	
+			}else{
+				$user->druglicense_image = (isset($request->druglicense_image))?$request->druglicense_image:'';
 			}
 			$user->address = $request->address;
-			$user->street = $request->street;
-			$user->block = $request->block;
+			if(!empty($request->street)){
+				$user->street = $request->street;
+			}
+			if(!empty($request->block)){
+				$user->block = $request->block;
+			}
 			$user->name = $request->name;
 			$user->email = $request->email;
 			$user->mobile_number  = $request->mobile_number;

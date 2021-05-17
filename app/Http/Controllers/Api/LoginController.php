@@ -91,6 +91,7 @@ class LoginController extends Controller
 			$response['data']->email=$login->email;
 			$response['data']->mobile_number=$login->mobile_number;
 			$response['data']->profile_image=$profile_image;
+			$response['data']->referral_code=($login->referral_code)?$login->referral_code:'';
 			$response['data']->dob=($login->dob)?$login->dob:'';
 
 			$data = new_users::find($login->id);
@@ -601,13 +602,20 @@ class LoginController extends Controller
 		$login = new_users::where('mobile_number',$mobile_number)->first();
         if($login) 
 		{
-				$current = date("Y-m-d H:i:s");
-				$otp_time = $login->otp_time;
-				$diff = strtotime($current) - strtotime($otp_time);
-				$days    = floor($diff / 86400);
-				$hours   = floor(($diff - ($days * 86400)) / 3600);
-				$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
-				if (($diff > 0) && ($minutes <= 10)) {
+			if(!empty($referral_code)){
+			    $pharmacy_code =  new_pharmacies::where('referral_code',$referral_code)->first();
+			    if(empty($pharmacy_code)){
+				    $response['status'] = 404;
+				    $response['message'] = 'Referral Code is not available';
+			    }
+			} else{
+			    	$current = date("Y-m-d H:i:s");
+					$otp_time = $login->otp_time;
+					$diff = strtotime($current) - strtotime($otp_time);
+					$days    = floor($diff / 86400);
+					$hours   = floor(($diff - ($days * 86400)) / 3600);
+					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
+					if (($diff > 0) && ($minutes <= 10)) {
 					
 					$profile_image = '';
 					if ($request->hasFile('profile_image')) {
@@ -652,8 +660,8 @@ class LoginController extends Controller
 					$response['data']->email=$user->email;
 					$response['data']->mobile_number=$user->mobile_number;
 					$response['data']->profile_image=$profile_image;
-					$response['data']->referral_code=($user->referral_code)?$user->referral_code:'';
 					$response['data']->dob=($user->dob)?$user->dob:'';
+					$response['data']->referral_code=($user->referral_code)?$user->referral_code:'';
 					$data = new_users::find($login->id);
 					$data->api_token = $login->createToken('MyApp')-> accessToken;
 					$data->save();
@@ -665,10 +673,11 @@ class LoginController extends Controller
 
 					$response['status'] = 200;
 					$response['message'] = 'Congratulations, your account has been successfully created.';
-				} else {
-					$response['status'] = 404;
-					$response['message'] = 'OTP Expired';
-				}
+					} else {
+						$response['status'] = 404;
+						$response['message'] = 'OTP Expired';
+					}
+			}
         }
 		
        $response = json_encode($response);

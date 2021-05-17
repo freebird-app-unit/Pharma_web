@@ -24,10 +24,17 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="owner_name">Owner Name<span class="required">*</span></label>
-					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('owner_name')) bad @endif">
-						<input type="text" placeholder="" class="form-control" value="{{{ old('owner_name', isset($user_detail) ? $user_detail->owner_name : null) }}}" name="owner_name" id="owner_name">
-						@if ($errors->has('owner_name')) <div class="errors_msg">{{ $errors->first('owner_name') }}</div>@endif
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="first_name">First Name<span class="required">*</span></label>
+					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('first_name')) bad @endif">
+						<input type="text" placeholder="" class="form-control" value="{{{ old('first_name', isset($user_detail) ? $user_detail->first_name : null) }}}" name="first_name" id="first_name">
+						@if ($errors->has('first_name')) <div class="errors_msg">{{ $errors->first('first_name') }}</div>@endif
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="last_name">Last Name<span class="required">*</span></label>
+					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('last_name')) bad @endif">
+						<input type="text" placeholder="" class="form-control" value="{{{ old('last_name', isset($user_detail) ? $user_detail->last_name : null) }}}" name="last_name" id="last_name">
+						@if ($errors->has('last_name')) <div class="errors_msg">{{ $errors->first('last_name') }}</div>@endif
 					</div>
 				</div>
 				<div class="form-group">
@@ -87,16 +94,16 @@
 					@endif
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2 col-sm-2 col-xs-12">License:</label> 
-					<div class="col-md-4 col-sm-4 col-xs-6  @if($errors->has('license_image')) bad @endif">
-						<input type="file" class="form-control" id="license_image" name="license_image"  data-input="false">
-						@if ($errors->has('license_image')) <div class="errors_msg">{{ $errors->first('license_image') }}</div>@endif
+					<label class="control-label col-md-2 col-sm-2 col-xs-12">Adhar Card:</label> 
+					<div class="col-md-4 col-sm-4 col-xs-6  @if($errors->has('adharcard_image')) bad @endif">
+						<input type="file" class="form-control" id="adharcard_image" name="adharcard_image"  data-input="false">
+						@if ($errors->has('adharcard_image')) <div class="errors_msg">{{ $errors->first('adharcard_image') }}</div>@endif
 					</div>
-					@if(!empty($user_detail->license_image) && isset($user_detail->license_image))
+					@if(!empty($user_detail->adharcard_image) && isset($user_detail->adharcard_image))
 					<div class="m-t-15 image_div col-md-2 col-sm-2 col-xs-12">
 						<a href="javascript:void(0)">
-							@if (file_exists(storage_path('app/public/uploads/new_pharmacy/license/'.$user_detail->license_image)))
-								@php $image_path = asset('storage/app/public/uploads/new_pharmacy/license/' . $user_detail->license_image) @endphp
+							@if (file_exists(storage_path('app/public/uploads/new_pharmacy/adharcard/'.$user_detail->adharcard_image)))
+								@php $image_path = asset('storage/app/public/uploads/new_pharmacy/adharcard/' . $user_detail->adharcard_image) @endphp
 							@else 
 								{{ $image_path = '' }}
 							@endif
@@ -117,6 +124,26 @@
 						<a href="javascript:void(0)">
 							@if (file_exists(storage_path('app/public/uploads/new_pharmacy/pancard/'.$user_detail->pancard_image)))
 								@php $image_path = asset('storage/app/public/uploads/new_pharmacy/pancard/' . $user_detail->pancard_image) @endphp
+							@else 
+								{{ $image_path = '' }}
+							@endif
+							<img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100">
+							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImagepan"><i class="fa fa-trash text-danger"></i></a>
+						</a>
+					</div>
+					@endif
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12">Drug License:</label> 
+					<div class="col-md-4 col-sm-4 col-xs-6  @if($errors->has('druglicense_image')) bad @endif">
+						<input type="file" class="form-control" id="druglicense_image" name="druglicense_image"  data-input="false">
+						@if ($errors->has('druglicense_image')) <div class="errors_msg">{{ $errors->first('druglicense_image') }}</div>@endif
+					</div>
+					@if(!empty($user_detail->druglicense_image) && isset($user_detail->druglicense_image))
+					<div class="m-t-15 image_div_pan col-md-2 col-sm-2 col-xs-12">
+						<a href="javascript:void(0)">
+							@if (file_exists(storage_path('app/public/uploads/new_pharmacy/druglicense/'.$user_detail->druglicense_image)))
+								@php $image_path = asset('storage/app/public/uploads/new_pharmacy/druglicense/' . $user_detail->druglicense_image) @endphp
 							@else 
 								{{ $image_path = '' }}
 							@endif
@@ -305,7 +332,8 @@
 				  	maxlength:10,
 				  	number: true
 				},
-				owner_name : 'required',
+				first_name : 'required',
+				last_name : 'required',
 				address : 'required',
 				/*block : 'required',*/
 				/*street : 'required',*/
@@ -358,7 +386,7 @@
 				}
 			});
 
-			$( "#license_image" ).rules( "add", {
+			$( "#adharcard_image" ).rules( "add", {
 				// required: true,
 				extension: "jpg|jpeg|png|ico|bmp|pdf",
 				messages: {
@@ -368,6 +396,14 @@
 			});
 
 			$( "#pancard_image" ).rules( "add", {
+				// required: true,
+				extension: "jpg|jpeg|png|ico|bmp|pdf",
+				messages: {
+					required: "Please upload file.",
+					extension: "Please upload file in these format only (jpg, jpeg, png, ico, bmp)."
+				}
+			});
+			$( "#druglicense_image" ).rules( "add", {
 				// required: true,
 				extension: "jpg|jpeg|png|ico|bmp|pdf",
 				messages: {
