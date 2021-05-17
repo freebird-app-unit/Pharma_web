@@ -53,14 +53,14 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="block">Block<span class="required">*</span></label>
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="block">Block<!-- <span class="required">*</span> --></label>
 					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('block')) bad @endif">
 						<input type="text" placeholder="" class="form-control" value="{{{ old('block', isset($user_detail) ? $user_detail->block : null) }}}" name="block" id="block">
 						@if ($errors->has('block')) <div class="errors_msg">{{ $errors->first('block') }}</div>@endif
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="street">Street<span class="required">*</span></label>
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="street">Street<!-- <span class="required">*</span> --></label>
 					<div class="col-md-8 col-sm-8 col-xs-12  @if($errors->has('street')) bad @endif">
 						<input type="text" placeholder="" class="form-control" value="{{{ old('street', isset($user_detail) ? $user_detail->street : null) }}}" name="street" id="street">
 						@if ($errors->has('street')) <div class="errors_msg">{{ $errors->first('street') }}</div>@endif
@@ -307,8 +307,8 @@
 				},
 				owner_name : 'required',
 				address : 'required',
-				block : 'required',
-				street : 'required',
+				/*block : 'required',*/
+				/*street : 'required',*/
 				country : 'required',
 				state : 'required',
 				city : 'required',
