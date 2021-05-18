@@ -81,7 +81,7 @@ class Pharmacycontroller extends Controller
 		//count total
 
 		// $total_res = DB::table('users')->where('user_type','pharmacy')->where('parentuser_id',$user_id);
-		$total_new_pharmacies = new_pharmacies::select('new_pharmacies.*');
+		$total_new_pharmacies = new_pharmacies::select('new_pharmacies.*')->where('is_delete','1');
 
 		if($searchtxt!=''){
 			$total_new_pharmacies= $total_new_pharmacies->where(function ($query) use($searchtxt) {
