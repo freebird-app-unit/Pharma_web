@@ -88,7 +88,11 @@
 							@else 
 								{{ $image_path = '' }}
 							@endif
-							<img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100">
+							<!-- <img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100"> -->
+							<div class="gallery"> 
+								<a href="{{ $image_path }}" class="big"><img src="{{ $image_path }}" style="width:150px;" class="img-responsive img-thumbnail"></a>
+								<div class="clear"></div>
+							</div>
 							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImageProfile"><i class="fa fa-trash text-danger"></i></a>
 						</a>
 					</div>
@@ -108,7 +112,11 @@
 							@else 
 								{{ $image_path = '' }}
 							@endif
-							<img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100">
+							<!-- <img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100"> -->
+							<div class="gallery"> 
+								<a href="{{ $image_path }}" class="big"><img src="{{ $image_path }}" style="width:150px;" class="img-responsive img-thumbnail"></a>
+								<div class="clear"></div>
+							</div>
 							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImageAdhar"><i class="fa fa-trash text-danger"></i></a>
 						</a>
 					</div>
@@ -128,7 +136,11 @@
 							@else 
 								{{ $image_path = '' }}
 							@endif
-							<img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100">
+							<!-- <img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100"> -->
+							<div class="gallery"> 
+								<a href="{{ $image_path }}" class="big"><img src="{{ $image_path }}" style="width:150px;" class="img-responsive img-thumbnail"></a>
+								<div class="clear"></div>
+							</div>
 							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImagepan"><i class="fa fa-trash text-danger"></i></a>
 						</a>
 					</div>
@@ -148,7 +160,11 @@
 							@else 
 								{{ $image_path = '' }}
 							@endif
-							<img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100">
+							<!-- <img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100"> -->
+							<div class="gallery"> 
+								<a href="{{ $image_path }}" class="big"><img src="{{ $image_path }}" style="width:150px;" class="img-responsive img-thumbnail"></a>
+								<div class="clear"></div>
+							</div>
 							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImageDrug"><i class="fa fa-trash text-danger"></i></a>
 						</a>
 					</div>
