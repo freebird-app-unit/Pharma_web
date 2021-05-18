@@ -2177,18 +2177,31 @@ class AcceptorderController extends Controller
         /*$delivery_charges_data = new_delivery_charges::where('logistic_id', $logistic_id)->orWhere('logistic_id', 0)->orderBy('logistic_id', 'ASC')->get();*/
         $delivery_charges_data = new_delivery_charges::all();
         $logistic_get_data = new_orders::where('id',$order_id)->first();
-
+        $remining_standard_paid_deliveries = new_pharmacies::where('id',$logistic_get_data->pharmacy_id)->first();
         // $delivery_charges_data = delivery_charges::all();
         if(!empty($delivery_charges_data)){
             foreach($delivery_charges_data as $value) {
-                if($value->is_user == 0){
-                        $delivery_charges[] = [
-                        'id' => $value->id,
-                        'delivery_type' => $value->delivery_type,
-                        'delivery_price' => $value->delivery_price,
-                        'delivery_approx_time' => $value->delivery_approx_time,
-                        'logistic_id' => $logistic_get_data->logistic_user_id,
-                    ];
+               if($value->is_user == 0){
+                    if($value->delivery_type=='standard'){
+                            $delivery_charges[] = [
+                            'id' => $value->id,
+                            'delivery_type' => $value->delivery_type,
+                            'delivery_price' => $value->delivery_price,
+                            'delivery_approx_time' => $value->delivery_approx_time,
+                            'logistic_id' => $logistic_get_data->logistic_user_id,
+                            'remining_standard_paid_deliveries' => $remining_standard_paid_deliveries->remining_standard_paid_deliveries
+                        ];
+                    }
+                    if($value->delivery_type=='free'){
+                            $delivery_charges[] = [
+                            'id' => $value->id,
+                            'delivery_type' => $value->delivery_type,
+                            'delivery_price' => $value->delivery_price,
+                            'delivery_approx_time' => $value->delivery_approx_time,
+                            'logistic_id' => $logistic_get_data->logistic_user_id,
+                            'remining_standard_paid_deliveries' => 0
+                        ];
+                    }
                 }
             }
             $response['status'] = 200;
