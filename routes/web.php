@@ -106,7 +106,8 @@ Route::get('/pharmacy/detail/{id}', array('as' => 'pharmacy.detail', 'uses' => '
 Route::get('/pharmacy/delete/{id}', array('as' => 'pharmacy.delete', 'uses' => 'Pharmacycontroller@delete'));
 Route::get('/pharmacy/{id}/active', array('as' => 'active.pharmacy', 'uses'=>'Pharmacycontroller@setActivate'));
 Route::get('/pharmacy/{id}/inactive', array('as' => 'inactive.pharmacy', 'uses'=>'Pharmacycontroller@setInactivate'));
-Route::post('/pharmacy/delete_image', 'Pharmacycontroller@delete_image');
+Route::post('/pharmacy_adhar/delete_image_adhar', 'Pharmacycontroller@delete_image_adhar');
+Route::post('/pharmacy_drug/delete_image_drug', 'Pharmacycontroller@delete_image_drug');
 Route::post('/pharmacy_pan/delete_image_pan', 'Pharmacycontroller@delete_image_pan');
 Route::post('/pharmacy_profile/delete_image_profile', 'Pharmacycontroller@delete_image_profile');
 

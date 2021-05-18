@@ -15,6 +15,7 @@
 	<div class="col-sm-12">
 		<div class="card-box">
 			<form class="form-horizontal" method="POST" action="@if(isset($user_detail)){{ route('pharmacy.edit',array('id'=>$user_detail->id)) }} @else{{ route('pharmacy.create') }}@endif" id="user_detail-form" enctype="multipart/form-data">
+				<input type="hidden" name="edit_id" id="edit_id" value="@if(isset($user_detail)) {{$user_detail->id}} @else 0 @endif"/>
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<div class="form-group">
 					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="name">Pharmacy Name<span class="required">*</span></label>
@@ -82,8 +83,8 @@
 					@if(!empty($user_detail->profile_image) && isset($user_detail->profile_image))
 					<div class="m-t-15 image_div col-md-2 col-sm-2 col-xs-12">
 						<a href="javascript:void(0)">
-							@if (file_exists(storage_path('app/public/uploads/new_users/'.$user_detail->profile_image)))
-								@php $image_path = asset('storage/app/public/uploads/new_users/' . $user_detail->profile_image) @endphp
+							@if (file_exists(storage_path('app/public/uploads/new_pharmacy/'.$user_detail->profile_image)))
+								@php $image_path = asset('storage/app/public/uploads/new_pharmacy/' . $user_detail->profile_image) @endphp
 							@else 
 								{{ $image_path = '' }}
 							@endif
@@ -100,7 +101,7 @@
 						@if ($errors->has('adharcard_image')) <div class="errors_msg">{{ $errors->first('adharcard_image') }}</div>@endif
 					</div>
 					@if(!empty($user_detail->adharcard_image) && isset($user_detail->adharcard_image))
-					<div class="m-t-15 image_div col-md-2 col-sm-2 col-xs-12">
+					<div class="m-t-15 image_div_adhar col-md-2 col-sm-2 col-xs-12">
 						<a href="javascript:void(0)">
 							@if (file_exists(storage_path('app/public/uploads/new_pharmacy/adharcard/'.$user_detail->adharcard_image)))
 								@php $image_path = asset('storage/app/public/uploads/new_pharmacy/adharcard/' . $user_detail->adharcard_image) @endphp
@@ -108,7 +109,7 @@
 								{{ $image_path = '' }}
 							@endif
 							<img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100">
-							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImage"><i class="fa fa-trash text-danger"></i></a>
+							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImageAdhar"><i class="fa fa-trash text-danger"></i></a>
 						</a>
 					</div>
 					@endif
@@ -140,7 +141,7 @@
 						@if ($errors->has('druglicense_image')) <div class="errors_msg">{{ $errors->first('druglicense_image') }}</div>@endif
 					</div>
 					@if(!empty($user_detail->druglicense_image) && isset($user_detail->druglicense_image))
-					<div class="m-t-15 image_div_pan col-md-2 col-sm-2 col-xs-12">
+					<div class="m-t-15 image_div_drug col-md-2 col-sm-2 col-xs-12">
 						<a href="javascript:void(0)">
 							@if (file_exists(storage_path('app/public/uploads/new_pharmacy/druglicense/'.$user_detail->druglicense_image)))
 								@php $image_path = asset('storage/app/public/uploads/new_pharmacy/druglicense/' . $user_detail->druglicense_image) @endphp
@@ -148,7 +149,7 @@
 								{{ $image_path = '' }}
 							@endif
 							<img src="{{ $image_path }}"  class="img-responsive img-thumbnail" width="100">
-							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImagepan"><i class="fa fa-trash text-danger"></i></a>
+							<a style="cursor: pointer;" class="m-l-10 action-icon deleteImageDrug"><i class="fa fa-trash text-danger"></i></a>
 						</a>
 					</div>
 					@endif
@@ -473,24 +474,41 @@
   }
     
   });
-
-  $(".deleteImage").click(function(){
+$(".deleteImageDrug").click(function(){
+	edit_id = $('#edit_id').val();
             $.ajax({
                 headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
-                url:'{{ url("/pharmacy/delete_image") }}',
+                url:'{{ url("/pharmacy_drug/delete_image_drug") }}',
                 type: 'POST',
+                data: 'edit_id='+edit_id,
                 success: function (data) {
-                    $('.image_div').remove();
+                    $('.image_div_drug').remove();
+                    $('#image_'+id).remove();
+                }
+            });
+        });
+
+  $(".deleteImageAdhar").click(function(){
+  	edit_id = $('#edit_id').val();
+            $.ajax({
+                headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+                url:'{{ url("/pharmacy_adhar/delete_image_adhar") }}',
+                type: 'POST',
+                data: 'edit_id='+edit_id,
+                success: function (data) {
+                    $('.image_div_adhar').remove();
                     $('#image_'+id).remove();
                 }
             });
         });
 
   $(".deleteImagepan").click(function(){
+  	edit_id = $('#edit_id').val();
             $.ajax({
                 headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
                 url:'{{ url("/pharmacy_pan/delete_image_pan") }}',
                 type: 'POST',
+                data: 'edit_id='+edit_id,
                 success: function (data) {
                     $('.image_div_pan').remove();
                     $('#image_'+id).remove();
@@ -499,12 +517,14 @@
         });
 
   $(".deleteImageProfile").click(function(){
+  	edit_id = $('#edit_id').val();
             $.ajax({
                 headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
                 url:'{{ url("/pharmacy_profile/delete_image_profile") }}',
                 type: 'POST',
+                data: 'edit_id='+edit_id,
                 success: function (data) {
-                    $('.image_div_pan').remove();
+                    $('.image_div').remove();
                     $('#image_'+id).remove();
                 }
             });

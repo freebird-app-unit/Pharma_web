@@ -198,7 +198,8 @@ class Pharmacycontroller extends Controller
 	public function store(Request $request){
 		$validate = $request->validate([
 			'name' => 'required',
-			'owner_name' => 'required',
+			'first_name' => 'required',
+			'last_name' => 'required',
 			'email' => 'required|email|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,email|max:255',
 			'mobile_number' => 'required|digits:10|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,mobile_number',
 			'address' => 'required',
@@ -224,7 +225,7 @@ class Pharmacycontroller extends Controller
 
 			if ($request->hasFile('profile_image')) {
 				$file2 = $request->file('profile_image');
-				$fileName2 = time().'lic.'.$file2->getClientOriginalExtension();  
+				$fileName2 = time().'profile.'.$file2->getClientOriginalExtension();  
 				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
 				$file2->move($destinationPath, $fileName2);
 				$user->profile_image = $fileName2;
@@ -271,7 +272,8 @@ class Pharmacycontroller extends Controller
 			$user->name = $request->name;
 			$user->email = $request->email;
 			$user->mobile_number  = $request->mobile_number;
-			$user->owner_name  = $request->owner_name;
+			$user->first_name  = $request->first_name;
+			$user->last_name  = $request->last_name;
 			$hashed_random_password = Hash::make($request->password);
 			$user->password = $hashed_random_password;
 			$user->radius  = $request->radius;
@@ -333,7 +335,8 @@ class Pharmacycontroller extends Controller
 	public function update(Request $request, $id){
 		$validate = $request->validate([
 					'name' => 'required',
-					'owner_name' => 'required',
+					'first_name' => 'required',
+					'last_name' => 'required',
 					'email' =>  ['required',Rule::unique('new_pharma_logistic_employee','email')->ignore($id),Rule::unique('new_users','email')->ignore($id),Rule::unique('new_pharmacies','email')->ignore($id),Rule::unique('new_logistics','email')->ignore($id)],
 					'mobile_number' =>  ['required',Rule::unique('new_pharma_logistic_employee','mobile_number')->ignore($id),Rule::unique('new_users','mobile_number')->ignore($id),Rule::unique('new_pharmacies','mobile_number')->ignore($id),Rule::unique('new_logistics','mobile_number')->ignore($id)],
 					'address' => 'required',
@@ -353,7 +356,7 @@ class Pharmacycontroller extends Controller
 			$user = new_pharmacies::find($id);
 			if ($request->hasFile('profile_image')) {
 				$file2 = $request->file('profile_image');
-				$fileName2 = time().'pro.'.$file2->getClientOriginalExtension();  
+				$fileName2 = time().'profile.'.$file2->getClientOriginalExtension();  
 				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
 				$file2->move($destinationPath, $fileName2);
 				$user->profile_image = $fileName2;
@@ -361,27 +364,34 @@ class Pharmacycontroller extends Controller
 				$user->profile_image = (isset($request->profile_image))?$request->profile_image:$user->profile_image;
 			}
 
-			if ($request->hasFile('license_image')) {
-				$file2 = $request->file('license_image');
-				$fileName2 = time().'lic.'.$file2->getClientOriginalExtension();  
-				//$destinationPath = 'storage/app/public/uploads/new_pharmacy/license';
-				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
-				$file2->move($destinationPath, $fileName2);
-				$user->license_image = $fileName2;
+			if ($request->hasFile('adharcard_image')) {
+				$file3 = $request->file('adharcard_image');
+				$fileName3 = time().'adharcard.'.$file3->getClientOriginalExtension();  
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy/adharcard';
+				$file3->move($destinationPath, $fileName3);
+				$user->adharcard_image = $fileName3;
 			}else{
-				$user->license_image = (isset($request->license_image))?$request->license_image:$user->license_image;
+				$user->adharcard_image = (isset($request->adharcard_image))?$request->adharcard_image:$user->adharcard_image;
 			}
 
 			if ($request->hasFile('pancard_image')) {
-				$file3 = $request->file('pancard_image');
-				$fileName3 = time().'pan.'.$file3->getClientOriginalExtension();  
-				//$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
-				$destinationPath = 'storage/app/public/uploads/new_pharmacy';
-				$file3->move($destinationPath, $fileName3);
-				$user->pancard_image = $fileName3;
-				
+				$file4 = $request->file('pancard_image');
+				$fileName4 = time().'pancard.'.$file4->getClientOriginalExtension();  
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
+				$file4->move($destinationPath, $fileName4);
+				$user->pancard_image = $fileName4;	
 			}else{
-				$user->pancard_image = (isset($request->old_pancard_image))?$request->old_pancard_image:$user->pancard_image;
+				$user->pancard_image = (isset($request->pancard_image))?$request->pancard_image:$user->pancard_image;
+			}
+
+			if ($request->hasFile('druglicense_image')) {
+				$file5 = $request->file('druglicense_image');
+				$fileName5 = time().'druglicense.'.$file5->getClientOriginalExtension();  
+				$destinationPath = 'storage/app/public/uploads/new_pharmacy/druglicense';
+				$file5->move($destinationPath, $fileName5);
+				$user->druglicense_image = $fileName5;	
+			}else{
+				$user->druglicense_image = (isset($request->druglicense_image))?$request->druglicense_image:$user->druglicense_image;
 			}
 			$user->address = $request->address;
 			$user->street = $request->street;
@@ -389,7 +399,8 @@ class Pharmacycontroller extends Controller
 			$user->name = $request->name;
 			$user->email = $request->email;
 			$user->mobile_number  = $request->mobile_number;
-			$user->owner_name  = $request->owner_name;
+			$user->first_name  = $request->first_name;
+			$user->last_name  = $request->last_name;
 			$user->radius  = $request->radius;
 			$user->lat = $request->lat;
 			$user->lon = $request->lon;
@@ -472,25 +483,41 @@ class Pharmacycontroller extends Controller
 		$status_change->save();
         return redirect(route('pharmacy.index'))->with('success_message', trans('InActive Successfully'));
     }
-	public function delete_image(Request $request)
+    public function delete_image_adhar(Request $request)
     {
-		$id = auth()->user()->id;
+		$id = $request->edit_id;
 		$user = new_pharmacies::find($id);
-		if (!empty($user->license_image)) {
+		if (!empty($user->adharcard_image)) {
 
-            $filename = 'storage/app/public/uploads/new_pharmacy/license' . $user->license_image;
+            $filename = 'storage/app/public/uploads/new_pharmacy/adharcard' . $user->adharcard_image;
             if (File::exists($filename)) {
                 File::delete($filename);
             }
         }
 		
-		$user->license_image = '';
+		$user->adharcard_image = '';
+        $user->save();
+
+	}
+	public function delete_image_drug(Request $request)
+    {
+		$id = $request->edit_id;
+		$user = new_pharmacies::find($id);
+		if (!empty($user->druglicense_image)) {
+
+            $filename = 'storage/app/public/uploads/new_pharmacy/druglicense' . $user->druglicense_image;
+            if (File::exists($filename)) {
+                File::delete($filename);
+            }
+        }
+		
+		$user->druglicense_image = '';
         $user->save();
 
 	}
 	public function delete_image_pan(Request $request)
     {
-		$id = auth()->user()->id;
+		$id = $request->edit_id;
 		$user = new_pharmacies::find($id);
 		if (!empty($user->pancard_image)) {
 
@@ -507,7 +534,7 @@ class Pharmacycontroller extends Controller
 	}
 	public function delete_image_profile(Request $request)
     {
-		$id = auth()->user()->id;
+		$id = $request->edit_id;
 		$user = new_pharmacies::find($id);
 		if (!empty($user->profile_image)) {
 
