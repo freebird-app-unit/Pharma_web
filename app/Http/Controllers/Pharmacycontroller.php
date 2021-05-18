@@ -292,6 +292,12 @@ class Pharmacycontroller extends Controller
 			$user->created_at = date('Y-m-d H:i:s');
 			$user->save();
 
+			$str1 = $user->first_name;
+			$str2 = $user->last_name;
+			$no=rand(1000,9999);
+			$user->referral_code=ucfirst($str1[0]).ucfirst($str2[0]).$no.$user->id;
+			$user->save();
+			
 			$auth_user = new User();
 			$auth_user->user_id = $user->id;
 			$auth_user->user_type = 'pharmacy';
