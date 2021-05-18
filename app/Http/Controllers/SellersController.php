@@ -56,9 +56,9 @@ class SellersController extends Controller
 		$search_pharmacy=(isset($_POST['search_pharmacy']) && $_POST['search_pharmacy']!='')?$_POST['search_pharmacy']:'';
 		//get list
 		if(Auth::user()->user_type=='admin'){
-			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where('user_type','seller');
+			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where('user_type','seller')->where('is_delete','1');
 		}else{
-			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=>'seller','is_active'=>'1'])->where('pharma_logistic_id',$user_id);
+			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=>'seller','is_active'=>'1','is_delete'=>'1'])->where('pharma_logistic_id',$user_id);
 		}
 
 		if($searchtxt!=''){
@@ -303,6 +303,7 @@ class SellersController extends Controller
 		}
 		$user = new_pharma_logistic_employee::find($id);
 		$user->is_active=0;
+		$user->is_delete='0';
 		$user->mobile_number='';
 		$user->email='';
 		$user->save();
