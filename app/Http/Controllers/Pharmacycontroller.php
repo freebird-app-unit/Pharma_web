@@ -453,12 +453,17 @@ class Pharmacycontroller extends Controller
 		if(!$user_detail){
 			return abort(404);
 		}
-		$user = new_pharmacies::find($id);
-		$user->is_active=0;
+		$pharmacy = new_pharmacies::find($id);
+		$pharmacy->is_delete='0';
+		$pharmacy->is_active=0;
+		$pharmacy->mobile_number='';
+		$pharmacy->email='';
+		$pharmacy->save();
+		
+		$user = User::where('user_id',$id)->first();
 		$user->mobile_number='';
 		$user->email='';
 		$user->save();
-		User::where(['user_id'=> $id, 'user_type'=> 'logistic'])->delete();
 
 		return redirect(route('pharmacy.index'))->with('success_message', trans('Deleted Successfully'));
 	}
