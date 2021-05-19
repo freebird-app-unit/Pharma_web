@@ -60,7 +60,7 @@ class LogisticsController extends Controller
 		$search_city=(isset($_POST['search_city']) && $_POST['search_city']!='')?$_POST['search_city']:'';
 		//count total
 
-		$total_new_logistiics = new_logistics::select('id', 'name', 'email', 'owner_name', 'profile_image', 'mobile_number', 'address', 'pincode', 'created_at','is_active','total_deposit','current_deposit');
+		$total_new_logistiics = new_logistics::select('id', 'name', 'email', 'owner_name', 'profile_image', 'mobile_number', 'address', 'pincode', 'created_at','is_active','total_deposit','current_deposit')->where('is_delete','1');
 
 		if($searchtxt!=''){
 			$total_new_logistiics = $total_new_logistiics->where(function ($query) use($searchtxt) {
@@ -403,8 +403,12 @@ class LogisticsController extends Controller
 		}
 
 		geo_fencings::where('user_id', $id)->update(array('is_active' => 0));
-		User::where(['user_id'=> $id, 'user_type'=> 'logistic'])->delete();
-
+		$user = User::where('user_id',$id)->first();
+		$user->mobile_number='';
+		$user->email='';
+		$user->save();
+		
+		$user->is_delete='1';
 		$user->is_active=0;
 		$user->mobile_number='';
 		$user->email='';
