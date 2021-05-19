@@ -1208,6 +1208,9 @@
 	@if($page_condition=='page_admincancelled')
 		<script src="{{ asset('public/admin/js/admincancelled.js') }}"></script>
 	@endif
+	@if($page_condition=='page_logisticorders')
+		<script src="{{ asset('public/admin/js/logisticorders.js') }}"></script>
+	@endif
 	@if($page_condition=='page_admincomplete')
 		<script src="{{ asset('public/admin/js/admincomplete.js') }}"></script>
 	@endif
