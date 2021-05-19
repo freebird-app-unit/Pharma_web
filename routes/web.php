@@ -516,3 +516,10 @@ Route::post('/getpharmacyrejectedlist', array('as' => 'pharmacyrejected.getlist'
 // packages history
 Route::get('/packageshistory', 'PackageshistoryController@index');
 Route::get('packageshistory_list', 'PackageshistoryController@list');
+
+
+//logistic orders
+Route::get('/logisticorders', array('as' => 'logisticorders.index', 'uses' => 'LogisticordersController@index'));
+Route::post('/getlogisticorderslist', array('as' => 'logisticorders.getlist', 'uses' => 'LogisticordersController@getlist'));
+Route::post('/logisticorders/assign', array('as' => 'logisticorders.assign', 'uses' => 'LogisticordersController@assign'));
+Route::post('/logisticorders/reject', array('as' => 'logisticorders.reject', 'uses' => 'LogisticordersController@reject'));
