@@ -1599,7 +1599,7 @@ class AcceptorderController extends Controller
     {
     	$orderAssign = new Orderassign();
         $orderAssign->order_id = $order_id;
-        $orderAssign->logistic_id = $order->logistic_user_id;
+        //$orderAssign->logistic_id = $order->logistic_user_id;
         $orderAssign->order_status = 'new';
         $orderAssign->updated_at = date('Y-m-d H:i:s');
         $orderAssign->save();
@@ -1608,7 +1608,7 @@ class AcceptorderController extends Controller
                 $new_order_images = new_order_images::where('order_id',$order_id)->delete();
         }       
         $order->assign_datetime = date('Y-m-d H:i:s');
-        $order->order_status = 'assign';
+        $order->order_status = 'accept';
        
          //order pass to external logistic
                /* $elt_response = [];
@@ -2589,15 +2589,15 @@ class AcceptorderController extends Controller
                                     //order update in our db
                                     $orderAssign = new Orderassign();
                                     $orderAssign->order_id = $order_id;
-                                    $orderAssign->logistic_id = $intersected[0]->id;
+                                    //$orderAssign->logistic_id = $intersected[0]->id;
                                     $orderAssign->order_status = 'new';
                                     $orderAssign->updated_at = date('Y-m-d H:i:s');
                                     $orderAssign->save();
                                             
                                     $order->assign_datetime = date('Y-m-d H:i:s');
-                                    $order->order_status = 'assign';
+                                    $order->order_status = 'accept';
                                     $order->deposit_returned=0;
-                                    $order->logistic_user_id = $intersected[0]->id;
+                                    //$order->logistic_user_id = $intersected[0]->id;
 
                                     
 
@@ -2678,15 +2678,15 @@ class AcceptorderController extends Controller
                                         
                                         $orderAssign = new Orderassign();
                                         $orderAssign->order_id = $order_id;
-                                        $orderAssign->logistic_id = $intersected[0]->id;
+                                        //$orderAssign->logistic_id = $intersected[0]->id;
                                         $orderAssign->order_status = 'new';
                                         $orderAssign->updated_at = date('Y-m-d H:i:s');
                                         $orderAssign->save();
                                                 
                                         $order->assign_datetime = date('Y-m-d H:i:s');
-                                        $order->order_status = 'assign';
+                                        $order->order_status = 'accept';
                                         $order->deposit_returned=0;
-                                        $order->logistic_user_id = $intersected[0]->id;
+                                        //$order->logistic_user_id = $intersected[0]->id;
 
                                         
                                         $logistic_data[] = [
@@ -2737,15 +2737,15 @@ class AcceptorderController extends Controller
                                 foreach ($intersected as $value) {
                                         $orderAssign = new Orderassign();
                                         $orderAssign->order_id = $order_id;
-                                        $orderAssign->logistic_id = $value->id;
+                                        //$orderAssign->logistic_id = $value->id;
                                         $orderAssign->order_status = 'new';
                                         $orderAssign->updated_at = date('Y-m-d H:i:s');
                                         $orderAssign->save();
                                                 
                                         $order->assign_datetime = date('Y-m-d H:i:s');
-                                        $order->order_status = 'assign';
+                                        $order->order_status = 'accept';
                                         $order->deposit_returned=0;
-                                        $order->logistic_user_id = $value->id;
+                                        //$order->logistic_user_id = $value->id;
 
                                        
                                 }
@@ -2765,7 +2765,7 @@ class AcceptorderController extends Controller
                        
                         $order->save();
 
-                        $order_data = new_orders::where('id',$order_id)->first();
+                        /*$order_data = new_orders::where('id',$order_id)->first();
                             //mail when order transfer to logistic
                             if(!empty($order_data)){
                                 $email_data = new_logistics::where('id',$order->logistic_user_id)->first();
@@ -2774,7 +2774,7 @@ class AcceptorderController extends Controller
                                     $to=$email_data->email;
                                     $subject='Pharma - Upcoming Order';
                                     Helper::sendMail($name,$order_number,$to,$subject);
-                            }
+                            }*/
                         }else{
                             $response['status'] = 404;
                             $response['message'] = 'This Order Is Already Accepted';
