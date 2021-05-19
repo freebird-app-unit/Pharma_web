@@ -107,7 +107,8 @@
 				</div>
 				<div  class="form-group" id='deliveryChargesBlock' style="display: none;">
 					<select id="delivery_charges_id" name="delivery_charges_id" class="form-control">
-						<option value="">Select delivery type</option>
+						<!-- <option value="">Select delivery type</option> -->
+						<option value="">Standard Delivery</option>
 					</select>
 				</div>
 				<br>
