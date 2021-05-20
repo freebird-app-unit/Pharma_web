@@ -13,7 +13,20 @@ if(!function_exists('get_settings')) {
 		}
     }
 }
-
+if(!function_exists('get_code')) {
+ 
+    function get_code($table,$field,$id) {
+        $data = \DB::table($table)
+            ->select($field)
+            ->where('id',$id)
+            ->first();
+		if($data){
+			return $data->$field;
+		}else{
+			return '';
+		}
+    }
+}
 if(!function_exists('get_image')) {
  
     function get_image($table,$field,$id) {

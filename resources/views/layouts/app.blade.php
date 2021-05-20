@@ -210,6 +210,11 @@
                                 <li class="hidden-xs">
                                     <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="icon-size-fullscreen"></i></a>
                                 </li>
+                                <?php 
+								if(auth()->user()->user_type == 'pharmacy'){
+									$code = get_code('new_pharmacies','referral_code',auth()->user()->user_id);
+                                 echo '<li class="hidden-xs"><a href="javascript:;" class="right-bar-toggle waves-effect waves-light"> Referral Code : '.$code.'</a></li>';
+                            	}?>
 								<!--<li class="dropdown hidden-xs">
                                     <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
                                         <i class="icon-bell"></i> <span class="badge badge-xs badge-danger">3</span>
@@ -225,6 +230,7 @@
 										echo '<a href="javascript:;" class="right-bar-toggle waves-effect waves-light"><img src="'.$profile_image_url.'" width="80"/></a>'.$name;
 									}else{
 								?>
+
 									<a href="javascript:;" class="right-bar-toggle waves-effect waves-light">{{ Auth::user()->name }}</a>
 								<?php
 									}
