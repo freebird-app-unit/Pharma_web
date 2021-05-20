@@ -11,6 +11,9 @@ use Storage;
 use Image;
 use File;
 use Validator;
+use App\referralcode;
+use App\new_pharmacies;
+use App\referralcode_delivery;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class ProfileController extends Controller
@@ -102,8 +105,8 @@ class ProfileController extends Controller
 		$name = isset($content->name) ? $content->name : '';
 		$mobile_number = isset($content->mobile_number) ? $content->mobile_number : ''; 
 		$email = isset($content->email) ? $content->email : ''; 
-		$dob = isset($content->dob) ? $content->dob : '';
-		$referral_code = isset($content->referral_code) ? $content->referral_code : ''; 
+		$dob = isset($content->dob) ? $content->dob : ''; 
+		$referral_code = isset($content->referral_code) ? $content->referral_code : '';
 		$params = [
 			'user_id' => $user_id
 		];
@@ -153,16 +156,15 @@ class ProfileController extends Controller
 		$response['data'] = (object)array();
 		
 		$login = new_users::find($user_id);
-        if($login) 
+         if($login) 
 		{
 			if(!empty($referral_code)){
 				$pharmacy_code =  new_pharmacies::where('referral_code',$referral_code)->first();
 			    if(empty($pharmacy_code)){
-				    $response['status'] = 404;
-				    $response['message'] = 'Referral Code is not available';
-			    }
-			} else{
-			    	if($login->count() > 0) 
+					$response['status'] = 404;
+					$response['message'] = 'Referral Code is not available';
+				}else{
+					if($login->count() > 0) 
 					{
 						$profile_image = '';
 						if ($request->hasFile('profile_image')) {
@@ -187,12 +189,13 @@ class ProfileController extends Controller
 							$user->mobile_number = ($mobile_number)?$mobile_number:$u_data->mobile_number;
 						}
 						$user->name = $name;
-						$user->email = $email; 
+						$email_data = new_users::where('id',$user_id)->first();
+						$user->email = ($email)?$email:$email_data->email; 
 						$user->dob = $dob; 
-						$user->referral_code = $referral_code;
 						if (!empty($profile_image)) {
 							$user->profile_image = $profile_image;
 						}
+						$user->referral_code = $referral_code;
 						$user->save();
 
 						$check_referral_onoff = referralcode::where('id','1')->first();
@@ -228,9 +231,49 @@ class ProfileController extends Controller
 						$response['status'] = 404;
 						$response['message'] = 'User not found';
 		            }
-			    }
-		} else 
-		{
+				}
+			}else{
+				if($login->count() > 0) 
+					{
+						$profile_image = '';
+						if ($request->hasFile('profile_image')) {
+							
+							$filename = storage_path('app/public/uploads/new_user/' . $login->profile_image);
+		            
+							if (File::exists($filename)) {
+								File::delete($filename);
+							}
+							
+							$image         = $request->file('profile_image');
+							$profile_image = time() . '.' . $image->getClientOriginalExtension();
+
+							$img = Image::make($image->getRealPath());
+							$img->stream(); // <-- Key point
+
+							Storage::disk('public')->put('uploads/new_user/'.$profile_image, $img, 'public');
+						}
+						$user = new_users::find($user_id);
+						$user_data = new_users::where('id',$user_id)->get();
+						foreach ($user_data as $u_data) {
+							$user->mobile_number = ($mobile_number)?$mobile_number:$u_data->mobile_number;
+						}
+						$user->name = $name;
+						$email_data = new_users::where('id',$user_id)->first();
+						$user->email = ($email)?$email:$email_data->email; 
+						$user->dob = $dob; 
+						if (!empty($profile_image)) {
+							$user->profile_image = $profile_image;
+						}
+						$user->referral_code = $email_data->referral_code; 
+						$user->save();
+						$response['status'] = 200;
+						$response['message'] = 'Your profile has been successfully updated';
+		            } else {
+						$response['status'] = 404;
+						$response['message'] = 'User not found';
+		            }
+			}
+		} else {
 			$response['status'] = 404;
             $response['message'] = 'User not found';
         }
