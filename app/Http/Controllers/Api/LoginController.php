@@ -536,8 +536,8 @@ class LoginController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$name = isset($content->name) ? $content->name : '';
 		$email = isset($content->email) ? $content->email : '';
@@ -618,7 +618,7 @@ class LoginController extends Controller
 					$hours   = floor(($diff - ($days * 86400)) / 3600);
 					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
 					
-					/*if (($diff > 0) && ($minutes <= 10)) {*/
+					if (($diff > 0) && ($minutes <= 10)) {
 					
 					$profile_image = '';
 					if ($request->hasFile('profile_image')) {
@@ -704,10 +704,10 @@ class LoginController extends Controller
 
 					$response['status'] = 200;
 					$response['message'] = 'Congratulations, your account has been successfully created.';
-					/*} else {
+					} else {
 						$response['status'] = 404;
 						$response['message'] = 'OTP Expired';
-					}*/
+					}
 				}
 			}else{
 				    $current = date("Y-m-d H:i:s");
@@ -783,9 +783,9 @@ class LoginController extends Controller
         }
 		
        $response = json_encode($response);
-	   //$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+	   $cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
     }
 
     public function logout(Request $request){
