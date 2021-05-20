@@ -601,15 +601,14 @@ class LoginController extends Controller
 		
 		$login = new_users::where('mobile_number',$mobile_number)->first();
         if($login) 
-		{
+		{	
 			if(!empty($referral_code)){
-			    $pharmacy_code =  new_pharmacies::where('referral_code',$referral_code)->first();
+				$pharmacy_code =  new_pharmacies::where('referral_code',$referral_code)->first();
 			    if(empty($pharmacy_code)){
-				    $response['status'] = 404;
-				    $response['message'] = 'Referral Code is not available';
-			    }
-			} else{
-			    	$current = date("Y-m-d H:i:s");
+					$response['status'] = 404;
+					$response['message'] = 'Referral Code is not available';
+				}else{
+				    $current = date("Y-m-d H:i:s");
 					$otp_time = $login->otp_time;
 					$diff = strtotime($current) - strtotime($otp_time);
 					$days    = floor($diff / 86400);
@@ -636,8 +635,8 @@ class LoginController extends Controller
 					$user->mobile_number = $mobile_number;
 					$user->dob = $dob;
 					$user->profile_image = $profile_image; 
+					$user->referral_code = $referral_code; 
 					$user->password = Hash::make($password);
-					$user->referral_code = $referral_code;
 					$user->save();
 					
 					$family_member = new FamilyMember();
@@ -655,13 +654,14 @@ class LoginController extends Controller
 							$profile_image = '';
 						}
 					}
+
 					$response['data']->user_id=$user->id;
 					$response['data']->name=$user->name;
 					$response['data']->email=$user->email;
 					$response['data']->mobile_number=$user->mobile_number;
 					$response['data']->profile_image=$profile_image;
+					$response['data']->referral_code=$user->referral_code;
 					$response['data']->dob=($user->dob)?$user->dob:'';
-					$response['data']->referral_code=($user->referral_code)?$user->referral_code:'';
 					$data = new_users::find($login->id);
 					$data->api_token = $login->createToken('MyApp')-> accessToken;
 					$data->save();
@@ -677,7 +677,78 @@ class LoginController extends Controller
 						$response['status'] = 404;
 						$response['message'] = 'OTP Expired';
 					}
-			}
+				}
+			}else{
+				    $current = date("Y-m-d H:i:s");
+					$otp_time = $login->otp_time;
+					$diff = strtotime($current) - strtotime($otp_time);
+					$days    = floor($diff / 86400);
+					$hours   = floor(($diff - ($days * 86400)) / 3600);
+					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
+					if (($diff > 0) && ($minutes <= 10)) {
+					
+					$profile_image = '';
+					if ($request->hasFile('profile_image')) {
+						
+						$image         = $request->file('profile_image');
+						$profile_image = time() . '.' . $image->getClientOriginalExtension();
+
+						$img = Image::make($image->getRealPath());
+						$img->stream(); // <-- Key point
+
+						Storage::disk('public')->put('uploads/new_user/'.$profile_image, $img, 'public');
+					}
+		
+					$user = new_users::find($login->id);
+					$user->name = $name;
+					$user->email = $email;
+					$user->is_verify = '1';
+					$user->mobile_number = $mobile_number;
+					$user->dob = $dob;
+					$user->profile_image = $profile_image; 
+					$user->referral_code = $referral_code; 
+					$user->password = Hash::make($password);
+					$user->save();
+					
+					$family_member = new FamilyMember();
+					$family_member->user_id = $login->id;
+					$family_member->family_member_id = $login->id;
+					$family_member->save();
+					$profile_image = '';
+					if (!empty($user->profile_image)) {
+
+						$filename = storage_path('app/public/uploads/new_user/' . $user->profile_image);
+					
+						if (File::exists($filename)) {
+							$profile_image = asset('storage/app/public/uploads/new_user/' . $user->profile_image);
+						} else {
+							$profile_image = '';
+						}
+					}
+
+					$response['data']->user_id=$user->id;
+					$response['data']->name=$user->name;
+					$response['data']->email=$user->email;
+					$response['data']->mobile_number=$user->mobile_number;
+					$response['data']->profile_image=$profile_image;
+					$response['data']->referral_code=($user->referral_code)?$user->referral_code:'';
+					$response['data']->dob=($user->dob)?$user->dob:'';
+					$data = new_users::find($login->id);
+					$data->api_token = $login->createToken('MyApp')-> accessToken;
+					$data->save();
+					$response['data']->api_token =  $data->api_token;
+
+					$token = new_users::find($login->id);
+					$token->fcm_token = $fcm_token;
+					$token->save();
+
+					$response['status'] = 200;
+					$response['message'] = 'Congratulations, your account has been successfully created.';
+					} else {
+						$response['status'] = 404;
+						$response['message'] = 'OTP Expired';
+					}
+			}    	
         }
 		
        $response = json_encode($response);
