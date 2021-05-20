@@ -24,6 +24,7 @@ Route::get('/logistic/login', 'logistic\Auth\LoginController@showLoginForm')->na
 Route::post('/logistic/login', 'logistic\Auth\LoginController@login')->name('logistic_logins');
 Route::post('/logistic/logout', 'logistic\Auth\LoginController@logout')->name('logistic_logout');
 
+
 // Registration Routes...
 Route::get('logistic/register', 'logistic\Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('logistic/register', 'logistic\Auth\RegisterController@register');
@@ -116,6 +117,8 @@ Route::get('dropdownlist','Pharmacycontroller@index');
 Route::get('get-state-list','Pharmacycontroller@getStateList');
 Route::get('get-city-list','Pharmacycontroller@getCityList');
 
+//referral code
+Route::get('/refferalcode', array('as' => 'referralcode.index', 'uses' => 'ReferralcodeController@index'));
 
 //Logistic
 Route::get('/logistic', array('as' => 'logistic.index', 'uses' => 'LogisticsController@index'));

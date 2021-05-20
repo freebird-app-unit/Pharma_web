@@ -306,6 +306,9 @@
 							<?php } ?>
 							<?php if(Auth::user()->user_type=='superadmin'){ ?>
 								<li>
+									<a href="{{ route('referralcode.index') }}" class="waves-effect <?php echo ($page_condition=='page_referralcode')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Referralcode Setting') }}</span></a>
+								</li>
+								<li>
 									<a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
 								</li>
 							<li>
@@ -864,6 +867,9 @@
   @endif
 	@if($page_condition=='page_sellers')
 		<script src="{{ asset('public/admin/js/sellers.js') }}"></script>
+	@endif
+	@if($page_condition=='page_referralcode')
+		<script src="{{ asset('public/admin/js/referralcode.js') }}"></script>
 	@endif
 	@if($page_condition=='page_logistic')
 		<script src="{{ asset('public/admin/js/logistics.js') }}"></script>
