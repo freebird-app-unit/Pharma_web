@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class referralcode extends Model
 {
-    //
+    protected $table = 'referralcode';
 }
