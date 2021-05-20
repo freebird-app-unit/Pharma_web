@@ -15,6 +15,7 @@ use File;
 use Exception;
 use App\referralcode;
 use App\new_pharmacies;
+use App\referralcode_delivery;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class LoginController extends Controller
@@ -617,7 +618,7 @@ class LoginController extends Controller
 					$hours   = floor(($diff - ($days * 86400)) / 3600);
 					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
 					
-					if (($diff > 0) && ($minutes <= 10)) {
+					/*if (($diff > 0) && ($minutes <= 10)) {*/
 					
 					$profile_image = '';
 					if ($request->hasFile('profile_image')) {
@@ -643,22 +644,22 @@ class LoginController extends Controller
 					$user->save();
 					
 					$check_referral_onoff = referralcode::where('id','1')->first();
-					$pharmacy_code = new_pharmacies::where('referralcode',$referralcode)->get();
+					$pharmacy_code = new_pharmacies::where('referral_code',$referral_code)->first();
 					if($check_referral_onoff->toggle == 'false'){
-						$entry_code = new referralcode();
+						$entry_code = new referralcode_delivery();
 						$entry_code->pharmacy_id = $pharmacy_code->id;
 						$entry_code->pharmacy_name = $pharmacy_code->name;
-						$entry_code->pharmacy_referralcode = $pharmacy_code->referralcode;
+						$entry_code->pharmacy_referralcode = $pharmacy_code->referral_code;
 						$entry_code->user_id = $user->id;
 						$entry_code->by_referral_freedelivery = 0;
 						$entry_code->created_at = date('Y-m-d H:i:s');
 						$entry_code->updated_at = date('Y-m-d H:i:s');
 						$entry_code->save();
 					}else{
-						$entry_code = new referralcode();
+						$entry_code = new referralcode_delivery();
 						$entry_code->pharmacy_id = $pharmacy_code->id;
 						$entry_code->pharmacy_name = $pharmacy_code->name;
-						$entry_code->pharmacy_referralcode = $pharmacy_code->referralcode;
+						$entry_code->pharmacy_referralcode = $pharmacy_code->referral_code;
 						$entry_code->user_id = $user->id;
 						$entry_code->by_referral_freedelivery = 1;
 						$entry_code->created_at = date('Y-m-d H:i:s');
@@ -703,13 +704,12 @@ class LoginController extends Controller
 
 					$response['status'] = 200;
 					$response['message'] = 'Congratulations, your account has been successfully created.';
-					} else {
+					/*} else {
 						$response['status'] = 404;
 						$response['message'] = 'OTP Expired';
-					}
+					}*/
 				}
 			}else{
-				dd(2);
 				    $current = date("Y-m-d H:i:s");
 					$otp_time = $login->otp_time;
 					$diff = strtotime($current) - strtotime($otp_time);
