@@ -201,12 +201,14 @@ class ProfileController extends Controller
 						$check_referral_onoff = referralcode::where('id','1')->first();
 						$pharmacy_code = new_pharmacies::where('referral_code',$referral_code)->first();
 						if($check_referral_onoff->toggle == 'false'){
+							$remain_delivery_increase = new_pharmacies::where('id',$pharmacy_code->id)->first();
 							$entry_code = new referralcode_delivery();
 							$entry_code->pharmacy_id = $pharmacy_code->id;
 							$entry_code->pharmacy_name = $pharmacy_code->name;
 							$entry_code->pharmacy_referralcode = $pharmacy_code->referral_code;
 							$entry_code->user_id = $user->id;
 							$entry_code->by_referral_freedelivery = 0;
+							$entry_code->remining_standard_paid_deliveries = $remain_delivery_increase->remining_standard_paid_deliveries;
 							$entry_code->created_at = date('Y-m-d H:i:s');
 							$entry_code->updated_at = date('Y-m-d H:i:s');
 							$entry_code->save();
