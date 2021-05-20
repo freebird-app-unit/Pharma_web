@@ -225,6 +225,7 @@
 								if(auth()->user()->user_type == 'pharmacy'){
 									$profile_image = get_image('new_pharmacies','profile_image',auth()->user()->user_id);
 									$name = get_name('new_pharmacies','name',auth()->user()->user_id);
+
 									if(file_exists(storage_path('app/public/uploads/new_users/'.$profile_image))){
 										$profile_image_url = asset('storage/app/public/uploads/new_users/' . $profile_image);
 										echo '<a href="javascript:;" class="right-bar-toggle waves-effect waves-light"><img src="'.$profile_image_url.'" width="80"/></a>'.$name;
