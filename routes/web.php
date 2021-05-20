@@ -119,6 +119,7 @@ Route::get('get-city-list','Pharmacycontroller@getCityList');
 
 //referral code
 Route::get('/refferalcode', array('as' => 'referralcode.index', 'uses' => 'ReferralcodeController@index'));
+Route::post('/refferalcode/onoff', 'ReferralcodeController@onoff');
 
 //Logistic
 Route::get('/logistic', array('as' => 'logistic.index', 'uses' => 'LogisticsController@index'));

@@ -79,7 +79,8 @@
 				<body>
 
 				<label class="switch">
-				  <input type="checkbox" id="togBtn" checked>
+				  <input type="hidden" name="toggle" id="toggle"/>
+				  <input type="checkbox" class="togBtn" checked>
 				  <span class="slider round"></span>
 				</label>
 
@@ -89,16 +90,17 @@
 @endsection
 @section('script')
 	<script type="text/javascript">
-		var switchStatus = true;
-		$("#togBtn").on('change', function() {
-		    if ($(this).is(':checked')) {
-		        switchStatus = $(this).is(':checked');
-		        alert(switchStatus);// To verify
-		    }
-		    else {
-		       switchStatus = $(this).is(':checked');
-		       alert(switchStatus);// To verify
-		    }
-		});	
+		$(".togBtn").click(function(){
+		toggle = $(this).is(':checked');
+	            $.ajax({
+	                headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
+	                url:'{{ url("/refferalcode/onoff") }}',
+	                type: 'POST',
+	                data: 'toggle='+toggle,
+	                success: function (data) {
+	                	console.log('1');
+	                }
+	            });
+        });
 </script>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\referralcode;
 
 class ReferralcodeController extends Controller
 {
@@ -13,5 +14,12 @@ class ReferralcodeController extends Controller
 		$data['page_condition'] = 'page_referralcode';
 		$data['site_title'] = 'Referral Code | ' . $this->data['site_title'];
         return view('referralcode.index', $data);
+    }
+
+    public function onoff(Request $request)
+    {
+    	$data = referralcode::where('id','1')->first();
+    	$data->toggle = $request->toggle;
+    	$data->save();
     }
 }
