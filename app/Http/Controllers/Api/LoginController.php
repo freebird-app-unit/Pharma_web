@@ -13,6 +13,8 @@ use Storage;
 use Image;
 use File;
 use Exception;
+use App\referralcode;
+use App\new_pharmacies;
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class LoginController extends Controller
@@ -533,8 +535,8 @@ class LoginController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$name = isset($content->name) ? $content->name : '';
 		$email = isset($content->email) ? $content->email : '';
@@ -614,6 +616,7 @@ class LoginController extends Controller
 					$days    = floor($diff / 86400);
 					$hours   = floor(($diff - ($days * 86400)) / 3600);
 					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
+					
 					if (($diff > 0) && ($minutes <= 10)) {
 					
 					$profile_image = '';
@@ -627,7 +630,7 @@ class LoginController extends Controller
 
 						Storage::disk('public')->put('uploads/new_user/'.$profile_image, $img, 'public');
 					}
-		
+
 					$user = new_users::find($login->id);
 					$user->name = $name;
 					$user->email = $email;
@@ -639,6 +642,33 @@ class LoginController extends Controller
 					$user->password = Hash::make($password);
 					$user->save();
 					
+					$check_referral_onoff = referralcode::where('id','1')->first();
+					$pharmacy_code = new_pharmacies::where('referralcode',$referralcode)->get();
+					if($check_referral_onoff->toggle == 'false'){
+						$entry_code = new referralcode();
+						$entry_code->pharmacy_id = $pharmacy_code->id;
+						$entry_code->pharmacy_name = $pharmacy_code->name;
+						$entry_code->pharmacy_referralcode = $pharmacy_code->referralcode;
+						$entry_code->user_id = $user->id;
+						$entry_code->by_referral_freedelivery = 0;
+						$entry_code->created_at = date('Y-m-d H:i:s');
+						$entry_code->updated_at = date('Y-m-d H:i:s');
+						$entry_code->save();
+					}else{
+						$entry_code = new referralcode();
+						$entry_code->pharmacy_id = $pharmacy_code->id;
+						$entry_code->pharmacy_name = $pharmacy_code->name;
+						$entry_code->pharmacy_referralcode = $pharmacy_code->referralcode;
+						$entry_code->user_id = $user->id;
+						$entry_code->by_referral_freedelivery = 1;
+						$entry_code->created_at = date('Y-m-d H:i:s');
+						$entry_code->updated_at = date('Y-m-d H:i:s');
+						$entry_code->save();
+
+						$remain_delivery_increase = new_pharmacies::where('id',$entry_code->pharmacy_id)->first();
+						$remain_delivery_increase->remining_standard_paid_deliveries = $remain_delivery_increase->remining_standard_paid_deliveries +1;
+						$remain_delivery_increase->save();
+					}
 					$family_member = new FamilyMember();
 					$family_member->user_id = $login->id;
 					$family_member->family_member_id = $login->id;
@@ -679,6 +709,7 @@ class LoginController extends Controller
 					}
 				}
 			}else{
+				dd(2);
 				    $current = date("Y-m-d H:i:s");
 					$otp_time = $login->otp_time;
 					$diff = strtotime($current) - strtotime($otp_time);
@@ -752,9 +783,9 @@ class LoginController extends Controller
         }
 		
        $response = json_encode($response);
-	   $cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+	   //$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
     }
 
     public function logout(Request $request){
