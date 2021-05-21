@@ -971,7 +971,8 @@ class OrderController extends Controller
                             }
                         $images_array[] =[
                             'id' => $pres->id,
-                            'image' => $pres_image
+                            'image' => $pres_image,
+                            'mimetype' => $pres->mimetype
                         ];
                     }
 				$orders_arr_data1[$key]['id'] = $val->ID;
@@ -1090,7 +1091,8 @@ class OrderController extends Controller
                             }
                         $images_array[] =[
                             'id' => $pres->id,
-                            'image' => $pres_image
+                            'image' => $pres_image,
+                            'mimetype' => $pres->mimetype
                         ];
                     }
 			if (!empty($orders[0]->audio)) {
