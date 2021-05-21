@@ -314,6 +314,67 @@ class PrescriptionController extends Controller
 		
         return response($cipher, 200);
     }
+
+    public function edit_prescription_name(Request $request)
+    {
+		$response = array();
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');	
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
+		
+		$user_id  = isset($content->user_id) ? $content->user_id : 0;
+		$id  = isset($content->id) ? $content->id : 0;
+		$prescription_name  = isset($content->prescription_name) ? $content->prescription_name : '';
+
+		$params = [
+			'user_id' => $user_id,
+			'id'     => $id,
+			'prescription_name' => $prescription_name
+		]; 
+		
+		$validator = Validator::make($params, [
+			'user_id' => 'required',
+            'id' => 'required',
+            'prescription_name' => 'required',
+        ]);
+ 
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+        }
+		$token =  $request->bearerToken();
+		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
+		if(count($user)>0){
+		$update_pre = multiple_prescription::where(['user_id'=>$user_id,'prescription_id'=>(int)$id])->get();
+		foreach ($update_pre as $value) {
+			$value->prescription_name=$prescription_name;
+			$value->save();
+		}
+
+		$prescription_data = prescription_multiple_image::where(['user_id'=>$user_id,'prescription_id'=>$id])->get();
+		foreach ($prescription_data as $val) {
+			$val->name=$prescription_name;
+			$val->save();
+		}
+
+		$prescription = Prescription::where('id',$id)->first();
+		$prescription->name=$prescription_name;
+		$prescription->save();
+		
+		$response['status'] = 200;
+		$response['message'] = 'Your prescription has been successfully updated';    
+		}else{
+	    		$response['status'] = 401;
+	            $response['message'] = 'Unauthenticated';
+	   	}
+		$response = json_encode($response);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($cipher, 200);
+    }
     public function save_prescription_imagedata(Request $request)
 	{
 		$response = array();
