@@ -471,8 +471,9 @@ class OrderController extends Controller
 									$abc->prescription_id = $prescriptions->id;
 									$abc->prescription_name = $prescriptions->name;
 									$abc->image = base64_encode(file_get_contents($file));
+									$abc->mimetype =  $file->getMimeType();
 									$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
-									$abc->prescription_date = $prescriptions->prescription_date;
+									$abc->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d');
 									$abc->is_delete = "0";
 									$abc->created_at = date('Y-m-d H:i:s');
 									$abc->updated_at = date('Y-m-d H:i:s');				
@@ -497,13 +498,15 @@ class OrderController extends Controller
 								    
 
 									$filename= time().'-'.$file->getClientOriginalName();
+									$mimetype = $file->getMimeType();
 									$tesw = $file->move($destinationPath, $filename);
 									$prescription_multiple_image = new prescription_multiple_image();
 									$prescription_multiple_image->prescription_id = $prescriptions->id;
 									$prescription_multiple_image->user_id = $prescriptions->user_id;
 									$prescription_multiple_image->name = $prescriptions->name;
 									$prescription_multiple_image->image = $filename;
-									$prescription_multiple_image->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d H:i:s');
+									$prescription_multiple_image->mimetype = $mimetype;
+									$prescription_multiple_image->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d');
 									$prescription_multiple_image->is_delete = '0';
 									$prescription_multiple_image->save();
 								}
@@ -597,10 +600,10 @@ class OrderController extends Controller
 								$notification->save();
 							}
 							
-							/*if (count($ids) > 0) {					
+							if (count($ids) > 0) {					
 								Helper::sendNotification($ids, $message, 'Order Created', $user->id, 'user', $seller_id, 'seller', $ids);
 
-							}*/
+							}
 						}
 					}
 
