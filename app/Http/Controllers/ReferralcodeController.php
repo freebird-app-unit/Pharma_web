@@ -13,6 +13,7 @@ class ReferralcodeController extends Controller
 		$data['page_title'] = 'Referral Code';
 		$data['page_condition'] = 'page_referralcode';
 		$data['site_title'] = 'Referral Code | ' . $this->data['site_title'];
+        $data['referralcode'] = referralcode::where('id','1')->first();
         return view('referralcode.index', $data);
     }
 

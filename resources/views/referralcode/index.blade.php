@@ -80,7 +80,14 @@
 
 				<label class="switch">
 				  <input type="hidden" name="toggle" id="toggle"/>
-				  <input type="checkbox" class="togBtn" checked>
+				  <?php 
+					if($referralcode->toggle == 'true'){
+						echo "<input type='checkbox' class='togBtn' checked>";
+					}else{
+						echo "<input type='checkbox' class='togBtn'>";
+					}
+					
+				   ?>
 				  <span class="slider round"></span>
 				</label>
 
