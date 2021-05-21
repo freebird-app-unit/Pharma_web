@@ -200,6 +200,7 @@ class PrescriptionController extends Controller
 						$abc->prescription_id = $prescriptions->id;
 						$abc->prescription_name = $prescriptions->name;
 						$abc->image = base64_encode(file_get_contents($file));
+						$abc->mimetype =  $file->getMimeType();
 						$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
 						$abc->prescription_date = $prescriptions->prescription_date;
 						$abc->is_delete = "0";
@@ -226,12 +227,14 @@ class PrescriptionController extends Controller
 					    
 
 						$filename= time().'-'.$file->getClientOriginalName();
+						$mimetype = $file->getMimeType();
 						$tesw = $file->move($destinationPath, $filename);
 						$prescription_multiple_image = new prescription_multiple_image();
 						$prescription_multiple_image->prescription_id = $prescriptions->id;
 						$prescription_multiple_image->user_id = $prescriptions->user_id;
 						$prescription_multiple_image->name = $prescriptions->name;
 						$prescription_multiple_image->image = $filename;
+						$prescription_multiple_image->mimetype = $mimetype;
 						$prescription_multiple_image->prescription_date = $prescriptions->prescription_date;
 						$prescription_multiple_image->is_delete = '0';
 						$prescription_multiple_image->save();
@@ -268,47 +271,43 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$id  = isset($content->id) ? $content->id : 0;
 		$sub_prescription_id  = isset($content->sub_prescription_id) ? $content->sub_prescription_id : 0;
 		
 		$params = [
 			'id'     => $id,
-			'sub_prescription_id' => $sub_prescription_id
 		]; 
 		
 		$validator = Validator::make($params, [
             'id' => 'required',
-            'sub_prescription_id' =>'required'
         ]);
  
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
 		
-		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id,'multiple_prescription_id'=>(int)$sub_prescription_id])->first();
+		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id])->first();
 		$delete_pre->is_delete='1';
 		$delete_pre->save();
 
-		$sub_prescription_id = prescription_multiple_image::where(['prescription_id'=>$id,'id'=>$sub_prescription_id])->first();
+		$sub_prescription_id = prescription_multiple_image::where(['prescription_id'=>$id])->first();
 		$sub_prescription_id->is_delete='1';
 		$sub_prescription_id->save();
 
-		$multiple_data = prescription_multiple_image::where(['prescription_id'=>$id,'is_delete'=>'0'])->get();
-		if(count($multiple_data) == 0){
-			$prescription = Prescription::where('id',$id)->first();
-			$prescription->is_delete="1";
-			$prescription->save();
-		}
+		$prescription = Prescription::where('id',$id)->first();
+		$prescription->is_delete="1";
+		$prescription->save();
+		
 		$response['status'] = 200;
 		$response['message'] = 'Your prescription has been successfully deleted';    
 		
 		$response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
     }
     public function save_prescription_imagedata(Request $request)
 	{
