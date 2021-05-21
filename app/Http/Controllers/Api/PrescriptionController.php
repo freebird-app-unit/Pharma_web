@@ -272,8 +272,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$id  = isset($content->id) ? $content->id : 0;
 		$sub_prescription_id  = isset($content->sub_prescription_id) ? $content->sub_prescription_id : 0;
@@ -290,13 +290,17 @@ class PrescriptionController extends Controller
             return $this->send_error($validator->errors()->first());  
         }
 		
-		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id])->first();
-		$delete_pre->is_delete='1';
-		$delete_pre->save();
+		$delete_pre = multiple_prescription::where(['prescription_id'=>(int)$id])->get();
+		foreach ($delete_pre as $value) {
+			$value->is_delete='1';
+			$value->save();
+		}
 
-		$sub_prescription_id = prescription_multiple_image::where(['prescription_id'=>$id])->first();
-		$sub_prescription_id->is_delete='1';
-		$sub_prescription_id->save();
+		$prescription_data = prescription_multiple_image::where(['prescription_id'=>$id])->get();
+		foreach ($prescription_data as $val) {
+			$val->is_delete='1';
+			$val->save();
+		}
 
 		$prescription = Prescription::where('id',$id)->first();
 		$prescription->is_delete="1";
@@ -306,9 +310,9 @@ class PrescriptionController extends Controller
 		$response['message'] = 'Your prescription has been successfully deleted';    
 		
 		$response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
     }
     public function save_prescription_imagedata(Request $request)
 	{
