@@ -26,8 +26,8 @@ class PatientReportController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data); 
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText); 
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$name = isset($content->name) ? $content->name : '';
@@ -52,9 +52,9 @@ class PatientReportController extends Controller
             return $this->send_error($validator->errors()->first());  
         }	
 
-		/*$token =  $request->bearerToken();
+		$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){*/
+		if(count($user)>0){
 
 		/*$patient_report_image = '';
 		if ($request->hasFile('patient_report')) {
@@ -104,6 +104,7 @@ class PatientReportController extends Controller
 						$abc->patient_report_id = $reports->id;
 						$abc->name = $reports->name;
 						$abc->image = base64_encode(file_get_contents($file));
+						$abc->mimetype =  $file->getMimeType();
 						$abc->path = asset('storage/app/public/uploads/patient_report/' . $file);
 						$abc->date = $reports->date;
 						$abc->is_delete = "0";
@@ -130,12 +131,14 @@ class PatientReportController extends Controller
 					    
 
 						$filename= time().'-'.$file->getClientOriginalName();
+						$mimetype = $file->getMimeType();
 						$tesw = $file->move($destinationPath, $filename);
 						$reports_multiple_image = new patient_report_multiple_image();
 						$reports_multiple_image->patient_report_id = $reports->id;
 						$reports_multiple_image->user_id = $reports->user_id;
 						$reports_multiple_image->name = $reports->name;
 						$reports_multiple_image->image = $filename;
+						$reports_multiple_image->mimetype = $mimetype;
 						$reports_multiple_image->date = $reports->date;
 						$reports_multiple_image->is_delete = '0';
 						$reports_multiple_image->save();
@@ -152,14 +155,14 @@ class PatientReportController extends Controller
 			$response['message'] = 'Report saved successfully!';
 			$response['data'] = (object)array();
 		}
-		/*}else{
+		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}*/
+	   	}
         $response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
     }
 
     public function patient_report_delete(Request $request)
