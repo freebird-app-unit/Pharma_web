@@ -52,10 +52,11 @@
 								<th width="10%" data-priority="1">Name</th>
 								<th width="15%" data-priority="3">Mobile number</th>
 								<th width="15%" data-priority="4">Address</th>
-								<th width="10%" data-priority="4">No. of completed <br> orders</th>
-								<th width="10%" data-priority="4">No of seller</th>
-								<th width="10%" data-priority="4">Selected Package</th>
-								<th width="25%" data-priority="6"></th>
+								<th width="10%" data-priority="5">No. of completed <br> orders</th>
+								<th width="10%" data-priority="6">No of seller</th>
+								<th width="10%" data-priority="7">Selected Package</th>
+								<th width="10%" data-priority="8">ReferralCode</th>
+								<th width="25%" data-priority="9">Action</th>
 							</tr>
 						</thead>
 						<tbody>
