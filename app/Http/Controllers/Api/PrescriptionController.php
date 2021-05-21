@@ -106,7 +106,8 @@ class PrescriptionController extends Controller
                                         }
                                     $images_array[] =[
                                         'id' => $pres->id,
-                                        'image' => $pres_image
+                                        'image' => $pres_image,
+                                        'mimetype' => $pres->mimetype
                                     ];
                                 }
 				$prescription_arr[$key]['id'] = $val['id'];
