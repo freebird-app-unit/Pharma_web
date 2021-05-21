@@ -173,51 +173,49 @@ class PatientReportController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$user_id  = isset($content->user_id) ? $content->user_id : 0;
 		$id  = isset($content->id) ? $content->id : 0;
-		$sub_report_id  = isset($content->sub_report_id) ? $content->sub_report_id : 0;
 
 		$params = [
 			'user_id' => $user_id,
 			'id'     => $id,
-			'sub_report_id' =>$sub_report_id
 		]; 
 		
 		$validator = Validator::make($params, [
 			'user_id' => 'required',
             'id' => 'required',
-            'sub_report_id' => 'required'
         ]);
  
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
 
-		$delete_re = patient_report_image::where(['patient_report_id'=>(int)$id,'user_id'=>(int)$user_id,'patient_report_image_id'=>(int)$sub_report_id])->first();
-		$delete_re->is_delete='1';
-		$delete_re->save();
-
-		$sub_report_data = patient_report_multiple_image::where(['patient_report_id'=>$id,'id'=>$sub_report_id])->first();
-		$sub_report_data->is_delete='1';
-		$sub_report_data->save();
-
-		$multiple_data = patient_report_multiple_image::where(['patient_report_id'=>$id,'is_delete'=>'0'])->get();
-		if(count($multiple_data) == 0){
-			$patient_report = patient_report::where(['id'=>$id,'user_id'=>$user_id])->first();
-			$patient_report->is_delete='1';
-			$patient_report->save();
+		$delete_re = patient_report_image::where(['patient_report_id'=>(int)$id,'user_id'=>(int)$user_id])->get();
+		foreach ($delete_re as $value) {
+			$value->is_delete='1';
+			$value->save();
 		}
+
+		$report_data = patient_report_multiple_image::where(['patient_report_id'=>$id])->get();
+		foreach ($report_data as $val) {
+			$val->is_delete='1';
+			$val->save();	
+		}
+		
+		$patient_report = patient_report::where(['id'=>$id,'user_id'=>$user_id])->first();
+		$patient_report->is_delete='1';
+		$patient_report->save();
 
 		$response['status'] = 200;
 		$response['message'] = 'Report successfully deleted!';    
 		
 		$response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
     }
 
     public function patient_report_display(Request $request)
@@ -231,8 +229,8 @@ class PatientReportController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$user_id    = isset($content->user_id) ? $content->user_id : '';
 		$searchtext = isset($content->searchtext) ? trim($content->searchtext) : ''; 
@@ -249,9 +247,9 @@ class PatientReportController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }		
-		/*$token =  $request->bearerToken();
+		$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){*/
+		if(count($user)>0){
 		if (!empty($searchtext)) {
 			$report = patient_report::select('id', 'name','image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
@@ -311,7 +309,8 @@ class PatientReportController extends Controller
                                         }
                                     $images_array[] =[
                                         'id' => $pres->id,
-                                        'image' => $pres_image
+                                        'image' => $pres_image,
+                                        'mimetype' => $pres->mimetype
                                     ];
                                 }
 				$report_arr[$key]['id'] = $val['id'];
@@ -325,15 +324,76 @@ class PatientReportController extends Controller
 		} 
 		$response['message'] = 'Report List';
 		$response['data']->content = $report_arr;
-		/*}else{
+		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
 	            $response['data'] = [];
-	   	}*/
+	   	}
         $response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
 	
 	}
+
+	public function patient_report_edit_name(Request $request)
+    {
+		$response = array();
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');	
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
+		
+		$user_id  = isset($content->user_id) ? $content->user_id : 0;
+		$id  = isset($content->id) ? $content->id : 0;
+		$patient_report_name  = isset($content->patient_report_name) ? $content->patient_report_name : '';
+
+		$params = [
+			'user_id' => $user_id,
+			'id'     => $id,
+			'patient_report_name' => $patient_report_name
+		]; 
+		
+		$validator = Validator::make($params, [
+			'user_id' => 'required',
+            'id' => 'required',
+            'patient_report_name' => 'required',
+        ]);
+ 
+        if ($validator->fails()) {
+            return $this->send_error($validator->errors()->first());  
+        }
+		$token =  $request->bearerToken();
+		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
+		if(count($user)>0){
+		$update_pre = patient_report_image::where(['user_id'=>(int)$user_id,'patient_report_id'=>(int)$id])->get();
+		foreach ($update_pre as $value) {
+			$value->name=$patient_report_name;
+			$value->save();
+		}
+
+		$prescription_data = patient_report_multiple_image::where(['user_id'=>$user_id,'patient_report_id'=>$id])->get();
+		foreach ($prescription_data as $val) {
+			$val->name=$patient_report_name;
+			$val->save();
+		}
+
+		$patient_report = patient_report::where(['id'=>$id,'user_id'=>$user_id])->first();
+		$patient_report->name=$patient_report_name;
+		$patient_report->save();
+
+		$response['status'] = 200;
+		$response['message'] = 'Your patient report has been successfully updated';    
+		}else{
+	    		$response['status'] = 401;
+	            $response['message'] = 'Unauthenticated';
+	   	}
+		$response = json_encode($response);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		
+        return response($cipher, 200);
+    }
 }
