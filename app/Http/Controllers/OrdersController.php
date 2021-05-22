@@ -13,7 +13,7 @@ use App\Rejectreason;
 use App\Orderassign;
 use App\delivery_charges;
 use App\new_address;
-
+use App\SellerModel\invoice;
 use App\new_orders;
 use App\new_order_history;
 use App\new_users;
@@ -223,9 +223,9 @@ class OrdersController extends Controller
 		$order->process_user_type = 'pharmacy';
 		$order->process_user_id = $user_id;
 		$order->accept_datetime = date('Y-m-d H:i:s');
-
+		$order->order_amount = $request->order_amount;
 		$orderAssign = new Orderassign();
-		$orderAssign->order_id = $id;
+		$orderAssign->order_id = $request->accept_id;
 		$orderAssign->order_status = 'new';
 		$orderAssign->updated_at = date('Y-m-d H:i:s');
 		$orderAssign->assign_date = date('Y-m-d H:i:s');
@@ -235,6 +235,17 @@ class OrdersController extends Controller
 		$order->order_status = 'accept';
 
 		$order->save();
+		$destinationPath = 'storage/app/public/uploads/invoice/'; 
+		$file = $request->invoice;
+        $filename = time().'-'.$file->getClientOriginalName();
+        $tesw = $file->move($destinationPath, $filename);
+        $invoice_data = new invoice();
+        $invoice_data->order_id = $request->accept_id;
+        $invoice_data->invoice = $filename;
+        $invoice_data->created_at = date('Y-m-d H:i:s');
+        $invoice_data->updated_at = date('Y-m-d H:i:s');
+        $invoice_data->save();
+
 		$ids = array();
 		$ids[] = $customer->fcm_token;
 		$receiver_id = array();
@@ -242,12 +253,8 @@ class OrdersController extends Controller
 		if (count($ids) > 0) {					
 			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
 		}
-
-		if(isset($_REQUEST['home'])){
-			return redirect(route('home'))->with('success_message', trans('Order Successfully accepted'));
-		}else{
-			return redirect(route('upcomingorders.index'))->with('success_message', trans('Order Successfully accepted'));
-		}
+		
+		return redirect(route('upcomingorders.index'))->with('success_message', trans('Order Successfully accepted'));
 	}
 	public function reject(Request $request)
     {

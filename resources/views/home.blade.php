@@ -590,7 +590,7 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 				<h4 class="modal-title" id="mySmallModalLabel"></h4>
 			</div>
 			<div class="modal-body">
-				<form method="post" action="{{ route('orders.accept') }}">
+				<form method="post" action="{{ route('orders.accept') }}" enctype="multipart/form-data">
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<input type="hidden" name="home" value="home">
 				<input type="hidden" id="accept_id" name="accept_id" value=""/>
