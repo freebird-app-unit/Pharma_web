@@ -1,11 +1,5 @@
 @extends('layouts.app')
 @section('content')
-@if(Session::has('success_message'))
-			<div class="alert alert-success alert-dismissable">
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				{{ Session::get('success_message') }}
-	        </div>
-		@endif
 <?php 
 $user = auth()->user();
 ?>
@@ -392,6 +386,7 @@ if($user->user_type=='logistic'){
 }
 if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 ?>
+
 <h5 class="page-title">Today's Orders</h5>
 <div class="row">
 <a href="{{ route('upcomingorders.index') }}">
@@ -450,6 +445,12 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 		<div class="card-box">
 		<div class="table-rep-plugin">
             <h4 class="page-title">Upcoming Orders</h4>
+            @if(Session::has('success_message'))
+			<div class="alert alert-success alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{{ Session::get('success_message') }}
+	        </div>
+		@endif
 			<div class="table-responsive" data-pattern="priority-columns">
 				<div class="col-sm-5 pull-right order_search_box">
 						<input type="text" class="form-control" name="order_search_text" placeholder="Search" id="order_search_text"/>
