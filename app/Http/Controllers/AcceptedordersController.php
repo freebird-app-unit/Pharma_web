@@ -324,24 +324,34 @@ class AcceptedordersController extends Controller
 			$assign->updated_at = date('Y-m-d H:i:s');
 	
 			$assign->save();
+			$user_id = Auth::user()->user_id;
+			$user_type = Auth::user()->user_type;
+			$delivery = new_pharma_logistic_employee::find($request->delivery_boy);
+			$ids = array();
+			$ids[] = $delivery->fcm_token;
+			$receiver_id = array();
+			$receiver_id[] = $delivery->id;
+			if (count($ids) > 0) {				
+				Helper::sendNotificationDeliveryboy($ids, 'Order Number '.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $delivery->id, 'delivery_boy', $delivery->fcm_token);
+			}
 		} else if($request->delivery_assign_type == 'logistic') {
 			$order = new_orders::find($request->assign_id);
-			$order->logistic_user_id = $request->delivery_boy;
+			$order->logistic_user_id = -1;
 			$order->assign_datetime =  date('Y-m-d H:i:s');
-			$order->delivery_charges_id = $request->delivery_charges_id;
-			$order->order_status = 'assign';
+			$order->delivery_charges_id = 8;
+			$order->order_status = 'accept';
 			$order->is_external_delivery = 1;
 			$order->external_delivery_initiatedby = 'pharmacy';
 			$order->save();
 			
 			$assign = new Orderassign();
 			$assign->order_id = $request->assign_id;
-			$assign->logistic_id = $request->delivery_boy;
-			$assign->order_status = 'assign';
-			
+			$assign->logistic_id = NULL;
+			$assign->order_status = 'new';
 			$assign->assign_date = date('Y-m-d H:i:s');
 			$assign->created_at = date('Y-m-d H:i:s');
 			$assign->updated_at = date('Y-m-d H:i:s');
+			$assign->save();
 		} else {
 			$order = new_orders::find($request->assign_id);
 			$order->deliveryboy_id = $request->delivery_boy;
@@ -360,17 +370,18 @@ class AcceptedordersController extends Controller
 			$assign->updated_at = date('Y-m-d H:i:s');
 	
 			$assign->save();
+			$user_id = Auth::user()->user_id;
+			$user_type = Auth::user()->user_type;
+			$delivery = new_pharma_logistic_employee::find($request->delivery_boy);
+			$ids = array();
+			$ids[] = $delivery->fcm_token;
+			$receiver_id = array();
+			$receiver_id[] = $delivery->id;
+			if (count($ids) > 0) {				
+				Helper::sendNotificationDeliveryboy($ids, 'Order Number '.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $delivery->id, 'delivery_boy', $delivery->fcm_token);
+			}
 		}
-		$user_id = Auth::user()->user_id;
-		$user_type = Auth::user()->user_type;
-		$delivery = new_pharma_logistic_employee::find($request->delivery_boy);
-		$ids = array();
-		$ids[] = $delivery->fcm_token;
-		$receiver_id = array();
-		$receiver_id[] = $delivery->id;
-		if (count($ids) > 0) {				
-			Helper::sendNotificationDeliveryboy($ids, 'Order Number '.$order->order_number, 'Order Assign', $user_id, 'pharmacy', $delivery->id, 'delivery_boy', $delivery->fcm_token);
-		}
+		
 		
 		return redirect(route('acceptedorders.index'))->with('success_message', trans('Order Successfully assign'));
 	}
