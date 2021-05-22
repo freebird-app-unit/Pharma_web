@@ -32,6 +32,9 @@ $("#search_text").keyup(function() {
 $("#perpage").change(function() {
 	getupcomingorderlist(1);
 });
+function accept_order(id){
+	$('#accept_id').val(id);
+}
 
 function assign_order(id){
 	$('#assign_id').val(id);

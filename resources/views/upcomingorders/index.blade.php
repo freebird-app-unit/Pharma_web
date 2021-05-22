@@ -153,5 +153,34 @@
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-									
+
+<div id="accept_modal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="mySmallModalLabel"></h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" action="{{ route('orders.accept') }}" enctype="multipart/form-data">
+				<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				<input type="hidden" name="home" value="home">
+				<input type="hidden" id="accept_id" name="accept_id" value=""/>
+				<div class="form-group">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="order_amount">OrderAmount<span class="required">*</span></label>
+					<input type="text" placeholder="Order Amount" class="form-control" name="order_amount" id="order_amount">
+				</div>
+				<div class="form-group">
+					<label class="control-label col-md-2 col-sm-2 col-xs-12" for="invoice">Invoice<span class="required">*</span></label>
+					<input type="file" class="form-control" id="invoice" name="invoice"  data-input="false">
+				</div>
+				<br>
+				<a href="javascript:;" class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cancel</a>
+				<input type="submit" name="submit" value="Send" class="btn btn-success"/>
+				</form>
+				
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->									
 @endsection
