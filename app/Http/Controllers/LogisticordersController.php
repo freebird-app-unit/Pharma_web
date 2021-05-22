@@ -11,6 +11,7 @@ use Auth;
 use App\Orderassign;
 use App\Rejectreason;
 use App\new_users;
+use App\new_address;
 use DB;
 use Helper;
 class LogisticordersController extends Controller
@@ -126,8 +127,11 @@ class LogisticordersController extends Controller
 	}
 	public function assign($id)
     {
-    	dd($id);
-    	$assign = new_orders::where('id',$request->assign_id)->first();
+    	$order = new_orders::where('id',$id)->first();
+    	$delivery_address_check = new_address::where('id',$order->address_id)->first();
+    	if($delivery_address_check->city == 'Rajkot'){
+    		
+    	}
     	$assign->logistic_user_id=$request->logistic_id;
     	$assign->order_status='assign';
     	$assign->save();
