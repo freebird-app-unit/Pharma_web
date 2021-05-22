@@ -1,5 +1,11 @@
 @extends('layouts.app')
 @section('content')
+@if(Session::has('success_message'))
+			<div class="alert alert-success alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				{{ Session::get('success_message') }}
+	        </div>
+		@endif
 <?php 
 $user = auth()->user();
 ?>
