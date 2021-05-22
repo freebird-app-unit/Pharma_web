@@ -21,6 +21,7 @@ use App\DeliveryboyModel\new_order_images;
 use App\DeliveryboyModel\new_order_history;
 use App\SellerModel\new_users;
 use App\new_logistics;
+use App\new_sellers;
 use App\SellerModel\new_pharmacies;
 use App\new_delivery_charges;
 use Validator;
@@ -72,13 +73,13 @@ class AcceptorderController extends Controller
         ]);
         
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
                 $check_data = new_orders::select('id','checking_by')->where('id',$order_id)->first();
                 $check_data->checking_by = $user_id;
                 $check_data->save();
 
-                $seller_data = new_pharma_logistic_employee::where('id',$user_id)->first();
+                $seller_data = new_sellers::where('id',$user_id)->first();
                 $check[] = [
                     'checking_by' => $seller_data->name         
                 ];
@@ -144,7 +145,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];      
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
             if(count($data_array)>0){
                 foreach($data_array as $value) { 
@@ -186,7 +187,7 @@ class AcceptorderController extends Controller
                         $name = '';
                     }
 
-                    $checking = new_pharma_logistic_employee::where('id',$value['checking_by'])->first();
+                    $checking = new_sellers::where('id',$value['checking_by'])->first();
                     if(!empty($checking)){
                         $checking_by =$checking->name;
                     }else{
@@ -292,7 +293,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
         }
  		$token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -402,7 +403,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         if (!empty($user_id) && !empty($search_text)) {
-             $seller = new_pharma_logistic_employee::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
+             $seller = new_sellers::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
 
             $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where('name', 'like', '%' .$search_text . '%')->where(['pharma_logistic_id'=>$seller->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1']);
 
@@ -422,13 +423,13 @@ class AcceptorderController extends Controller
             
         } elseif ($page == -1) { 
             
-            $seller = new_pharma_logistic_employee::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
+            $seller = new_sellers::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
             
             $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['pharma_logistic_id'=>$seller->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1'])->get();
 
         } else{
             
-            $seller = new_pharma_logistic_employee::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
+            $seller = new_sellers::select('id','pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['id'=>$user_id,'user_type'=>'seller','is_active'=>'1'])->first();
             
             $deliveryboy_list = new_pharma_logistic_employee::select('pharma_logistic_id','user_type','is_active','profile_image','id','name','mobile_number','is_available')->where(['pharma_logistic_id'=>$seller->pharma_logistic_id,'user_type'=>'delivery_boy','is_active'=>'1']);
             
@@ -448,7 +449,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(!empty($data_array)){
                     foreach($data_array as $value) {
@@ -615,7 +616,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -768,7 +769,7 @@ class AcceptorderController extends Controller
                 $data_array = $data_array['data']; 
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
@@ -905,7 +906,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -1112,7 +1113,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 if(count($data_array)>0){
                          foreach($data_array as $value) {
@@ -1238,7 +1239,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 $orders = new_orders::where('id',$order_id)->first();
                 if(!empty($orders)){
@@ -1347,7 +1348,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
             $calls= Callhistory::where(['user_id' => $user_id,'order_id'=>$order_id])->get();
             if(!empty($calls)){
@@ -1396,7 +1397,7 @@ class AcceptorderController extends Controller
         }
         $logistic_data = [];
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
         	if($user_id > 0){
 				$ids = array();
@@ -1686,7 +1687,7 @@ class AcceptorderController extends Controller
         }
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
              $dupicate_data = new_orders::where('id',$order_id)->first();
             $dupicate_data->deliveryboy_id = 0;
@@ -1798,7 +1799,7 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
 			$reject = new_orders::find($order_id);
 			if(!empty($reject)){
@@ -1887,7 +1888,7 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->first();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->first();
         if(!empty($user)){
                 $reject = new_orders::find($order_id);
                 if(!empty($reject)){
@@ -1961,7 +1962,7 @@ class AcceptorderController extends Controller
         }
         $time=[];
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
             $data = new Callhistory();
             $data->user_id=$user_id;
@@ -2036,7 +2037,7 @@ class AcceptorderController extends Controller
             $data_array = $data_array['data'];
         }
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                     if(count($data_array)>0){
                              foreach($data_array as $value) {
@@ -2248,7 +2249,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->first();
+        $user = new_sellers::where(['id'=>$user_id, 'api_token'=>$token])->first();
         if(!empty($user)){
             $orders = new_orders::where('id',$order_id)->get();
             if(count($orders)>0){
@@ -2994,9 +2995,9 @@ class AcceptorderController extends Controller
             return validation_error($validator->errors()->first());  
         }
 
-        $seller_data =  new_pharma_logistic_employee::where('id',$user_id)->get();
+        $seller_data =  new_sellers::where('id',$user_id)->get();
         foreach ($seller_data as $seller) {
-            $phar_data= new_pharma_logistic_employee::where('id',$seller->pharma_logistic_id)->get();
+            $phar_data= new_sellers::where('id',$seller->pharma_logistic_id)->get();
             foreach ($phar_data as $phar) {
                 $logistics = \DB::table('new_logistics')
                         ->select('new_logistics.*')
@@ -3048,7 +3049,7 @@ class AcceptorderController extends Controller
             $cancel->order_status = 'cancel';
             $cancel->save();
 
-            $user = new_pharma_logistic_employee::where(['id'=>$user_id])->first();
+            $user = new_sellers::where(['id'=>$user_id])->first();
 
             if($user_id > 0){
                 $ids = array();
@@ -3174,7 +3175,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token = $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->first();
+        $user = new_sellers::where(['id'=>$user_id, 'api_token'=>$token])->first();
         if(!empty($user)){
             $order = new_orders::find($order_id);
             if(!empty($order)){
@@ -3262,7 +3263,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
         $notification = [];
         $token = $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id, 'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id, 'api_token'=>$token])->get();
         if(count($user)>0){
         $notification_data = notification_seller::select('id','user_id','title','subtitle','order_id','order_status','created_at')->where('user_id',$user_id)->orderBy('id','DESC');
         $total = $notification_data->count();
@@ -3336,7 +3337,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
         $token =  $request->bearerToken();
-        $user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+        $user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
         if(count($user)>0){
                 $order_details =  new_orders::where('id' , $order_id)->orderBy('id', 'DESC')->get();
                 $order_details_complete =  new_order_history::where('order_id' , $order_id)->orderBy('order_id', 'DESC')->get();
@@ -3730,7 +3731,7 @@ class AcceptorderController extends Controller
         $response['data'] = (object)array();
 
 		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::where(['id'=>$user_id,'api_token'=>$token])->get();
+		$user = new_sellers::where(['id'=>$user_id,'api_token'=>$token])->get();
 		if(count($user)>0){
 		$notification_arr = [];
 		
