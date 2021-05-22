@@ -254,11 +254,11 @@ class OrdersController extends Controller
 			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
 		}
 		
-		if(isset($_REQUEST['home'])){
+		/*if(isset($_REQUEST['home'])){
 			return redirect(route('home'))->with('success_message', trans('Order Successfully accepted'));
-		}else{
+		}else{*/
 			return redirect(route('upcomingorders.index'))->with('success_message', trans('Order Successfully accepted'));
-		}
+		/*}*/
 	}
 	public function reject(Request $request)
     {
