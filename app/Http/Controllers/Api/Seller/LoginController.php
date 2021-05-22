@@ -6,6 +6,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use App\SellerModel\User;
 use App\SellerModel\new_pharma_logistic_employee;
+use App\new_sellers;
 use App\SellerModel\new_pharmacies;
 use Mail;
 use Validator;
@@ -49,7 +50,7 @@ class LoginController extends Controller
 	            throw new Exception($validator->errors()->first());
 	        }
 
-	        $login = new_pharma_logistic_employee::select('mobile_number','user_type','id','name','email','password','profile_image','mobile_number','pharma_logistic_id','api_token','fcm_token','is_active','is_available')->where(['mobile_number' => $mobile_number,"user_type"=>"seller"])->first();
+	        $login = new_sellers::select('mobile_number','user_type','id','name','email','password','profile_image','mobile_number','pharma_logistic_id','api_token','fcm_token','is_active','is_available')->where(['mobile_number' => $mobile_number,"user_type"=>"seller"])->first();
 	        
 			if(empty($login)) 
 			{
@@ -94,12 +95,12 @@ class LoginController extends Controller
 			}else{
 				$response['data']->pharmacy='';	
 			}							
-			$data = new_pharma_logistic_employee::find($login->id);
+			$data = new_sellers::find($login->id);
 			$data->api_token = $login->createToken('MyApp')-> accessToken;
 			$data->save();
 			$response['data']->api_token =  $data->api_token;
 
-			$token = new_pharma_logistic_employee::find($login->id);
+			$token = new_sellers::find($login->id);
 			$token->fcm_token = $fcm_token;
 			$token->save();
 
@@ -138,7 +139,7 @@ class LoginController extends Controller
 	            throw new Exception($validator->errors()->first());
 	        }
 
-			$login = new_pharma_logistic_employee::select('id','mobile_number','name','is_available','is_active','otp','otp_time')->where('mobile_number', $mobile_number)->first();		
+			$login = new_sellers::select('id','mobile_number','name','is_available','is_active','otp','otp_time')->where('mobile_number', $mobile_number)->first();		
 	        
 			if(empty($login)) 
 			{
@@ -208,7 +209,7 @@ class LoginController extends Controller
 	            throw new Exception($validator->errors()->first());
 	        }
 					
-			$login = new_pharma_logistic_employee::select('mobile_number','otp','otp_time','is_active','is_available')->where('mobile_number',$mobile_number)->first();
+			$login = new_sellers::select('mobile_number','otp','otp_time','is_active','is_available')->where('mobile_number',$mobile_number)->first();
 	        
 			if(empty($login)) 
 			{
@@ -280,7 +281,7 @@ class LoginController extends Controller
 	            throw new Exception($validator->errors()->first());
 	        }
 					
-			$login = new_pharma_logistic_employee::select('mobile_number','password','otp','id')->where('mobile_number', $mobile_number)->first();
+			$login = new_sellers::select('mobile_number','password','otp','id')->where('mobile_number', $mobile_number)->first();
 	        
 			if(empty($login)) 
 			{
@@ -291,7 +292,7 @@ class LoginController extends Controller
 			{
 				throw new Exception("Old password and new password cannot be same");
 			}
-			$user = new_pharma_logistic_employee::find($login->id);
+			$user = new_sellers::find($login->id);
 			$user->password = Hash::make($password); 
 			$user->otp = '';
 			$user->save();
@@ -349,9 +350,9 @@ class LoginController extends Controller
 	            throw new Exception($validator->errors()->first());
 	        }
 			$token =  $request->bearerToken();
-			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			$user = new_sellers::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
 			if(!empty($user)){
-				$login = new_pharma_logistic_employee::select('id','password','mobile_number')->where('id', $user_id)->first();
+				$login = new_sellers::select('id','password','mobile_number')->where('id', $user_id)->first();
 		        
 				if(empty($login)) 
 				{
@@ -366,7 +367,7 @@ class LoginController extends Controller
 					throw new Exception("Old password and new password cannot be same");
 				}
 					
-				$user = new_pharma_logistic_employee::find($login->id);
+				$user = new_sellers::find($login->id);
 				$user->password = Hash::make($password); 
 				$user->otp = '';
 				$user->save();
@@ -417,9 +418,9 @@ class LoginController extends Controller
 		$response['data'] = (object)array();
 
 		$token =  $request->bearerToken();
-		$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+		$user = new_sellers::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
 		if(!empty($user)){
-			$user = new_pharma_logistic_employee::find($user_id);
+			$user = new_sellers::find($user_id);
 			$user->api_token = '';
 			$user->fcm_token = '';
 			$user->save();
