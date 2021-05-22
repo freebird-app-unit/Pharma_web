@@ -448,7 +448,7 @@ class LoginController extends Controller
 		];
 		
 		$validator = Validator::make($params, [
-            'mobile_number' => 'required|min:10|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,mobile_number',
+            'mobile_number' => 'required|min:10|unique:new_users,mobile_number',
         ]);
  
         if ($validator->fails()) {
