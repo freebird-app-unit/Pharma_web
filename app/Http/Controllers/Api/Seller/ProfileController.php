@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\SellerModel\User;
 use App\SellerModel\new_pharma_logistic_employee;
 use App\SellerModel\new_pharmacies;
+use App\new_sellers;
 use Storage;
 use Image;
 use File;
@@ -42,9 +43,9 @@ class ProfileController extends Controller
 	            throw new Exception($validator->errors()->first());
 	        }
 			$token =  $request->bearerToken();
-			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			$user = new_sellers::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
 			if(!empty($user)){
-				$login = new_pharma_logistic_employee::select('id','password','mobile_number','profile_image','name','email','pharma_logistic_id','api_token','fcm_token')->where('id', $user_id)->first();
+				$login = new_sellers::select('id','password','mobile_number','profile_image','name','email','pharma_logistic_id','api_token','fcm_token')->where('id', $user_id)->first();
 		        
 				if(empty($login)) 
 				{
@@ -105,9 +106,15 @@ class ProfileController extends Controller
 		];
 		
 		$validator = Validator::make($params, [
-            'user_id' => 'required',
+            'email' =>  ['required',Rule::unique('new_sellers','email')->ignore($user_id)],
+			
+			'mobile_number' =>  ['required',Rule::unique('new_sellers','mobile_number')->ignore($user_id)],
         ]);
  
+
+		if ($validator->fails()) {
+           return $this->send_error($validator->errors()->first());  
+        }
 		$response['status'] = 200;
 		$response['message'] = '';
 		$response['data'] = (object)array();
@@ -117,9 +124,9 @@ class ProfileController extends Controller
 	            throw new Exception($validator->errors()->first());
 	        }
 			$token =  $request->bearerToken();
-			$user = new_pharma_logistic_employee::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
+			$user = new_sellers::select('id','api_token')->where(['id'=>$user_id,'api_token'=>$token])->first();
 			if(!empty($user)){
-				$login = new_pharma_logistic_employee::select('id','mobile_number','profile_image','name','email')->where('id', $user_id)->first();
+				$login = new_sellers::select('id','mobile_number','profile_image','name','email')->where('id', $user_id)->first();
 		        
 				if(empty($login)) 
 				{
@@ -143,7 +150,7 @@ class ProfileController extends Controller
 
 					Storage::disk('public')->put('uploads/new_seller/'.$profile_image, $img, 'public');
 				}
-				$user = new_pharma_logistic_employee::find($user_id);
+				$user = new_sellers::find($user_id);
 				$user->name = $name;
 				$user->email = $email; 
 				$user->mobile_number = $mobile_number;
