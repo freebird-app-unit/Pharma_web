@@ -218,22 +218,21 @@ class OrdersController extends Controller
 	public function accept(Request $request)
     {
 		$user_id = Auth::user()->user_id;
-		$order = new_orders::find($id);
+		$order = new_orders::find($request->accept_id);
 		$customer = new_users::find($order->customer_id);
 		$order->process_user_type = 'pharmacy';
 		$order->process_user_id = $user_id;
 		$order->accept_datetime = date('Y-m-d H:i:s');
 
-			$orderAssign = new Orderassign();
-			$orderAssign->order_id = $id;
-			$orderAssign->logistic_id = $order->logistic_user_id;
-			$orderAssign->order_status = 'new';
-			$orderAssign->updated_at = date('Y-m-d H:i:s');
-			$orderAssign->assign_date = date('Y-m-d H:i:s');
-			$orderAssign->save();
+		$orderAssign = new Orderassign();
+		$orderAssign->order_id = $id;
+		$orderAssign->order_status = 'new';
+		$orderAssign->updated_at = date('Y-m-d H:i:s');
+		$orderAssign->assign_date = date('Y-m-d H:i:s');
+		$orderAssign->save();
 
-			$order->assign_datetime = date('Y-m-d H:i:s');
-			$order->order_status = 'accept';
+		$order->assign_datetime = date('Y-m-d H:i:s');
+		$order->order_status = 'accept';
 
 		$order->save();
 		$ids = array();
