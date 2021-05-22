@@ -173,9 +173,11 @@ class OrdersController extends Controller
 				}else{
 					$html.='<td>';
 					if($homepage!=''){
-						$html.='<a class="btn btn-success waves-effect waves-light" href="'.url('/orders/accept/'.$order->id.'?home').'" title="Accept order">Accept</a>';
+						/*$html.='<a class="btn btn-success waves-effect waves-light" href="'.url('/orders/accept/'.$order->id.'?home').'" title="Accept order">Accept</a>';*/
+						$html.='<a onclick="accept_order('.$order->id.')" class="btn btn-success waves-effect waves-light" href="javascript:;" title="Accept order" data-toggle="modal" data-target="#accept_modal">Accept</a>';
 					}else{
-						$html.='<a class="btn btn-success waves-effect waves-light" href="'.url('/orders/accept/'.$order->id).'" title="Accept order">Accept</a>';
+						/*$html.='<a class="btn btn-success waves-effect waves-light" href="'.url('/orders/accept/'.$order->id).'" title="Accept order">Accept</a>';*/
+						$html.='<a onclick="accept_order('.$order->id.')" class="btn btn-success waves-effect waves-light" href="javascript:;" title="Accept order" data-toggle="modal" data-target="#accept_modal">Accept</a>';
 					}
 					$html.='<a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
 					$html.='</td>';
@@ -213,7 +215,7 @@ class OrdersController extends Controller
 		echo $html."##".$pagination."##".$total_summary;
 	}
 
-	public function accept($id)
+	public function accept(Request $request)
     {
 		$user_id = Auth::user()->user_id;
 		$order = new_orders::find($id);
@@ -222,7 +224,6 @@ class OrdersController extends Controller
 		$order->process_user_id = $user_id;
 		$order->accept_datetime = date('Y-m-d H:i:s');
 
-		if((isset($order->external_delivery_initiatedby)) && ($order->external_delivery_initiatedby !== 0) && ($order->logistic_user_id !== null) && ($order->logistic_user_id !== 0)){
 			$orderAssign = new Orderassign();
 			$orderAssign->order_id = $id;
 			$orderAssign->logistic_id = $order->logistic_user_id;
@@ -232,10 +233,7 @@ class OrdersController extends Controller
 			$orderAssign->save();
 
 			$order->assign_datetime = date('Y-m-d H:i:s');
-			$order->order_status = 'assign';
-		} else {
 			$order->order_status = 'accept';
-		}
 
 		$order->save();
 		$ids = array();
@@ -244,30 +242,6 @@ class OrdersController extends Controller
 		$receiver_id[] = $customer->id;
 		if (count($ids) > 0) {					
 			Helper::sendNotificationUser($ids, 'Order Number '.$order->order_number, 'Order Accepted', $user_id, 'pharmacy', $customer->id, 'user', $customer->fcm_token);
-		}
-		if(isset($order->external_delivery_initiatedby) && ($order->external_delivery_initiatedby !== 0) && ($order->external_delivery_initiatedby !== null)){
-			$assignOrderEmit = (object)[];
-			$assignOrderEmit->pharmacy_id = $order->pharmacy_id;
-			$assignOrderEmit->logistic_id = $order->logistic_user_id;
-
-			$image_url = url('/').'/uploads/placeholder.png';
-
-			// if (!empty($order->prescription_image)) {
-			// 	if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-			// 		$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-			// 	}
-			// }
-
-			$assignOrderEmit->prescription_image = '<a href="'.url('/orders/prescription/'.$id).'"><img src="'.$image_url.'" width="50"/></a><span>'.$id.'</span>';
-			$assignOrderEmit->id = '<a href="'.url('/logistic/upcoming/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a>';
-			$assignOrderEmit->order_number = $order->order_number;
-			$assignOrderEmit->delivery_type = delivery_charges::where('id', $order->delivery_charges_id)->value('delivery_type');
-			$assignOrderEmit->delivery_address = new_address::where('id', $order->address_id)->value('address');
-			$assignOrderEmit->pickup_address = new_pharmacies::where('id',$order->pharmacy_id)->value('address');
-			$assignOrderEmit->order_amount = $order->order_amount;
-			$assignOrderEmit->action = '<a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" href="javascript:;" data-toggle="modal" data-target="#assign_modal">Assign</a> <a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" href="javascript:;" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
-
-			event(new AssignOrderLogistic($assignOrderEmit));
 		}
 
 		if(isset($_REQUEST['home'])){

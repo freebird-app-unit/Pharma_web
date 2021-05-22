@@ -18,6 +18,9 @@ function getorderslist(pageno){
 	});
 }
 
+function accept_order(id){
+	$('#accept_id').val(id);
+}
 function reject_order(id){
 	$('#reject_id').val(id);
 }

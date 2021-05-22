@@ -151,7 +151,7 @@ Route::post('/deliveryboy/delete_image', 'DeliveryboyController@delete_image');
 //Order
 Route::get('/orders', array('as' => 'orders.index', 'uses' => 'OrdersController@index'));
 Route::post('/getorderslist', array('as' => 'orders.getlist', 'uses' => 'OrdersController@getlist'));
-Route::get('/orders/accept/{id}', array('as' => 'orders.accept', 'uses' => 'OrdersController@accept'));
+Route::post('/orders/accept', array('as' => 'orders.accept', 'uses' => 'OrdersController@accept'));
 Route::post('/orders/reject', array('as' => 'orders.reject', 'uses' => 'OrdersController@reject'));
 Route::get('/orders/order_details/{id}', array('as' => 'orders.order_details', 'uses' => 'OrdersController@order_details'));
 Route::get('/orders/prescription/{id}', array('as' => 'orders.prescription', 'uses' => 'OrdersController@prescription'));
