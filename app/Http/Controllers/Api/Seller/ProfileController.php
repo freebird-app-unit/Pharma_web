@@ -13,6 +13,7 @@ use Image;
 use File;
 use Validator;
 use Exception;
+
 //use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class ProfileController extends Controller
