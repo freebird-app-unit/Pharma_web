@@ -65,38 +65,7 @@
 	</div>
 </div>
 
-<div id="assign_modal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content">
-			<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="mySmallModalLabel">Assign to</h4>
-			</div>
-			<div class="modal-body">
-				<form method="post" action="{{ route('logisticorders.assign') }}">
-				<input type="hidden" name="_token" value="{{ csrf_token() }}">
-				<input type="hidden" id="assign_id" name="assign_id" value=""/>
-				<div class="form-group" >
-					<label>Assign</label><br>
-				</div>
-				<div  class="form-group">
-					<select id="logistic_id" name="logistic_id" class="form-control" required>
-						<option value="">Select Logistic</option>
-						<?php 
-							foreach($logistic_list as $raw){
-								echo '<option value="'.$raw->id.'">'.$raw->name.'</option>';
-							}
-						?>
-					</select>
-				</div>
-				<br>
-				<a href="javascript:;" class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cancel</a>
-				<input type="submit" name="submit" value="Send" class="btn btn-success"/>
-				</form>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+
 
 <div id="reject_modal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
 	<div class="modal-dialog modal-sm">

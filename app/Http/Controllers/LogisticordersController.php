@@ -21,7 +21,7 @@ class LogisticordersController extends Controller
 		$data['page_title'] = 'Logistic Orders';
 		$data['page_condition'] = 'page_logisticorders';
 		$data['site_title'] = 'Logistic Orders | ' . $this->data['site_title'];
-		$data['logistic_list'] = new_logistics::where('is_active','1')->get();
+		//$data['logistic_list'] = new_logistics::where('is_active','1')->get();
 		$data['reject_reason'] = Rejectreason::where('type', 'pharmacy')->get();
 		return view('logisticorders.index', $data);
     }
@@ -92,7 +92,8 @@ class LogisticordersController extends Controller
 					<td>'.$order->myaddress.'</td>
 					<td>'.$process_user_name.'</td>
 					<td>'.$accept_date.'</td>';
-					$html.='<td><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#assign_modal">Assign</a>';
+					/*$html.='<td><a onclick="assign_order('.$order->id.')" class="btn btn-warning btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#assign_modal">Assign</a>';*/
+					$html.='<td><a href="'.url('/logisticorders/assign/'.$order->id).'" class="btn btn-warning btn-custom waves-effect waves-light" title="Accept order">Assign</a>';
 					$html.='<a onclick="reject_order('.$order->id.')" class="btn btn-danger btn-custom waves-effect waves-light" title="Reject order" data-toggle="modal" data-target="#reject_modal">Reject</a>';
 					$html.='</td></tr>';
 			}
@@ -123,8 +124,9 @@ class LogisticordersController extends Controller
 		
 		echo $html."##".$pagination."##".$total_summary;
 	}
-	public function assign(Request $request)
+	public function assign($id)
     {
+    	dd($id);
     	$assign = new_orders::where('id',$request->assign_id)->first();
     	$assign->logistic_user_id=$request->logistic_id;
     	$assign->order_status='assign';
