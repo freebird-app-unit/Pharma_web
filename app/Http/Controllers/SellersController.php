@@ -15,6 +15,7 @@ use Storage;
 use Image;
 use File;
 use App\new_order_history;
+use App\new_sellers;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 
@@ -56,9 +57,9 @@ class SellersController extends Controller
 		$search_pharmacy=(isset($_POST['search_pharmacy']) && $_POST['search_pharmacy']!='')?$_POST['search_pharmacy']:'';
 		//get list
 		if(Auth::user()->user_type=='admin'){
-			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where('user_type','seller')->where('is_delete','1');
+			$user_detail = new_sellers::select('new_sellers.*')->where('user_type','seller')->where('is_delete','1');
 		}else{
-			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=>'seller','is_active'=>'1','is_delete'=>'1'])->where('pharma_logistic_id',$user_id);
+			$user_detail = new_sellers::select('new_sellers.*')->where(['user_type'=>'seller','is_active'=>'1','is_delete'=>'1'])->where('pharma_logistic_id',$user_id);
 		}
 
 		if($searchtxt!=''){
@@ -74,7 +75,7 @@ class SellersController extends Controller
 		$total = $user_detail->count();
 		$total_page = ceil($total/$per_page);
 
-		$user_detail = $user_detail->orderby('new_pharma_logistic_employee.created_at','DESC');
+		$user_detail = $user_detail->orderby('new_sellers.created_at','DESC');
 		$user_detail = $user_detail->paginate($per_page,'','',$page);
 		
 		//get list
@@ -164,8 +165,8 @@ class SellersController extends Controller
 		$validate = $request->validate([
 			'user_type' => 'required',
 			'name' => 'required',
-			'email' => 'required|email|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,email|max:255',
-			'mobile_number' => 'required|digits:10|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,mobile_number',
+			'email' => 'required|email|unique:new_sellers|max:255',
+			'mobile_number' => 'required|digits:10|unique:new_sellers',
 			'address' => 'required',
 			'profile_image' => 'image|max:1024',
 			'password' => 'required|min:4|max:255',
@@ -177,10 +178,10 @@ class SellersController extends Controller
 		]);
 		
 		if($validate){
-			$user = new new_pharma_logistic_employee();
+			$user = new new_sellers();
 			
-			if ($request->hasFile('image')) {
-				$file1 = $request->file('image');
+			if ($request->hasFile('profile_image')) {
+				$file1 = $request->file('profile_image');
 				$fileName = time().'.'.$file1->getClientOriginalExtension();  
 				$destinationPath = 'storage/app/public/uploads/new_seller';
 				$file1->move($destinationPath, $fileName);
@@ -214,7 +215,7 @@ class SellersController extends Controller
 			return redirect(route('home'));
 		}*/
 
-		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
+		$user_detail = new_sellers::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
 		}
@@ -231,9 +232,9 @@ class SellersController extends Controller
 		$validate = $request->validate([
 			'user_type' => 'required',
 			'name' => 'required',
-			'email' =>  ['required',Rule::unique('new_pharma_logistic_employee','email')->ignore($id),Rule::unique('new_users','email')->ignore($id),Rule::unique('new_pharmacies','email')->ignore($id),Rule::unique('new_logistics','email')->ignore($id)],
+			'email' =>  ['required',Rule::unique('new_sellers','email')->ignore($id)],
 			
-			'mobile_number' =>  ['required',Rule::unique('new_pharma_logistic_employee','mobile_number')->ignore($id),Rule::unique('new_users','mobile_number')->ignore($id),Rule::unique('new_pharmacies','mobile_number')->ignore($id),Rule::unique('new_logistics','mobile_number')->ignore($id)],
+			'mobile_number' =>  ['required',Rule::unique('new_sellers','mobile_number')->ignore($id)],
 			'address' => 'required',
 			'profile_image' => 'image|max:1024',
 			'address' => 'required',
@@ -242,7 +243,7 @@ class SellersController extends Controller
 			'pincode' => 'required',
 		]);
 		if($validate){
-			$user = new_pharma_logistic_employee::find($id);
+			$user = new_sellers::find($id);
 			if ($request->hasFile('profile_image')) {
 				$file1 = $request->file('profile_image');
 				$fileName = time().'.'.$file1->getClientOriginalExtension();  
@@ -276,7 +277,7 @@ class SellersController extends Controller
 			return redirect(route('home'));
 		}*/
 
-		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
+		$user_detail = new_sellers::where('id',$id)->first();
 		$user_detail->pharmacy_name = '';
 
 		$pharmacy_detail = new_pharmacies::select('name')->where('id',$user_detail->pharma_logistic_id)->first();
@@ -297,11 +298,11 @@ class SellersController extends Controller
 		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
 		}*/
-		$user_detail = new_pharma_logistic_employee::where('id',$id)->first();
+		$user_detail = new_sellers::where('id',$id)->first();
 		if(!$user_detail){
 			return abort(404);
 		}
-		$user = new_pharma_logistic_employee::find($id);
+		$user = new_sellers::find($id);
 		$user->is_active=0;
 		$user->is_delete='0';
 		$user->mobile_number='';
@@ -314,7 +315,7 @@ class SellersController extends Controller
 		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
 		}*/
-		$status_change = new_pharma_logistic_employee::where('id',$id)->first();
+		$status_change = new_sellers::where('id',$id)->first();
 		$status_change->is_active=1;
 		$status_change->save();
         return redirect(route('seller.index'))->with('success_message', trans('Active Successfully'));
@@ -324,7 +325,7 @@ class SellersController extends Controller
 		/*if(Auth::user()->user_type!='pharmacy' && Auth::user()->user_type!='admin'){
 			return redirect(route('home'));
 		}*/
-		$status_change = new_pharma_logistic_employee::where('id',$id)->first();
+		$status_change = new_sellers::where('id',$id)->first();
 		$status_change->is_active=0;
 		$status_change->save();
         return redirect(route('seller.index'))->with('success_message', trans('InActive Successfully'));
@@ -332,7 +333,7 @@ class SellersController extends Controller
 	public function delete_image(Request $request)
     {
 		$id = $request->edit_id;
-		$user = new_pharma_logistic_employee::find($id);
+		$user = new_sellers::find($id);
 		if (!empty($user->profile_image)) {
 
             $filename = 'storage/app/public/uploads/new_seller' . $user->profile_image;
