@@ -48,21 +48,21 @@ $(document).ready(function($) {
 	pharmacy_id = pharmacy_id;
 
 	var op1 = '<option value="">Select delivery boy</option>';
-	/*var op2 = '<option value="">Select Logistic Provider</option>';*/
+	//var op2 = '<option value="">Select Logistic Provider</option>';
 
 	deliveryboy_Arr.forEach(e => {
 		op1 += '<option value="'+e.id+'">'+e.name+'</option>';
 	});
 
-	/*logistic_Arr.forEach(e => {
-		op2 += '<option value="'+e.id+'">'+e.name+'</option>';
-	});*/
+	//logistic_Arr.forEach(e => {
+		//op2 += '<option value="'+e.id+'">'+e.name+'</option>';
+	//});
 
 	$('input[type="radio"]').change(function(){
 		var i = $(this);
 
 		if(i.val() == 'logistic'){
-			$('#delivery_boy').hide();
+			$('#delivery_boy').hide().prop('required',false);
 			$('#deliveryChargesBlock').show();
 
 			/*$("#delivery_boy").change(function() {
@@ -81,9 +81,9 @@ $(document).ready(function($) {
 				.end()
 				.append(op);
 				$('#delivery_charges_id').prop('required',true);
-			});*/
+			});
 
-			/*$('#delivery_boy')
+			$('#delivery_boy')
 			.find('option')
 			.remove()
 			.end()
