@@ -1356,6 +1356,11 @@
 			window.location.href = base_url+"/searchorders?search_text="+search_text;
 			return false;
 		}
+		  var timeout = setTimeout("location.reload(true);",120000);
+		  function resetTimeout() {
+		    clearTimeout(timeout);
+		    timeout = setTimeout("location.reload(true);",120000);
+		  }
 	</script>
 </body>
 </html>
