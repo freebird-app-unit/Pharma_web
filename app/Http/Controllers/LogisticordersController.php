@@ -130,7 +130,7 @@ class LogisticordersController extends Controller
     	$order = new_orders::where('id',$id)->first();
     	$delivery_address_check = new_address::where('id',$order->address_id)->first();
     	if($delivery_address_check->city == 'Rajkot'){
-    		
+    		dd(1);
     	}
     	$assign->logistic_user_id=$request->logistic_id;
     	$assign->order_status='assign';
