@@ -180,8 +180,8 @@ class DeliveryboyController extends Controller
 		$validate = $request->validate([
 			'user_type' => 'required',
 			'name' => 'required',
-			'email' => 'required|email|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,email|max:255',
-			'mobile_number' => 'required|digits:10|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,mobile_number',
+			'email' => 'required|email|unique:new_pharma_logistic_employee,email|max:255',
+			'mobile_number' => 'required|digits:10|unique:new_pharma_logistic_employee,mobile_number',
 			'address' => 'required',
 			'profile_image' => 'image|max:1024',
 			'password' => 'required|min:4|max:255',
@@ -250,11 +250,11 @@ class DeliveryboyController extends Controller
 			'name' => 'required',
 			'email' =>  [
     'required',
-    Rule::unique('new_pharma_logistic_employee','email')->ignore($id),Rule::unique('new_users','email')->ignore($id),Rule::unique('new_pharmacies','email')->ignore($id),Rule::unique('new_logistics','email')->ignore($id)
+    Rule::unique('new_pharma_logistic_employee','email')->ignore($id)
 ],
 			'mobile_number' =>  [
     'required',
-    Rule::unique('new_pharma_logistic_employee','mobile_number')->ignore($id),Rule::unique('new_users','mobile_number')->ignore($id),Rule::unique('new_pharmacies','mobile_number')->ignore($id),Rule::unique('new_logistics','mobile_number')->ignore($id)
+    Rule::unique('new_pharma_logistic_employee','mobile_number')->ignore($id)
 ],
 			'address' => 'required',
 			'profile_image' => 'image|max:1024',
