@@ -1356,10 +1356,10 @@
 			window.location.href = base_url+"/searchorders?search_text="+search_text;
 			return false;
 		}
-		  var timeout = setTimeout("location.reload(true);",120000);
+		  var timeout = setTimeout("location.reload(true);",900000);
 		  function resetTimeout() {
 		    clearTimeout(timeout);
-		    timeout = setTimeout("location.reload(true);",120000);
+		    timeout = setTimeout("location.reload(true);",900000);
 		  }
 	</script>
 </body>

@@ -81,10 +81,10 @@
 		});
 		$(".knob").knob();
 	});
-	var timeout = setTimeout("location.reload(true);",120000);
+	var timeout = setTimeout("location.reload(true);",900000);
 		  function resetTimeout() {
 		    clearTimeout(timeout);
-		    timeout = setTimeout("location.reload(true);",120000);
+		    timeout = setTimeout("location.reload(true);",900000);
 		  }
 	</script>
 </body>
