@@ -213,8 +213,8 @@ class UsersController extends Controller
 		$validation_arr = array(
 			'user_type' => 'required',
 			'name' => 'required',
-			'email' => 'required|email|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,email|max:255',
-			'mobile_number' => 'required|digits:10|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,mobile_number',
+			'email' => 'required|email|unique:new_pharmacies|max:255',
+			'mobile_number' => 'required|digits:10|unique:new_pharmacies,mobile_number',
 			'profile_image' => 'image|max:1024',
 			'password' => 'required|min:8|max:255',
 		);
@@ -384,13 +384,13 @@ class UsersController extends Controller
 
 		switch ($request->user_type) {
 			case 'pharmacy':
-				$validation_arr['email'] = 'required|email|unique:new_users,email|unique:new_pharma_logistic_employee,email|unique:new_logistics,email|max:255|unique:new_pharmacies,email,'.$id;
-				$validation_arr['mobile_number'] = 'required|digits:10|unique:new_users,mobile_number|unique:new_pharma_logistic_employee,mobile_number|unique:new_logistics,mobile_number|max:255|unique:new_pharmacies,mobile_number,'.$id;
+				$validation_arr['email'] = 'required|email|max:255|unique:new_pharmacies,email,'.$id;
+				$validation_arr['mobile_number'] = 'required|digits:10|max:255|unique:new_pharmacies,mobile_number,'.$id;
 				break;
 
 			case 'customer':
-				$validation_arr['email'] = 'required|email|unique:new_pharmacies,email|unique:new_pharma_logistic_employee,email|unique:new_logistics,email|max:255|unique:new_users,email,'.$id;
-				$validation_arr['mobile_number'] = 'required|digits:10|unique:new_pharmacies,mobile_number|unique:new_pharma_logistic_employee,mobile_number|unique:new_logistics,mobile_number|max:255|unique:new_users,mobile_number,'.$id;
+				$validation_arr['email'] = 'required|email|unique:new_pharmacies,email,'.$id;
+				$validation_arr['mobile_number'] = 'required|digits:10|unique:new_pharmacies,mobile_number,'.$id;
 				break;
 
 			case 'seller':
