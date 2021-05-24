@@ -213,8 +213,8 @@ class UsersController extends Controller
 		$validation_arr = array(
 			'user_type' => 'required',
 			'name' => 'required',
-			'email' => 'required|email|unique:new_pharmacies|max:255',
-			'mobile_number' => 'required|digits:10|unique:new_pharmacies,mobile_number',
+			'email' => 'required|email|unique:new_users|max:255',
+			'mobile_number' => 'required|digits:10|unique:new_users,mobile_number',
 			'profile_image' => 'image|max:1024',
 			'password' => 'required|min:8|max:255',
 		);
@@ -389,8 +389,8 @@ class UsersController extends Controller
 				break;
 
 			case 'customer':
-				$validation_arr['email'] = 'required|email|unique:new_pharmacies,email,'.$id;
-				$validation_arr['mobile_number'] = 'required|digits:10|unique:new_pharmacies,mobile_number,'.$id;
+				$validation_arr['email'] = 'required|email|unique:new_users,email,'.$id;
+				$validation_arr['mobile_number'] = 'required|digits:10|unique:new_users,mobile_number,'.$id;
 				break;
 
 			case 'seller':
