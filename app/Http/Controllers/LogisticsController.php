@@ -156,8 +156,8 @@ class LogisticsController extends Controller
 		$validate = $request->validate([
 			'name' => 'required',
 			'owner_name' => 'required',
-			'email' => 'required|email|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,email|max:255',
-			'mobile_number' => 'required|digits:10|unique:new_users|unique:new_pharma_logistic_employee|unique:new_pharmacies|unique:new_logistics,mobile_number',
+			'email' => 'required|email|unique:new_logistics,email|max:255',
+			'mobile_number' => 'required|digits:10|unique:new_logistics,mobile_number',
 			'profile_image' => 'image|max:1024',
 			'password' => 'required|min:4|max:255',
 			'address'  => 'required',
@@ -278,11 +278,11 @@ class LogisticsController extends Controller
 	public function update(Request $request, $id){
 		$validate = $request->validate([
 			'name' => 'required|max:255',
-			'email' =>  ['required',Rule::unique('new_pharma_logistic_employee','email')->ignore($id),Rule::unique('new_users','email')->ignore($id),Rule::unique('new_pharmacies','email')->ignore($id),Rule::unique('new_logistics','email')->ignore($id)],
+			'email' =>  ['required',Rule::unique('new_logistics','email')->ignore($id)],
 			//'email' => 'required|email|unique:new_pharmacies,email|unique:new_pharma_logistic_employee,email|unique:new_logistics,email|max:255|unique:new_users,email,'.$id,
 			'address'  => 'required',
 			'owner_name' => 'required|max:255',
-			'mobile_number' =>  ['required',Rule::unique('new_pharma_logistic_employee','mobile_number')->ignore($id),Rule::unique('new_users','mobile_number')->ignore($id),Rule::unique('new_pharmacies','mobile_number')->ignore($id),Rule::unique('new_logistics','mobile_number')->ignore($id)],
+			'mobile_number' =>  ['required',Rule::unique('new_logistics','mobile_number')->ignore($id)],
 			//'mobile_number' => 'required',
 			'profile_image' => 'image|max:1024',
 			'address'  => 'required',
