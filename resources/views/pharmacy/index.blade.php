@@ -56,7 +56,8 @@
 								<th width="10%" data-priority="6">No of seller</th>
 								<th width="10%" data-priority="7">Selected Package</th>
 								<th width="10%" data-priority="8">ReferralCode</th>
-								<th width="25%" data-priority="9">Action</th>
+								<th width="10%" data-priority="9">Remain Standard Delivery</th>
+								<th width="25%" data-priority="10">Action</th>
 							</tr>
 						</thead>
 						<tbody>
