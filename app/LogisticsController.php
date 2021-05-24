@@ -408,7 +408,7 @@ class LogisticsController extends Controller
 		$user->email='';
 		$user->save();
 		
-		$logistic = new_logistics::where('id',$id)->first();
+		$logistic = new_logistic::where('id',$id)->first();
 		$logistic->is_delete=0;
 		$logistic->is_active=0;
 		$logistic->mobile_number='';
