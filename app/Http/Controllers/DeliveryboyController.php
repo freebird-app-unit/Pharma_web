@@ -339,7 +339,7 @@ class DeliveryboyController extends Controller
 		}
 		$user = new_pharma_logistic_employee::find($id);
 		$user->is_active=0;
-		$user->is_delete='1';
+		$user->is_delete='0';
 		$user->mobile_number='';
 		$user->email='';
 		$user->save();
