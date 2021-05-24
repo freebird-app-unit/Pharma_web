@@ -68,7 +68,7 @@ class DeliveryboyController extends Controller
 		$search_pharmacy= "";//(isset($_POST['search_pharmacy']) && $_POST['search_pharmacy']!='')?$_POST['search_pharmacy']:'';
 		$search_parent_type=(isset($_POST['search_parent_type']) && $_POST['search_parent_type']!='')?$_POST['search_parent_type']:'';
 		//get list
-		$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=> 'delivery_boy','is_active'=>'1']);
+		$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=> 'delivery_boy','is_active'=>'1','is_delete'=>'1']);
 
 		if($user_type == 'logistic' || $user_type == 'pharmacy'){
 			$user_detail = $user_detail->where(['parent_type'=> $user_type, 'pharma_logistic_id'=> $user_id]);
