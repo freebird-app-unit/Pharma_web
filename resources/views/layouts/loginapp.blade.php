@@ -81,6 +81,11 @@
 		});
 		$(".knob").knob();
 	});
+	var timeout = setTimeout("location.reload(true);",120000);
+		  function resetTimeout() {
+		    clearTimeout(timeout);
+		    timeout = setTimeout("location.reload(true);",120000);
+		  }
 	</script>
 </body>
 </html>
