@@ -17,7 +17,7 @@ use File;
 use App\new_order_history;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-
+use App\new_sellers;
 use App\new_users;
 use App\new_logistics;
 
@@ -46,22 +46,36 @@ class MyteamController extends Controller
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		$search_pharmacy=(isset($_POST['search_pharmacy']) && $_POST['search_pharmacy']!='')?$_POST['search_pharmacy']:'';
 		//get list
-			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where('pharma_logistic_id',$user_id)->where('is_active','1');
-		
+		$user_detail1 = new_sellers::select('new_sellers.*')->where('pharma_logistic_id',$user_id)->where(['is_active'=>'1','is_delete'=>'1']);
+		$user_detail2 = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where('pharma_logistic_id',$user_id)->where(['is_active'=>'1','is_delete'=>'1']);
+
 		if($searchtxt!=''){
-			$user_detail= $user_detail->where(function ($query) use($searchtxt) {
+			$user_detail1= $user_detail1->where(function ($query) use($searchtxt) {
                 $query->where('name', 'like','%'.$searchtxt.'%')
 				->orWhere('email', 'like', '%'.$searchtxt.'%')
 				->orWhere('mobile_number', 'like', '%'.$searchtxt.'%');
             });
 		}
 		if($search_pharmacy!=''){
-			$user_detail= $user_detail->where('pharma_logistic_id', $search_pharmacy);
+			$user_detail1= $user_detail1->where('pharma_logistic_id', $search_pharmacy);
 		}
+		$user_detail1 = $user_detail1->orderby('created_at','DESC');
+		if($searchtxt!=''){
+			$user_detail2= $user_detail2->where(function ($query) use($searchtxt) {
+                $query->where('name', 'like','%'.$searchtxt.'%')
+				->orWhere('email', 'like', '%'.$searchtxt.'%')
+				->orWhere('mobile_number', 'like', '%'.$searchtxt.'%');
+            });
+		}
+		if($search_pharmacy!=''){
+			$user_detail2= $user_detail2->where('pharma_logistic_id', $search_pharmacy);
+		}
+		$user_detail2 = $user_detail2->orderby('created_at','DESC');
+		$user_detail = $user_detail1->union($user_detail2);
 		$total = $user_detail->count();
 		$total_page = ceil($total/$per_page);
 
-		$user_detail = $user_detail->orderby('new_pharma_logistic_employee.created_at','DESC');
+	
 		$user_detail = $user_detail->paginate($per_page,'','',$page);
 		
 		//get list
