@@ -63,7 +63,8 @@ class OnboardingrequestController extends Controller
 			$new_pharmacies->email = $Onboardingrequest->email;
 			$new_pharmacies->mobile_number = $Onboardingrequest->phone;
 			$new_pharmacies->password = $Onboardingrequest->password;
-			$new_pharmacies->owner_name = $Onboardingrequest->first_name.' '.$Onboardingrequest->last_name;
+			$new_pharmacies->first_name = $Onboardingrequest->first_name;
+			$new_pharmacies->last_name = $Onboardingrequest->last_name;
 			$new_pharmacies->address = $Onboardingrequest->address;
 			$new_pharmacies->country = $Onboardingrequest->country;
 			$new_pharmacies->state = $Onboardingrequest->state;
@@ -71,12 +72,19 @@ class OnboardingrequestController extends Controller
 			$new_pharmacies->pincode = $Onboardingrequest->pincode;
 			$new_pharmacies->start_time = $Onboardingrequest->open_time;
 			$new_pharmacies->close_time = $Onboardingrequest->close_time;
-			$new_pharmacies->radius = $Onboardingrequest->delivery_range;
+			$new_pharmacies->lat = $Onboardingrequest->latitude;
+			$new_pharmacies->lon = $Onboardingrequest->longitude;
+			$new_pharmacies->remining_express_paid_deliveries = 50;	
+			$new_pharmacies->remining_standard_paid_deliveries = 50;	
+			$new_pharmacies->radius = ($Onboardingrequest->delivery_range)?$Onboardingrequest->delivery_range:0;
 			$new_pharmacies->referral_code = $Onboardingrequest->referral_code;
 			$new_pharmacies->pancard_image = $Onboardingrequest->pan_card;
+			$new_pharmacies->druglicense_image = $Onboardingrequest->drug_license;
+			$new_pharmacies->adharcard_image = $Onboardingrequest->adhar_card;
 			$new_pharmacies->profile_image = $Onboardingrequest->photo;
 			$new_pharmacies->created_at = date('Y-m-d H:i:s');
 			$new_pharmacies->save();
+			
 			
 			$user = new User;
 			$user->user_id = $new_pharmacies->id;
