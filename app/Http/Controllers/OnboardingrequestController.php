@@ -85,7 +85,25 @@ class OnboardingrequestController extends Controller
 			$new_pharmacies->created_at = date('Y-m-d H:i:s');
 			$new_pharmacies->save();
 			
-			
+			/*$file1 = $new_pharmacies->adharcard_image;
+			$filename1 = $file1->getClientOriginalName();
+			$destinationPath = 'storage/app/public/uploads/new_pharmacy/adharcard';
+			$file1->move($destinationPath, $filename1);
+
+			$file2 = $new_pharmacies->pancard_image;
+			$filename2 = $file2->getClientOriginalName();
+			$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
+			$file2->move($destinationPath, $filename2);
+
+			$file3 = $new_pharmacies->profile_image;
+			$filename3 = $file3->getClientOriginalName();
+			$destinationPath = 'storage/app/public/uploads/new_pharmacy';
+			$file3->move($destinationPath, $filename3);
+
+			$file4 = $new_pharmacies->druglicense_image;
+			$filename4 = $file4->getClientOriginalName();
+			$destinationPath = 'storage/app/public/uploads/new_pharmacy/druglicense';
+			$file4->move($destinationPath, $filename4);*/
 			$user = new User;
 			$user->user_id = $new_pharmacies->id;
 			$user->user_type = 'pharmacy';
