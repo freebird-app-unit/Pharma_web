@@ -48,6 +48,10 @@ class PasswordController
 				$user->otp = $otp;
 				$user->save();
 				
+				$message = "OTP to verify your account is " . $user->otp ." Team My Health Chart";
+				$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HLTCHT&mobileNos='".$request->email_mobile."'&message=" . urlencode($message);
+				$sms = file_get_contents($api);
+
 				$data['to'] = $user->email;
 				$data['otp'] = $otp;
 				$data['name'] = $user->name;
