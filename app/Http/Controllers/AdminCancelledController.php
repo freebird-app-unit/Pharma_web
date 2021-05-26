@@ -19,6 +19,7 @@ use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
 use App\new_order_history;
+use App\new_sellers;
 use App\new_users;
 use App\new_pharmacies;
 use App\new_delivery_charges;
@@ -91,7 +92,23 @@ class AdminCancelledController extends Controller
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
 				$created_at = ($order->created_at!='')?date('d-M-Y h:i a', strtotime($order->created_at)):'';
-				$process_user_name = $order->process_user_name.' '.$order->process_employee_name;
+				$cancelled_by = '';
+				if($order->rejectby_user == "seller"){
+					$name = new_sellers::where('id',$order->reject_user_id)->first();
+					if(!empty($name)){
+						$cancelled_by = $name->name;	
+					}
+				}elseif ($order->rejectby_user == "customer") {
+					$name = new_users::where('id',$order->reject_user_id)->first();
+					if(!empty($name)){
+						$cancelled_by = $name->name;	
+					}
+				}else{
+					$name = new_pharmacies::where('id',$order->reject_user_id)->first();
+					if(!empty($name)){
+						$cancelled_by = $name->name;	
+					}
+				}
 				if($order->is_external_delivery == 1){
 					$order_type = 'Paid';
 				}else{
@@ -102,9 +119,9 @@ class AdminCancelledController extends Controller
 					<td>'.$order->customer_name.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order->myaddress.'</td>
-					<td>'.$process_user_name.'</td>
+					<td>'.$cancelled_by.'</td>
 					<td>'.$order_type.'</td>
-					<td>'.$created_at.'</td></tr>';
+					<td>'.$order->cancel_datetime.'</td></tr>';
 			}
 			if($page==1){
 				$prev='disabled';
