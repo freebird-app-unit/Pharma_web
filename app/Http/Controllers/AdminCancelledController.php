@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
+use App\new_order_history;
 use App\new_users;
 use App\new_pharmacies;
 use App\new_delivery_charges;
@@ -57,33 +58,33 @@ class AdminCancelledController extends Controller
 		$pharmacy_id=(isset($_POST['pharmacy_id']) && $_POST['pharmacy_id']!='')?$_POST['pharmacy_id']:'';
 		$logistic_id=(isset($_POST['logistic_id']) && $_POST['logistic_id']!='')?$_POST['logistic_id']:'';
 		
-		$order_detail = new_orders::select('new_orders.*','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name')
-		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
-		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
-		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
-		->leftJoin('new_pharmacies AS process_user', 'process_user.id', '=', 'new_orders.process_user_id')
-		->leftJoin('new_pharma_logistic_employee AS process_employee', 'process_employee.id', '=', 'new_orders.process_user_id')
-		->where('new_orders.order_status','cancel');
+		$order_detail = new_order_history::select('new_order_history.*','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name')
+		->leftJoin('new_users', 'new_users.id', '=', 'new_order_history.customer_id')
+		->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
+		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
+		->leftJoin('new_pharmacies AS process_user', 'process_user.id', '=', 'new_order_history.process_user_id')
+		->leftJoin('new_pharma_logistic_employee AS process_employee', 'process_employee.id', '=', 'new_order_history.process_user_id')
+		->where('new_order_history.order_status','cancel');
 		
 		if($pharmacy_id != ''){
-			$order_detail = $order_detail->where('new_orders.pharmacy_id',$pharmacy_id);
+			$order_detail = $order_detail->where('new_order_history.pharmacy_id',$pharmacy_id);
 		}
 		if($logistic_id !=''){
-			$order_detail = $order_detail->where('new_orders.logistic_user_id', $logistic_id);
+			$order_detail = $order_detail->where('new_order_history.logistic_user_id', $logistic_id);
 		}
 
 		if($searchtxt!=''){
 			$order_detail= $order_detail->where(function ($query) use($searchtxt) {
                 $query->where('new_users.name', 'like', '%'.$searchtxt.'%')
 				->orWhere('new_users.mobile_number', 'like', '%'.$searchtxt.'%')
-				->orWhere('new_orders.order_number', 'like', '%'.$searchtxt.'%');
+				->orWhere('new_order_history.order_number', 'like', '%'.$searchtxt.'%');
             });
 		}
 
 		$total = $order_detail->count();
 		$total_page = ceil($total/$per_page);
 
-		$order_detail = $order_detail->orderby('new_orders.id','desc');
+		$order_detail = $order_detail->orderby('new_order_history.id','desc');
 		$order_detail = $order_detail->paginate($per_page,'','',$page);
 		$queries = DB::getQueryLog();
 		//get list
