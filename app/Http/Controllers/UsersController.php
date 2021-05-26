@@ -316,6 +316,7 @@ class UsersController extends Controller
 			$user->name = $request->name;
 			$user->email = $request->email;
 			$user->mobile_number  = $request->mobile_number;
+			$user->is_verify  = '1';
 			$user->password = Hash::make($request->password);
 			$user->created_at = date('Y-m-d H:i:s');
 
