@@ -40,9 +40,9 @@ class RegistrationPending extends Controller
 		$data = array();
 		$user_city = new_address::select('city')->groupby('city')->get();
 		$data['user_city'] = $user_city;
-		$data['page_title'] = 'Users';
-		$data['page_condition'] = 'page_users';
-		$data['site_title'] = 'Users | ' . $this->data['site_title'];
+		$data['page_title'] = 'pegistration Pending';
+		$data['page_condition'] = 'page_registration_pending';
+		$data['site_title'] = ' | Registration Pending' . $this->data['site_title'];
         return view('registration_pending.index', $data);
     }
 	public function getlist()
@@ -61,7 +61,7 @@ class RegistrationPending extends Controller
 		$search_city=(isset($_POST['search_city']) && $_POST['search_city']!='')?$_POST['search_city']:'';
 
 		//count total
-		$total_new_users = new_users::select('id', 'referral_code','name', 'email', 'mobile_number','is_active','profile_image', DB::raw("'' as city"), 'created_at', DB::raw("'customer' as user_type"))->where('is_delete','1');
+		$total_new_users = new_users::select('id', 'referral_code','name', 'email', 'mobile_number','is_active','profile_image', DB::raw("'' as city"), 'created_at', DB::raw("'customer' as user_type"))->where('name','<>','')->where('email','<>','');
 		//$total_new_pharmacies = new_pharmacies::select('id', 'name', 'email', 'mobile_number','is_active', 'city', 'created_at', DB::raw("'pharmacy' as user_type"));
 		//$total_new_pharma_logistic_employee = new_pharma_logistic_employee::select('id', 'name', 'email', 'mobile_number','is_active', DB::raw("'' as city"), 'created_at', 'user_type');
 
