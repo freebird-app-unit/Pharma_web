@@ -89,11 +89,13 @@ class LoginController extends Controller
 			$response['data']->mobile_number=$login->mobile_number;
 			$response['data']->profile_image=$profile_image;
 			$response['data']->pharmacy_id=$login->pharma_logistic_id;
-			$pharmacy = new_pharmacies::select('id','name')->where('id',$login->pharma_logistic_id)->first();
+			$pharmacy = new_pharmacies::select('id','name','referral_code')->where('id',$login->pharma_logistic_id)->first();
 			if(!empty($pharmacy)){
 				$response['data']->pharmacy=$pharmacy->name;	
+				$response['data']->referral_code=$pharmacy->referral_code;	
 			}else{
 				$response['data']->pharmacy='';	
+				$response['data']->referral_code='';
 			}							
 			$data = new_sellers::find($login->id);
 			$data->api_token = $login->createToken('MyApp')-> accessToken;
