@@ -115,36 +115,39 @@ class HomeController extends Controller
 			$data['total_orders'] = $total_res;
 			//orders
 
-			//logistic
-			$total_res = DB::table('new_logistics');
-			$total_res = $total_res->count();
-			$data['total_logistic'] = $total_res;
-			//logistic
-			
 			//pharmacy
-			$total_res = DB::table('new_pharmacies');
+			$total_res = DB::table('new_pharmacies')
+			->where(['is_active'=>'1','is_delete'=>'1']);
 			//->where('user_type','pharmacy');
 			$total= $total_res->count();
 			$data['total_pharmacy'] = $total;
 			//pharmacy
 			
+			//logistic
+			$total_res = DB::table('new_logistics')
+			->where(['is_active'=>'1','is_delete'=>'1']);
+			$total_res = $total_res->count();
+			$data['total_logistic'] = $total_res;
+			//logistic
+			
 			//seller
-			$total_res = DB::table('new_pharma_logistic_employee')
-			->where('user_type','seller');
+			$total_res = DB::table('new_sellers')
+			->where(['user_type'=>'seller','is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_seller'] = $total;
 			//seller
 			
 			//delivery boy
 			$total_res = DB::table('new_pharma_logistic_employee')
-			->where('user_type','delivery_boy');
+			->where(['user_type'=>'delivery_boy','is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_deliveryboy'] = $total;
 			//delivery boy
 
 			//customer
-			$total_res = DB::table('new_users');
+			$total_res = DB::table('new_users')
 			//->where('user_type','customer');
+			->where(['is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_customer'] = $total;
 			//customer
@@ -169,36 +172,39 @@ class HomeController extends Controller
 			$data['total_orders'] = $total_res;
 			//orders
 
-			//logistic
-			$total_res = DB::table('new_logistics');
-			$total_res = $total_res->count();
-			$data['total_logistic'] = $total_res;
-			//logistic
-			
 			//pharmacy
-			$total_res = DB::table('new_pharmacies');
+			$total_res = DB::table('new_pharmacies')
+			->where(['is_active'=>'1','is_delete'=>'1']);
 			//->where('user_type','pharmacy');
 			$total= $total_res->count();
 			$data['total_pharmacy'] = $total;
 			//pharmacy
 			
+			//logistic
+			$total_res = DB::table('new_logistics')
+			->where(['is_active'=>'1','is_delete'=>'1']);
+			$total_res = $total_res->count();
+			$data['total_logistic'] = $total_res;
+			//logistic
+			
 			//seller
-			$total_res = DB::table('new_pharma_logistic_employee')
-			->where('user_type','seller');
+			$total_res = DB::table('new_sellers')
+			->where(['user_type'=>'seller','is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_seller'] = $total;
 			//seller
 			
 			//delivery boy
 			$total_res = DB::table('new_pharma_logistic_employee')
-			->where('user_type','delivery_boy');
+			->where(['user_type'=>'delivery_boy','is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_deliveryboy'] = $total;
 			//delivery boy
 
 			//customer
-			$total_res = DB::table('new_users');
+			$total_res = DB::table('new_users')
 			//->where('user_type','customer');
+			->where(['is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_customer'] = $total;
 			//customer
