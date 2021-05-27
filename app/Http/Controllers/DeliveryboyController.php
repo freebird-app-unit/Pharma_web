@@ -68,7 +68,9 @@ class DeliveryboyController extends Controller
 		$search_pharmacy= "";//(isset($_POST['search_pharmacy']) && $_POST['search_pharmacy']!='')?$_POST['search_pharmacy']:'';
 		$search_parent_type=(isset($_POST['search_parent_type']) && $_POST['search_parent_type']!='')?$_POST['search_parent_type']:'';
 		//get list
-		$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=> 'delivery_boy','is_active'=>'1','is_delete'=>'1']);
+
+		//old code
+		/*$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=> 'delivery_boy','is_active'=>'1','is_delete'=>'1']);
 
 		if($user_type == 'logistic' || $user_type == 'pharmacy'){
 			$user_detail = $user_detail->where(['parent_type'=> $user_type, 'pharma_logistic_id'=> $user_id]);
@@ -86,7 +88,33 @@ class DeliveryboyController extends Controller
 		}
 		if($search_parent_type!=''){
 			$user_detail= $user_detail->where('parent_type', $search_parent_type);
+		}*/
+
+		//newcode
+		if($user_type == 'logistic' || $user_type == 'pharmacy'){
+			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=> 'delivery_boy','is_active'=>'1','is_delete'=>'1']);
+			$user_detail = $user_detail->where(['parent_type'=> $user_type, 'pharma_logistic_id'=> $user_id]);
+
+			if($search_pharmacy!=''){
+			$user_detail= $user_detail->where('pharma_logistic_id', $search_pharmacy);
+			}
+			if($search_parent_type!=''){
+				$user_detail= $user_detail->where('parent_type', $search_parent_type);
+			}
 		}
+		if($user_type == 'admin' || $user_type == 'superadmin'){
+			$user_detail = new_pharma_logistic_employee::select('new_pharma_logistic_employee.*')->where(['user_type'=> 'delivery_boy','is_active'=>'1','is_delete'=>'1']);
+		}
+
+
+		if($searchtxt!=''){
+			$user_detail= $user_detail->where(function ($query) use($searchtxt) {
+                $query->where('name', 'like', '%'.$searchtxt.'%')
+						->orWhere('email', 'like', '%'.$searchtxt.'%')
+						->orWhere('mobile_number', 'like', '%'.$searchtxt.'%');
+            });
+		}
+
 		$total = $user_detail->count();
 		$total_page = ceil($total/$per_page);
 
