@@ -56,9 +56,6 @@
 						</div>-->
 					</div>
 					<div class="col-sm-11"></div>
-					<div class="col-sm-1">
-						<a href="{{ route('user.create') }}" class="btn btn-success waves-effect waves-light">Create</a>
-					</div>
 					<table id="admin_client_list" class="table  table-striped">
 						<thead>
 							<tr>
