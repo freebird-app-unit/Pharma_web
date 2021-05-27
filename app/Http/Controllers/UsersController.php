@@ -65,7 +65,7 @@ class UsersController extends Controller
 		$search_city=(isset($_POST['search_city']) && $_POST['search_city']!='')?$_POST['search_city']:'';
 
 		//count total
-		$total_new_users = new_users::select('id', 'name', 'email', 'mobile_number','is_active','profile_image', DB::raw("'' as city"), 'created_at', DB::raw("'customer' as user_type"))->where('is_delete','1');
+		$total_new_users = new_users::select('id', 'referral_code','name', 'email', 'mobile_number','is_active','profile_image', DB::raw("'' as city"), 'created_at', DB::raw("'customer' as user_type"))->where('is_delete','1');
 		//$total_new_pharmacies = new_pharmacies::select('id', 'name', 'email', 'mobile_number','is_active', 'city', 'created_at', DB::raw("'pharmacy' as user_type"));
 		//$total_new_pharma_logistic_employee = new_pharma_logistic_employee::select('id', 'name', 'email', 'mobile_number','is_active', DB::raw("'' as city"), 'created_at', 'user_type');
 
@@ -73,7 +73,8 @@ class UsersController extends Controller
 			$total_new_users = $total_new_users->where(function ($query) use($searchtxt) {
                 $query->where('name', 'like', '%'.$searchtxt.'%')
 				->orWhere('email', 'like', '%'.$searchtxt.'%')
-				->orWhere('mobile_number', 'like', '%'.$searchtxt.'%');
+				->orWhere('mobile_number', 'like', '%'.$searchtxt.'%')
+				->orWhere('referral_code', 'like', '%'.$searchtxt.'%');
 			});
 			
 			/*$total_new_pharmacies = $total_new_pharmacies->where(function ($query) use($searchtxt) {
@@ -158,6 +159,7 @@ class UsersController extends Controller
 					<td>'.$user->email.'</td>
 					<td>'.$user->mobile_number.'</td>
 					<td>'.$total_complete_order.'</td>
+					<td>'.$user->referral_code.'</td>
 					<td>'.$created_at.'</td>';
 					$html.='<td><a class="btn btn-success waves-effect waves-light" href="'.url('/'.$user->user_type_detail_url.'/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a><a class="btn btn-info waves-effect waves-light" href="'.url('/user/edit/'.$user->id.'/'.$user->user_type).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a>';
 					if($user->is_active == 1){

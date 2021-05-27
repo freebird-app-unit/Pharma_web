@@ -67,6 +67,7 @@
 								<th width="15%" data-priority="2">Email</th>
 								<th width="10%" data-priority="4">Mobile number</th>
 								<th width="10%" data-priority="4">No. of completed <br> order</th>
+								<th width="10%" data-priority="6">Referral Code</th>
 								<th width="10%" data-priority="6">Created</th>
 								<th width="20%" data-priority="7">Action</th>
 							</tr>
