@@ -54,7 +54,7 @@ Route::get('/passwordreset/{slug}', array('as' => 'passwordreset', 'uses' => 'Pa
 Route::post('/passwordreset', array('as' => 'passwordreset', 'uses' => 'PasswordController@savepassword'));
 
 //registration_pending
-//Users
+
 Route::get('/registration_pending', array('as' => 'registration_pending.index', 'uses' => 'RegistrationPending@index'));
 Route::post('/getregistrationpendinglist', array('as' => 'registration_pending.getlist', 'uses' => 'RegistrationPending@getlist'));
 
