@@ -331,6 +331,9 @@
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
 							</li>
 							<li>
+                                <a href="{{ route('registration_pending.index') }}" class="waves-effect <?php echo ($page_condition=='page_registration_pending')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Registration Pending') }}</span></a>
+							</li>
+							<li>
                                 <a href="{{ route('admin.index') }}" class="waves-effect <?php echo ($page_condition=='page_admin')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Admin') }}</span></a>
 							</li>
                    			<li>
@@ -485,6 +488,9 @@
 								</li>
 							<li>
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
+							</li>
+							<li>
+                                <a href="{{ route('registration_pending.index') }}" class="waves-effect <?php echo ($page_condition=='page_registration_pending')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Registration Pending') }}</span></a>
 							</li>
                    			<li>
                                 <a href="{{ route('pharmacy.index') }}" class="waves-effect <?php echo ($page_condition=='page_pharmacy')?'active':''; ?>"><img src="{{ asset('public/images/pharmacy.png') }}"/><span>{{ __('Pharmacy') }}</span></a>
@@ -856,6 +862,9 @@
 	@endif
 	@if($page_condition=='page_voucher_history')
 		<script src="{{ asset('public/admin/js/voucher_history.js') }}"></script>
+	@endif
+	@if($page_condition=='page_registration_pending')
+		<script src="{{ asset('public/admin/js/registration_pending.js') }}"></script>
 	@endif
 	@if($page_condition=='page_voucher_detail')
 		<script src="{{ asset('public/admin/js/voucher_detail.js') }}"></script>

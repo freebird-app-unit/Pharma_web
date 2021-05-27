@@ -53,6 +53,10 @@ Route::post('/otpverify', array('as' => 'otpverify', 'uses' => 'PasswordControll
 Route::get('/passwordreset/{slug}', array('as' => 'passwordreset', 'uses' => 'PasswordController@passwordreset'));
 Route::post('/passwordreset', array('as' => 'passwordreset', 'uses' => 'PasswordController@savepassword'));
 
+//registration_pending
+//Users
+Route::get('/registration_pending', array('as' => 'registration_pending.index', 'uses' => 'RegistrationPending@index'));
+Route::post('/getregistrationpendinglist', array('as' => 'registration_pending.getlist', 'uses' => 'RegistrationPending@getlist'));
 
 //Users
 Route::get('/user', array('as' => 'user.index', 'uses' => 'UsersController@index'));
