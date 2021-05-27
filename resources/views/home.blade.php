@@ -110,12 +110,12 @@ if($user->user_type=='admin'){
 		</div>
 	</div>
 </a>
-	<div class="col-lg-3 col-sm-6">
+	<!-- <div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_users; ?></h2>
 			<div class="text-muted m-t-5">Total Users</div>
 		</div>
-	</div>
+	</div> -->
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_orders; ?></h2>
@@ -188,12 +188,12 @@ if($user->user_type=='superadmin'){
 		</div>
 	</div>
 </a>
-	<div class="col-lg-3 col-sm-6">
+	<!-- <div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_users; ?></h2>
 			<div class="text-muted m-t-5">Total Users</div>
 		</div>
-	</div>
+	</div> -->
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_orders; ?></h2>
