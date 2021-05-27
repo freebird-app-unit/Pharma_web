@@ -40,9 +40,9 @@ class RegistrationPending extends Controller
 		$data = array();
 		$user_city = new_address::select('city')->groupby('city')->get();
 		$data['user_city'] = $user_city;
-		$data['page_title'] = 'Users';
+		$data['page_title'] = 'Registration Pending';
 		$data['page_condition'] = 'page_registration_pending';
-		$data['site_title'] = 'Users | ' . $this->data['site_title'];
+		$data['site_title'] = 'Registration Pending | ' . $this->data['site_title'];
         return view('registration_pending.index', $data);
     }
 	public function getlist()
@@ -152,13 +152,13 @@ class RegistrationPending extends Controller
 				$html.='<tr>
 					<td>'.$user->mobile_number.'</td>
 					<td>'.$created_at.'</td>';
-					$html.='<td><a class="btn btn-success waves-effect waves-light" href="'.url('/'.$user->user_type_detail_url.'/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a><a class="btn btn-info waves-effect waves-light" href="'.url('/user/edit/'.$user->id.'/'.$user->user_type).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a>';
+					/*$html.='<td><a class="btn btn-success waves-effect waves-light" href="'.url('/'.$user->user_type_detail_url.'/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a><a class="btn btn-info waves-effect waves-light" href="'.url('/user/edit/'.$user->id.'/'.$user->user_type).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a>';
 					if($user->is_active == 1){
                         $html.='<a href="'.url('/user/'.$user->id.'/inactive/'.$user->user_type).'" onClick="return confirm(\'Are you sure you want to inactive this?\');" rel="tooltip" title="InActive" class="btn btn-default btn-xs"><i class="fa fa-circle text-success"></i></a>';  
                     }else{ 
                     	$html.='<a href="'.url('/user/'.$user->id.'/active/'.$user->user_type).'" onClick="return confirm(\'Are you sure you want to active this?\');" rel="tooltip" title="Active" class="btn btn-default btn-xs"><i class="fa fa-circle text-danger"></i></a>';
                     }
-					$html.='</td>';
+					$html.='</td>';*/
 				$html.='</tr>';
 			}
 			if($page==1){

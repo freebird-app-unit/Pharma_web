@@ -35,7 +35,6 @@
 							<tr>
 								<th width="10%" data-priority="1">Mobile number</th>
 								<th width="10%" data-priority="2">Created</th>
-								<th width="10%" data-priority="3">Action</th>
 							</tr>
 						</thead>
 						<tbody>
