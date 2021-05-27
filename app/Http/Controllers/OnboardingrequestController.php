@@ -86,8 +86,7 @@ class OnboardingrequestController extends Controller
 			$new_pharmacies->save();
 			
 			$file1 = $new_pharmacies->adharcard_image;
-			$destinationPath = 'storage/app/public/uploads/new_pharmacy/adharcard';
-			dd(move_uploaded_file($file1,$destinationPath));		
+			$destinationPath = 'storage/app/public/uploads/new_pharmacy/adharcard';	
 			$filename1 = time().'-'.$file1->getClientOriginalName();
 			$file1->move($destinationPath, $filename1);
 
