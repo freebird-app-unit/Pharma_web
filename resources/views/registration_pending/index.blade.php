@@ -24,49 +24,18 @@
 			<div class="table-rep-plugin">
 				<div class="table-responsive" data-pattern="priority-columns">
 					<div class="col-sm-4">
-						<label>Search</label>
 						<input type="text" class="form-control" name="search_text" placeholder="Search" id="search_text"/>
 					</div>
-					<div class="col-sm-4">
-						<label>City</label>
-						<div class="form-group">
-						<select class="form-control" name="search_city" id="search_city">
-							<option value=''>All City</option>
-							<?php 
-							foreach($user_city as $user_city_val){
-								if($user_city_val->city != ""){
-									echo '<option value="'.$user_city_val->city.'">'.$user_city_val->city.'</option>';
-								}	
-							}
-							?>
-						</select>
-						</div>
+					<div class="col-sm-7"></div>
+					<div class="col-sm-1">
+						
 					</div>
-					<div class="col-sm-4">
-						<input type="hidden" name="user_type" id="user_type" value="customer"/>
-						<!--<label>Role</label>
-						<div class="form-group">
-						<select class="form-control" name="user_type" id="user_type">
-							<option value=''>All Role</option>
-							<option value="pharmacy">Pharmacy</option>
-							<option value="seller">Seller</option>
-							<option value="delivery_boy">Delivery boy</option>
-							<option value="customer">Customer</option>
-						</select>
-						</div>-->
-					</div>
-					<div class="col-sm-11"></div>
-					<table id="admin_client_list" class="table  table-striped">
+					<table id="admin_order_list" class="table  table-striped">
 						<thead>
 							<tr>
-								<th width="10%" data-priority="1">Image</th>
-								<th width="15%" data-priority="1">Name</th>
-								<th width="15%" data-priority="2">Email</th>
-								<th width="10%" data-priority="4">Mobile number</th>
-								<th width="10%" data-priority="4">No. of completed <br> order</th>
-								<th width="10%" data-priority="6">Referral Code</th>
-								<th width="10%" data-priority="6">Created</th>
-								<th width="20%" data-priority="7">Action</th>
+								<th width="10%" data-priority="1">Mobile number</th>
+								<th width="10%" data-priority="2">Created</th>
+								<th width="10%" data-priority="3">Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -88,5 +57,5 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div>							
 @endsection
