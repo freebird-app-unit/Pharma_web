@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
 use Validator;
 use Paykun\Checkout\Payment;
- 
+use App\pass_data_image;
 class OnboardingrequestController extends Controller
 {
 	public function __construct()
@@ -85,25 +85,27 @@ class OnboardingrequestController extends Controller
 			$new_pharmacies->created_at = date('Y-m-d H:i:s');
 			$new_pharmacies->save();
 			
-			$file1 = $new_pharmacies->adharcard_image;
-			$destinationPath = 'storage/app/public/uploads/new_pharmacy/adharcard';	
-			$filename1 = time().'-'.$file1->getClientOriginalName();
-			$file1->move($destinationPath, $filename1);
+			$get_data = pass_data_image::where('register_pharmacy_id',$Onboardingrequest->id)->get();
+			foreach ($get_data as $value) {
+				if($value->image_type == "adharcard"){
+					Storage::disk('public')->put('uploads/new_pharmacy/adharcard/'.$value->filename, base64_decode($value->file), 'public');
+				}
+				if($value->image_type == "pancard"){
+					Storage::disk('public')->put('uploads/new_pharmacy/pancard/'.$value->filename, base64_decode($value->file), 'public');
+				}
+				if($value->image_type == "profile"){
+					Storage::disk('public')->put('uploads/new_pharmacy/'.$value->filename, base64_decode($value->file), 'public');
+				}
+				if($value->image_type == "druglicense"){
+					Storage::disk('public')->put('uploads/new_pharmacy/druglicense/'.$value->filename, base64_decode($value->file), 'public');
+				}
+			}
 
-			$file2 = $new_pharmacies->pancard_image;
-			$filename2 = $file2->getClientOriginalName();
-			$destinationPath = 'storage/app/public/uploads/new_pharmacy/pancard';
-			$file2->move($destinationPath, $filename2);
-
-			$file3 = $new_pharmacies->profile_image;
-			$filename3 = $file3->getClientOriginalName();
-			$destinationPath = 'storage/app/public/uploads/new_pharmacy';
-			$file3->move($destinationPath, $filename3);
-
-			$file4 = $new_pharmacies->druglicense_image;
-			$filename4 = $file4->getClientOriginalName();
-			$destinationPath = 'storage/app/public/uploads/new_pharmacy/druglicense';
-			$file4->move($destinationPath, $filename4);
+			$delete_data =  pass_data_image::where('register_pharmacy_id',$Onboardingrequest->id)->get();
+			foreach ($delete_data as $key => $val) {
+				$val->delete();
+			}
+			
 			$user = new User;
 			$user->user_id = $new_pharmacies->id;
 			$user->user_type = 'pharmacy';
