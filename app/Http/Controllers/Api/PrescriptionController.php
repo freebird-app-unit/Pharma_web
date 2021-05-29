@@ -31,8 +31,8 @@ class PrescriptionController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');	
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		
 		$user_id    = isset($content->user_id) ? $content->user_id : '';
 		$searchtext = isset($content->searchtext) ? trim($content->searchtext) : ''; 
@@ -49,9 +49,9 @@ class PrescriptionController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }		
-		/*$token =  $request->bearerToken();
+		$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){*/
+		if(count($user)>0){
 		if (!empty($searchtext)) {
 			$prescription = Prescription::select('id', 'name', 'image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
@@ -91,7 +91,7 @@ class PrescriptionController extends Controller
 			foreach($data_array as $key=>$val){
 				
 				$images_array=[];
-                                $image_data = Prescription::where('id',$val['id'])->get();
+                                $image_data = prescription_multiple_image::where('prescription_id',$val['id'])->get();
                                 foreach ($image_data as $pres) {
                                      $pres_image = '';
                                         if (!empty($pres->image)) {
@@ -107,7 +107,7 @@ class PrescriptionController extends Controller
                                     $images_array[] =[
                                         'id' => $pres->id,
                                         'image' => $pres_image,
-                                        'mimetype' => ($pres->mimetype)?$pres->mimetype:''
+                                        'mimetype' => $pres->mimetype
                                     ];
                                 }
 				$prescription_arr[$key]['id'] = $val['id'];
@@ -121,15 +121,15 @@ class PrescriptionController extends Controller
 		} 
 		$response['message'] = 'Prescription List';
 		$response['data']->content = $prescription_arr;
-		/*}else{
+		}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
 	            $response['data'] = [];
-	   	}*/
+	   	}
         $response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($response, 200);
+        return response($cipher, 200);
 	
 	}
 
@@ -175,12 +175,12 @@ class PrescriptionController extends Controller
 			$response['status'] = 404;
 			$response['message'] = 'Prescription name already exists';
 		}else{
-			/*$prescriptions = new Prescription();
+			$prescriptions = new Prescription();
 			$prescriptions->user_id = $user_id;
 			$prescriptions->name = $name;
 			//$prescriptions->image = $prescription_image;
 			$prescriptions->prescription_date = $prescription_date;
-			$prescriptions->save();*/
+			$prescriptions->save();
 
 			$prescription_image = '';
 			if ($request->hasFile('prescription')) {
@@ -190,7 +190,6 @@ class PrescriptionController extends Controller
 				if($files=$request->file('prescription')){
 					
 					foreach($files as $key => $file){
-
 						$check_table_empty = multiple_prescription::all();
 						$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
 						if(!empty($last_id)){
@@ -198,31 +197,18 @@ class PrescriptionController extends Controller
 						}
 						$abc= new multiple_prescription();
 						$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
-						$abc->image = base64_encode(file_get_contents($file));
-						$abc->mimetype =  $file->getMimeType();
-						$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
-						
-
-
-						$filename= time().'-'.$file->getClientOriginalName();
-						$mimetype = $file->getMimeType();
-						$tesw = $file->move($destinationPath, $filename);
-						$prescriptions = new Prescription();
-						$prescriptions->user_id = $user_id;
-						$prescriptions->name = $name;
-						$prescriptions->image = $filename;
-						$prescriptions->mimetype = $mimetype;
-						$prescriptions->prescription_date = $prescription_date;
-						$prescriptions->save();
-
 						$abc->user_id = $prescriptions->user_id;
 						$abc->prescription_id = $prescriptions->id;
 						$abc->prescription_name = $prescriptions->name;
+						$abc->image = base64_encode(file_get_contents($file));
+						$abc->mimetype =  $file->getMimeType();
+						$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
 						$abc->prescription_date = $prescriptions->prescription_date;
 						$abc->is_delete = "0";
 						$abc->created_at = date('Y-m-d H:i:s');
 						$abc->updated_at = date('Y-m-d H:i:s');				
 						$abc->save();
+
 						//restore image and PDF
 						/*$image = $abc->image;  // your base64 encoded
 						if(str_replace('data:image/png;base64,', '', $image)){
@@ -240,6 +226,19 @@ class PrescriptionController extends Controller
 							 Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
 						}*/
 					    
+
+						$filename= time().'-'.$file->getClientOriginalName();
+						$mimetype = $file->getMimeType();
+						$tesw = $file->move($destinationPath, $filename);
+						$prescription_multiple_image = new prescription_multiple_image();
+						$prescription_multiple_image->prescription_id = $prescriptions->id;
+						$prescription_multiple_image->user_id = $prescriptions->user_id;
+						$prescription_multiple_image->name = $prescriptions->name;
+						$prescription_multiple_image->image = $filename;
+						$prescription_multiple_image->mimetype = $mimetype;
+						$prescription_multiple_image->prescription_date = $prescriptions->prescription_date;
+						$prescription_multiple_image->is_delete = '0';
+						$prescription_multiple_image->save();
 					}
 				}
 			} else {
@@ -297,18 +296,15 @@ class PrescriptionController extends Controller
 			$value->save();
 		}
 
-		/*$prescription_data = prescription_multiple_image::where(['prescription_id'=>$id])->get();
+		$prescription_data = prescription_multiple_image::where(['prescription_id'=>$id])->get();
 		foreach ($prescription_data as $val) {
 			$val->is_delete='1';
 			$val->save();
-		}*/
-
-		$prescription = Prescription::where('id',$id)->get();
-		foreach ($prescription as $value) {
-			$value->is_delete="1";
-			$value->save();
 		}
-		
+
+		$prescription = Prescription::where('id',$id)->first();
+		$prescription->is_delete="1";
+		$prescription->save();
 		
 		$response['status'] = 200;
 		$response['message'] = 'Your prescription has been successfully deleted';    
@@ -358,17 +354,15 @@ class PrescriptionController extends Controller
 			$value->save();
 		}
 
-		/*$prescription_data = prescription_multiple_image::where(['user_id'=>$user_id,'prescription_id'=>$id])->get();
+		$prescription_data = prescription_multiple_image::where(['user_id'=>$user_id,'prescription_id'=>$id])->get();
 		foreach ($prescription_data as $val) {
 			$val->name=$prescription_name;
 			$val->save();
-		}*/
+		}
 
 		$prescription = Prescription::where('id',$id)->first();
-		foreach ($prescription as $value) {
-			$value->name=$prescription_name;
-			$value->save();
-		}
+		$prescription->name=$prescription_name;
+		$prescription->save();
 		
 		$response['status'] = 200;
 		$response['message'] = 'Your prescription has been successfully updated';    
