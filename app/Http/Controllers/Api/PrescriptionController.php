@@ -175,12 +175,12 @@ class PrescriptionController extends Controller
 			$response['status'] = 404;
 			$response['message'] = 'Prescription name already exists';
 		}else{
-			$prescriptions = new Prescription();
+			/*$prescriptions = new Prescription();
 			$prescriptions->user_id = $user_id;
 			$prescriptions->name = $name;
 			//$prescriptions->image = $prescription_image;
 			$prescriptions->prescription_date = $prescription_date;
-			$prescriptions->save();
+			$prescriptions->save();*/
 
 			$prescription_image = '';
 			if ($request->hasFile('prescription')) {
@@ -190,6 +190,7 @@ class PrescriptionController extends Controller
 				if($files=$request->file('prescription')){
 					
 					foreach($files as $key => $file){
+
 						$check_table_empty = multiple_prescription::all();
 						$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
 						if(!empty($last_id)){
@@ -197,18 +198,31 @@ class PrescriptionController extends Controller
 						}
 						$abc= new multiple_prescription();
 						$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
-						$abc->user_id = $prescriptions->user_id;
-						$abc->prescription_id = $prescriptions->id;
-						$abc->prescription_name = $prescriptions->name;
 						$abc->image = base64_encode(file_get_contents($file));
 						$abc->mimetype =  $file->getMimeType();
 						$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
+						
+
+
+						$filename= time().'-'.$file->getClientOriginalName();
+						$mimetype = $file->getMimeType();
+						$tesw = $file->move($destinationPath, $filename);
+						$prescriptions = new Prescription();
+						$prescriptions->user_id = $user_id;
+						$prescriptions->name = $name;
+						$prescriptions->image = $filename;
+						$prescriptions->mimetype = $mimetype;
+						$prescriptions->prescription_date = $prescription_date;
+						$prescriptions->save();
+
+						$abc->user_id = $prescriptions->user_id;
+						$abc->prescription_id = $prescriptions->id;
+						$abc->prescription_name = $prescriptions->name;
 						$abc->prescription_date = $prescriptions->prescription_date;
 						$abc->is_delete = "0";
 						$abc->created_at = date('Y-m-d H:i:s');
 						$abc->updated_at = date('Y-m-d H:i:s');				
 						$abc->save();
-
 						//restore image and PDF
 						/*$image = $abc->image;  // your base64 encoded
 						if(str_replace('data:image/png;base64,', '', $image)){
@@ -226,19 +240,6 @@ class PrescriptionController extends Controller
 							 Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
 						}*/
 					    
-
-						$filename= time().'-'.$file->getClientOriginalName();
-						$mimetype = $file->getMimeType();
-						$tesw = $file->move($destinationPath, $filename);
-						$prescription_multiple_image = new prescription_multiple_image();
-						$prescription_multiple_image->prescription_id = $prescriptions->id;
-						$prescription_multiple_image->user_id = $prescriptions->user_id;
-						$prescription_multiple_image->name = $prescriptions->name;
-						$prescription_multiple_image->image = $filename;
-						$prescription_multiple_image->mimetype = $mimetype;
-						$prescription_multiple_image->prescription_date = $prescriptions->prescription_date;
-						$prescription_multiple_image->is_delete = '0';
-						$prescription_multiple_image->save();
 					}
 				}
 			} else {
