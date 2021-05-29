@@ -39,6 +39,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\notification_user;
+use App\category;
 use Mail;
 use DateTime;
 use DatePeriod;
@@ -1551,7 +1552,42 @@ class OrderController extends Controller
 	}
 	public function category_list(Request $request)
 	{
-		dd(1);
+		$response = array();
+		$response['status'] = 200;
+		$response['message'] = '';
+		$response['data'] = (object)array();
+		// $user_id = $request->user_id;
+		
+		$encryption = new \MrShan0\CryptoLib\CryptoLib();
+		$secretyKey = env('ENC_KEY');
+		
+		$data = $request->input('data');	
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
+		
+		$category_list = category::all();
+		
+		$categories = [];
+		if (!empty($category_list)) {
+			foreach($category_list as $value) {
+				
+				$categories[] = [
+					'id' => $value['id'],
+					'name' => $value['name']
+				];
+			}
+			$response['status'] = 200;
+		} else {
+			$response['status'] = 404;
+		}
+		
+		$response['message'] = 'Category';
+		$response['data'] =  $categories;
+		
+        $response = json_encode($response);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey); 
+		
+        return response($cipher, 200);
 	}
 	public function add_records(Request $request)
 	{
