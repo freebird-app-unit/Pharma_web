@@ -956,7 +956,8 @@ class OrderController extends Controller
 				}*/	
 				//new code
 				$images_array=[];
-                    $image_data = prescription_multiple_image::where('prescription_id',$val->prescription_id)->get();
+                    $image_data = prescription_multiple_image::where('prescription_id',$orders[0]->prescription_id)->get();
+                    if(count($image_data)>0){
                     foreach ($image_data as $pres) {
                          $pres_image = '';
                             if (!empty($pres->image)) {
@@ -975,6 +976,27 @@ class OrderController extends Controller
                             'mimetype' => $pres->mimetype
                         ];
                     }
+                }else{
+                	$old_data= Prescription::where('id',$orders[0]->prescription_id)->first();
+                	if(!empty($old_data)){
+                		$pres_image = '';
+                                        if (!empty($old_data->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $old_data->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $old_data->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+	                                    $images_array[] =[
+	                                        'id' => $old_data->id,
+	                                        'image' => $pres_image,
+	                                        'mimetype' => "image/jpeg"
+	                                    ];
+                	}
+                }
 				$orders_arr_data1[$key]['id'] = $val->ID;
 				$orders_arr_data1[$key]['pharmacy_id'] = $val->pharmacy_id;
 				$orders_arr_data1[$key]['prescription_name'] = !empty($val->prescriptions->name) ? $val->prescriptions->name : '';
@@ -1077,6 +1099,7 @@ class OrderController extends Controller
 			//new code
 			$images_array=[];
                     $image_data = prescription_multiple_image::where('prescription_id',$orders[0]->prescription_id)->get();
+                    if(count($image_data)>0){
                     foreach ($image_data as $pres) {
                          $pres_image = '';
                             if (!empty($pres->image)) {
@@ -1095,6 +1118,27 @@ class OrderController extends Controller
                             'mimetype' => $pres->mimetype
                         ];
                     }
+                }else{
+                	$old_data= Prescription::where('id',$orders[0]->prescription_id)->first();
+                	if(!empty($old_data)){
+                		$pres_image = '';
+                                        if (!empty($old_data->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $old_data->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $old_data->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+	                                    $images_array[] =[
+	                                        'id' => $old_data->id,
+	                                        'image' => $pres_image,
+	                                        'mimetype' => "image/jpeg"
+	                                    ];
+                	}
+                }
 			if (!empty($orders[0]->audio)) {
 				$filename = storage_path('app/public/uploads/audio/' . $orders[0]->audio);
 				if (File::exists($filename)) {
