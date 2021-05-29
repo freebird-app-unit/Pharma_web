@@ -92,7 +92,8 @@ class PrescriptionController extends Controller
 				
 				$images_array=[];
                                 $image_data = prescription_multiple_image::where('prescription_id',$val['id'])->get();
-                                foreach ($image_data as $pres) {
+                                if(count($image_data)>0){
+                                	foreach ($image_data as $pres) {
                                      $pres_image = '';
                                         if (!empty($pres->image)) {
 
@@ -104,11 +105,30 @@ class PrescriptionController extends Controller
                                                 $pres_image = '';
                                             }
                                         }
-                                    $images_array[] =[
-                                        'id' => $pres->id,
-                                        'image' => $pres_image,
-                                        'mimetype' => $pres->mimetype
-                                    ];
+	                                    $images_array[] =[
+	                                        'id' => $pres->id,
+	                                        'image' => $pres_image,
+	                                        'mimetype' => $pres->mimetype
+	                                    ];
+	                                }
+                                }else{
+                                	$old_data= Prescription::where('id',$val['id'])->first();
+                                	$pres_image = '';
+                                        if (!empty($old_data->image)) {
+
+                                            $filename = storage_path('app/public/uploads/prescription/' .  $old_data->image);
+                                        
+                                            if (File::exists($filename)) {
+                                                $pres_image = asset('storage/app/public/uploads/prescription/' .  $old_data->image);
+                                            } else {
+                                                $pres_image = '';
+                                            }
+                                        }
+	                                    $images_array[] =[
+	                                        'id' => $old_data->id,
+	                                        'image' => $pres_image,
+	                                        'mimetype' => "image/jpeg"
+	                                    ];
                                 }
 				$prescription_arr[$key]['id'] = $val['id'];
 				$prescription_arr[$key]['name'] = $val['name'];
