@@ -358,15 +358,17 @@ class PrescriptionController extends Controller
 			$value->save();
 		}
 
-		$prescription_data = prescription_multiple_image::where(['user_id'=>$user_id,'prescription_id'=>$id])->get();
+		/*$prescription_data = prescription_multiple_image::where(['user_id'=>$user_id,'prescription_id'=>$id])->get();
 		foreach ($prescription_data as $val) {
 			$val->name=$prescription_name;
 			$val->save();
-		}
+		}*/
 
 		$prescription = Prescription::where('id',$id)->first();
-		$prescription->name=$prescription_name;
-		$prescription->save();
+		foreach ($prescription as $value) {
+			$value->name=$prescription_name;
+			$value->save();
+		}
 		
 		$response['status'] = 200;
 		$response['message'] = 'Your prescription has been successfully updated';    
