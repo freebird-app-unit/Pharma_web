@@ -128,7 +128,8 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/patient_report_add', 'PatientReportController@patient_report_add');	
 	Route::post('/patient_report_delete', 'PatientReportController@patient_report_delete');	
 	Route::post('/patient_report_display', 'PatientReportController@patient_report_display');	
-	Route::post('/patient_report_edit_name', 'PatientReportController@patient_report_edit_name');	
+	Route::post('/patient_report_edit_name', 'PatientReportController@patient_report_edit_name');
+	Route::post('/category_list', 'OrderController@category_list');	
 });
 
 

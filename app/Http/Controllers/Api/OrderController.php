@@ -1549,6 +1549,10 @@ class OrderController extends Controller
 		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		return response($cipher, 200);
 	}
+	public function category_list(Request $request)
+	{
+		dd(1);
+	}
 	public function add_records(Request $request)
 	{
 		for ($i=1; $i<=5000; $i++) { 
