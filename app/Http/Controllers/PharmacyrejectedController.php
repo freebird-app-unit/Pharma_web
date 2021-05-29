@@ -20,7 +20,7 @@ use App\new_orders;
 use App\new_order_history;
 use App\new_users;
 use App\new_pharmacies;
-
+use App\new_sellers;
 class PharmacyrejectedController extends Controller
 {
 	public function __construct()
@@ -86,7 +86,7 @@ class PharmacyrejectedController extends Controller
 					$pharmacy = new_pharmacies::where('id',$order->reject_user_id)->first();
 					$reject_by = $pharmacy->name;
 				}else if($order->rejectby_user == 'seller'){
-					$seller = new_pharma_logistic_employee::where('id',$order->reject_user_id)->first();
+					$seller = new_sellers::where('id',$order->reject_user_id)->first();
 					$reject_by = $seller->name;
 				}else if($order->rejectby_user == 'deliveryboy'){
 					$deliveryboy = new_pharma_logistic_employee::where('id',$order->reject_user_id)->first();
