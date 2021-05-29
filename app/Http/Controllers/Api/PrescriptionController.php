@@ -297,15 +297,18 @@ class PrescriptionController extends Controller
 			$value->save();
 		}
 
-		$prescription_data = prescription_multiple_image::where(['prescription_id'=>$id])->get();
+		/*$prescription_data = prescription_multiple_image::where(['prescription_id'=>$id])->get();
 		foreach ($prescription_data as $val) {
 			$val->is_delete='1';
 			$val->save();
-		}
+		}*/
 
-		$prescription = Prescription::where('id',$id)->first();
-		$prescription->is_delete="1";
-		$prescription->save();
+		$prescription = Prescription::where('id',$id)->get();
+		foreach ($prescription as $value) {
+			$value->is_delete="1";
+			$value->save();
+		}
+		
 		
 		$response['status'] = 200;
 		$response['message'] = 'Your prescription has been successfully deleted';    
