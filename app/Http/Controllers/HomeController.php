@@ -147,10 +147,18 @@ class HomeController extends Controller
 			//customer
 			$total_res = DB::table('new_users')
 			//->where('user_type','customer');
-			->where(['is_active'=>'1','is_delete'=>'1']);
+			->where('name','<>','')->where('email','<>','')->where(['is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_customer'] = $total;
 			//customer
+
+			//pending customer
+			$total_res = DB::table('new_users')
+			//->where('user_type','customer');
+			->where('name','=','')->where('email','=','')->where(['is_active'=>'1','is_delete'=>'1']);
+			$total= $total_res->count();
+			$data['total_customer_pending'] = $total;
+			//pending customer
 
 			//admin
 			$total_res = DB::table('admin_panel_creds')
@@ -204,10 +212,18 @@ class HomeController extends Controller
 			//customer
 			$total_res = DB::table('new_users')
 			//->where('user_type','customer');
-			->where(['is_active'=>'1','is_delete'=>'1']);
+			->where('name','<>','')->where('email','<>','')->where(['is_active'=>'1','is_delete'=>'1']);
 			$total= $total_res->count();
 			$data['total_customer'] = $total;
 			//customer
+
+			//pending customer
+			$total_res = DB::table('new_users')
+			//->where('user_type','customer');
+			->where('name','=','')->where('email','=','')->where(['is_active'=>'1','is_delete'=>'1']);
+			$total= $total_res->count();
+			$data['total_customer_pending'] = $total;
+			//pending customer
 
 			//admin
 			$total_res = DB::table('admin_panel_creds')

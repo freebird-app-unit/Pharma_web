@@ -94,6 +94,14 @@ if($user->user_type=='admin'){
 		</div>
 	</div>
 </a>
+<a href="{{ route('registration_pending.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_customer_pending; ?></h2>
+			<div class="text-muted m-t-5">Registration Pending Customer</div>
+		</div>
+	</div>
+	</a>
 <a href="{{ route('logistic.index') }}">
 	<div class="col-lg-3 col-sm-6">
 		<div class="widget-panel widget-style-2 bg-white">
@@ -169,6 +177,14 @@ if($user->user_type=='superadmin'){
 		<div class="widget-panel widget-style-2 bg-white">
 			<h2 class="m-0 text-dark counter font-600"><?php echo $total_customer; ?></h2>
 			<div class="text-muted m-t-5">Total Customer</div>
+		</div>
+	</div>
+	</a>
+	<a href="{{ route('registration_pending.index') }}">
+	<div class="col-lg-3 col-sm-6">
+		<div class="widget-panel widget-style-2 bg-white">
+			<h2 class="m-0 text-dark counter font-600"><?php echo $total_customer_pending; ?></h2>
+			<div class="text-muted m-t-5">Registration Pending Customer</div>
 		</div>
 	</div>
 	</a>
