@@ -275,6 +275,9 @@
 									<a href="{{ route('home') }}" class="waves-effect <?php echo ($page_condition=='page_dashboard')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Dashboard') }}</span></a>
 								</li>
 								<li>
+									<a href="{{ route('referral_code_used_users.index') }}" class="waves-effect <?php echo ($page_condition=='page_referral_code_used_users')?'active':''; ?>"><img src="{{ asset('public/images/dashboard.png') }}"/><span>{{ __('Referral code Used Users') }}</span></a>
+								</li>
+								<li>
 									<a href="{{ route('upcomingorders.index') }}" class="waves-effect <?php echo ($page_condition=='page_acceptedorders' || $page_condition=='page_upcomingorder' || $page_condition=='page_pickup' || $page_condition=='page_outfordelivery')?'active':''; ?>"><img src="{{ asset('public/images/live_order.png') }}"/><span>{{ __('Live Orders') }}</span></a>
 								</li>
 								<li>
@@ -1214,6 +1217,9 @@
 	@endif
 	@if($page_condition=='page_upcomingorder')
 		<script src="{{ asset('public/admin/js/upcomingorder.js') }}"></script>
+	@endif
+	@if($page_condition=='page_referral_code_used_users')
+		<script src="{{ asset('public/admin/js/referral_code_used_users.js') }}"></script>
 	@endif
 	@if($page_condition=='page_adminupcomingorders')
 		<script src="{{ asset('public/admin/js/adminupcomingorders.js') }}"></script>

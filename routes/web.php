@@ -58,6 +58,12 @@ Route::post('/passwordreset', array('as' => 'passwordreset', 'uses' => 'Password
 Route::get('/registration_pending', array('as' => 'registration_pending.index', 'uses' => 'RegistrationPending@index'));
 Route::post('/getregistrationpendinglist', array('as' => 'registration_pending.getlist', 'uses' => 'RegistrationPending@getlist'));
 
+//referralcodeuseduser
+
+Route::get('/referral_code_used_users', array('as' => 'referral_code_used_users.index', 'uses' => 'ReferralCodeUsedUsersController@index'));
+Route::post('/getreferralcodeuseduserslist', array('as' => 'referral_code_used_users.getlist', 'uses' => 'ReferralCodeUsedUsersController@getlist'));
+
+
 //Users
 Route::get('/user', array('as' => 'user.index', 'uses' => 'UsersController@index'));
 Route::post('/getuserlist', array('as' => 'user.getlist', 'uses' => 'UsersController@getlist'));
