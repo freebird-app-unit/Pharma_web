@@ -101,7 +101,7 @@ class AdmincompleteController extends Controller
 					$order_type = 'Free';
 				}
 				$html.='<tr>
-					<td><span>'.$order->order_number.'</span></td>
+					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->customer_name.'</td>
 					<td>'.$order->neighbour_info.'</td>
 					<td>'.$order->customer_number.'</td>
