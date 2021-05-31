@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
@@ -26,11 +27,10 @@ use App\new_cities;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-//use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class PharmacyController extends Controller
 {
-	public function _pre($all_array){
+    public function _pre($all_array){
 		echo '<pre>';
 		print_r($all_array);
 		echo '</pre>';
@@ -82,8 +82,8 @@ class PharmacyController extends Controller
 
 		$response['status'] = 200;
 		$response['message'] = '';
-        $response['data']['currentPageIndex'] = '';
-        $response['data']['totalPage']='';
+        $response['data']['currentPageIndex'] = 0;
+        $response['data']['totalPage']=0;
         $response['data']['content'] = array();
 
 		$userdata = new_users::find($user_id);
@@ -120,6 +120,7 @@ class PharmacyController extends Controller
 					$params['is_intersection'] = "1";
 					if($close_time >= $current_time){
 						$params['city'] = $city;
+						$params['user_id'] = $user_id;
 						$params['logistic_current_status'] = true;
 						$params['logistic_id'] = -1;
 						$params['next_logistic_working_day'] = "";
@@ -129,6 +130,7 @@ class PharmacyController extends Controller
 						// next_logistic_working_day = ""
 					}else{
 						$params['city'] = $city;
+						$params['user_id'] = $user_id;
 						$params['logistic_current_status'] = false;
 						$params['logistic_id'] = -1;
 						$params['next_logistic_working_day'] = $this->GetNextDayLogic();
@@ -160,6 +162,7 @@ class PharmacyController extends Controller
 						$timing_logistic_detail = new_logistics::where('id',$final_logistics_detail->id)->where('close_time','>=', $current_time)->first();
 						if($timing_logistic_detail){
 							$params['city'] = $city;
+							$params['user_id'] = $user_id;
 							$params['logistic_current_status'] = true;
 							$params['next_logistic_working_day'] = "";
 							return $this->GetPharmacyLogisticWise($params,$encryption);
@@ -210,7 +213,8 @@ class PharmacyController extends Controller
 		$current_latitude = isset($search_array['current_latitude']) ? $search_array['current_latitude'] : '';
 		$current_longitude = isset($search_array['current_longitude']) ? $search_array['current_longitude'] : '';
 		$page = isset($search_array['page']) ? $search_array['page'] : '';
-		
+		$user_id = isset($search_array['user_id']) ? $search_array['user_id'] : '';
+
 		$pharmacies = $this->pharamcyList($city);
 		if(isset($pharmacies) && count($pharmacies)){
 			$pharmacyIds = array();
@@ -298,7 +302,7 @@ class PharmacyController extends Controller
             $per_page = 10;
             $response['status'] = 200;
 			$response['message'] = 'Pharmacy';
-            $response['data']['currentPageIndex'] = $page;
+            $response['data']['currentPageIndex'] = (int)$page;
             $response['data']['totalPage'] = ceil($total/$per_page);
             $orders = $this->paginate($pharmacy,$per_page,$page,[]);
             $data_array = $orders->toArray();
@@ -312,7 +316,7 @@ class PharmacyController extends Controller
 		$free_close = [];
 		$paid_open = [];
 		$paid_close = [];
-		
+		$referral_code = [];
 
 		if(count($data_array)>0){
 			$cnt = 0;
@@ -346,7 +350,35 @@ class PharmacyController extends Controller
 					$pharmacy_current_status = false;
 					$next_pharmacy_working_day = $this->GetNextDayLogic();
 				}
-				
+				$user_data = new_users::where('id',$user_id)->first();
+				if($user_data->referral_code != NULL){
+					if($user_data->referral_code == $val->referral_code){
+							$referral_code[] = [
+							'logistic_id' => $logistic_id,
+							'is_paid' => $val->is_paid,
+							'pharmacy_distance' => number_format($val->distance, 2),
+							'pharmacy_radius' => $radius,
+							'pharmacy_id' => $pharmacy_id,
+							'distance_unit' => 'Km',
+							'id'          => $val->id,
+							'name'          => $val->name,
+							'address' => $address,
+							'profile_image' => $profile_image,
+							'email' => $val->email,
+							'mobile_number' => $mobile_number,
+							'rating' => ($average_star2)?$average_star2:'0.0',
+							'discount' => $discount,
+							'delivery_hour' => $delivery_hour,
+							'total_order' => 0,
+							'logistic_current_status' => $logistic_current_status,
+							'is_intersection' => $is_intersection,
+							'next_logistic_working_day' => $next_logistic_working_day,
+							'close_time' => $close_time,
+							'pharmacy_current_status' => $pharmacy_current_status,
+							'next_pharmacy_working_day' => $next_pharmacy_working_day
+						];
+					}		
+				}
 				if ($val->is_paid == 'false' && $pharmacy_current_status) {
 					$free_open[] = [
 						'logistic_id' => $logistic_id,
@@ -464,7 +496,8 @@ class PharmacyController extends Controller
 		if($sortings == 'ratings'){
 			usort($pharmacy_arr, "sort_pharmacy_array_ratings");
 		}
-		$final_arr = array_merge($free_open, $free_close, $paid_open, $paid_close);
+		$final_arr_data = array_merge($referral_code,$free_open, $free_close, $paid_open, $paid_close);
+		$final_arr = array_unique($final_arr_data,SORT_REGULAR);
 		$response['data']['content'] = $final_arr;
 		
 		$response = json_encode($response);
@@ -747,4 +780,4 @@ class PharmacyController extends Controller
 		}
 		return $pharmacyChecked;
 	}
-}	
+}
