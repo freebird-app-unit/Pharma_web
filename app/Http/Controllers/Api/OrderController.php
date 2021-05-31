@@ -382,9 +382,6 @@ class OrderController extends Controller
 		$logistic_id = isset($content->logistic_id) ? $content->logistic_id : 0;
 		$is_external_delivery = isset($content->is_external_delivery) ? $content->is_external_delivery : '';
 		$is_intersection = isset($content->is_intersection) ? $content->is_intersection : '';
-		$category_id = isset($content->category_id) ? implode(',',$content->category_id) : '';
-		$quantity = isset($content->quantity) ? implode(',',$content->quantity) : '';
-		$manual_text = isset($content->manual_text) ? implode(',',$content->manual_text) : '';
 		$params = [
 			'user_id' => $user_id,
 			'pharmacy_id' => $pharmacy_id,
@@ -411,256 +408,248 @@ class OrderController extends Controller
 		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->first();
 		if(!empty($user)){*/
-			$userdata = new_users::find($user_id);
+		$userdata = new_users::find($user_id);
+		
+		if($userdata){
 			
-			if($userdata){
-				$prescription = 0;
-				$neworder = new new_orders();
-				if($order_type == "manual_order"){
-						$neworder->category_id = $category_id;	
-						$neworder->quantity = $quantity;	
-						$neworder->manual_text = $manual_text;	
-				}else{
-					$pre = Prescription::where('id','=',$prescription_id);
-					$prescriptions = new Prescription();
+			$pre = Prescription::where('id','=',$prescription_id);
+				$prescriptions = new Prescription();
+				
+				if (($pre->count()) == 0) {
 					
-					if (($pre->count()) == 0) {
+					$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$prescription_name,"is_delete"=>"0"])->get();
+					if(count($find_name)>0){
+						$response['status'] = 404;
+						$response['message'] = 'Prescription name already exists';
+						$response = json_encode($response);
+						//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 						
-						$find_name = Prescription::where(['user_id'=>$user_id,'name'=>$prescription_name,"is_delete"=>"0"])->get();
-						if(count($find_name)>0){
+						return response($response, 200);
+					}else{
+						//old code
+						/*$prescription_image = '';
+						if ($request->hasFile('prescription')) {
+							
+							$image         = $request->file('prescription');
+							$prescription_image = time() . '.' . $image->getClientOriginalExtension();
+
+							$img = Image::make($image->getRealPath());
+							$img->stream(); // <-- Key point
+
+							Storage::disk('public')->put('uploads/prescription/'.$prescription_image, $img, 'public');
+						} else {
 							$response['status'] = 404;
-							$response['message'] = 'Prescription name already exists';
+							$response['message'] = 'Please upload prescription';
+							
 							$response = json_encode($response);
 							$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 							
 							return response($cipher, 200);
-						}else{
-							//old code
-							/*$prescription_image = '';
-							if ($request->hasFile('prescription')) {
+						}*/
+
+						//new code
+						$prescriptions->user_id = $user_id;
+						$prescriptions->name = $prescription_name;
+						//$prescriptions->image = $prescription_image;
+						$prescriptions->save();
+						$prescription = $prescriptions->id;
+
+						$prescription_image = '';
+						if ($request->hasFile('prescription')) {
+							
+							$destinationPath = 'storage/app/public/uploads/prescription/' ; 
+							$images=array();
+							if($files=$request->file('prescription')){
 								
-								$image         = $request->file('prescription');
-								$prescription_image = time() . '.' . $image->getClientOriginalExtension();
-
-								$img = Image::make($image->getRealPath());
-								$img->stream(); // <-- Key point
-
-								Storage::disk('public')->put('uploads/prescription/'.$prescription_image, $img, 'public');
-							} else {
-								$response['status'] = 404;
-								$response['message'] = 'Please upload prescription';
-								
-								$response = json_encode($response);
-								$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-								
-								return response($cipher, 200);
-							}*/
-
-							//new code
-							$prescriptions->user_id = $user_id;
-							$prescriptions->name = $prescription_name;
-							//$prescriptions->image = $prescription_image;
-							$prescriptions->save();
-							$prescription = $prescriptions->id;
-
-							$prescription_image = '';
-							if ($request->hasFile('prescription')) {
-								
-								$destinationPath = 'storage/app/public/uploads/prescription/' ; 
-								$images=array();
-								if($files=$request->file('prescription')){
-									
-									foreach($files as $key => $file){
-										$check_table_empty = multiple_prescription::all();
-										$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
-										if(!empty($last_id)){
-											$update_id = $last_id->multiple_prescription_id + 1;	
-										}
-										$abc= new multiple_prescription();
-										$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
-										$abc->user_id = $prescriptions->user_id;
-										$abc->prescription_id = $prescriptions->id;
-										$abc->prescription_name = $prescriptions->name;
-										$abc->image = base64_encode(file_get_contents($file));
-										$abc->mimetype =  $file->getMimeType();
-										$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
-										$abc->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d');
-										$abc->is_delete = "0";
-										$abc->created_at = date('Y-m-d H:i:s');
-										$abc->updated_at = date('Y-m-d H:i:s');				
-										$abc->save();
-
-										//restore image and PDF
-										/*$image = $abc->image;  // your base64 encoded
-										if(str_replace('data:image/png;base64,', '', $image)){
-											$image = str_replace('data:image/png;base64,', '', $image);
-										    $image = str_replace(' ', '+', $image);
-										    $imageName = str::random(10) . '.png';
-											Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
-										}
-
-
-										if(str_replace('data:pdf/pdf;base64,', '', $image)){
-											 $image = str_replace('data:pdf/pdf;base64,', '', $image);
-									    	 $image = str_replace(' ', '+', $image);
-										     $imageName = str::random(10) . '.pdf';
-											 Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
-										}*/
-									    
-
-										$filename= time().'-'.$file->getClientOriginalName();
-										$mimetype = $file->getMimeType();
-										$tesw = $file->move($destinationPath, $filename);
-										$prescription_multiple_image = new prescription_multiple_image();
-										$prescription_multiple_image->prescription_id = $prescriptions->id;
-										$prescription_multiple_image->user_id = $prescriptions->user_id;
-										$prescription_multiple_image->name = $prescriptions->name;
-										$prescription_multiple_image->image = $filename;
-										$prescription_multiple_image->mimetype = $mimetype;
-										$prescription_multiple_image->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d');
-										$prescription_multiple_image->is_delete = '0';
-										$prescription_multiple_image->save();
+								foreach($files as $key => $file){
+									$check_table_empty = multiple_prescription::all();
+									$last_id = multiple_prescription::latest('multiple_prescription_id')->first();
+									if(!empty($last_id)){
+										$update_id = $last_id->multiple_prescription_id + 1;	
 									}
+									$abc= new multiple_prescription();
+									$abc->multiple_prescription_id=(count($check_table_empty)==0)?1:$update_id;
+									$abc->user_id = $prescriptions->user_id;
+									$abc->prescription_id = $prescriptions->id;
+									$abc->prescription_name = $prescriptions->name;
+									$abc->image = base64_encode(file_get_contents($file));
+									$abc->mimetype =  $file->getMimeType();
+									$abc->path = asset('storage/app/public/uploads/prescription/' . $file);
+									$abc->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d');
+									$abc->is_delete = "0";
+									$abc->created_at = date('Y-m-d H:i:s');
+									$abc->updated_at = date('Y-m-d H:i:s');				
+									$abc->save();
+
+									//restore image and PDF
+									/*$image = $abc->image;  // your base64 encoded
+									if(str_replace('data:image/png;base64,', '', $image)){
+										$image = str_replace('data:image/png;base64,', '', $image);
+									    $image = str_replace(' ', '+', $image);
+									    $imageName = str::random(10) . '.png';
+										Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+									}
+
+
+									if(str_replace('data:pdf/pdf;base64,', '', $image)){
+										 $image = str_replace('data:pdf/pdf;base64,', '', $image);
+								    	 $image = str_replace(' ', '+', $image);
+									     $imageName = str::random(10) . '.pdf';
+										 Storage::disk('public')->put('uploads/prescription_restore/'.$imageName, base64_decode($image), 'public');
+									}*/
+								    
+
+									$filename= time().'-'.$file->getClientOriginalName();
+									$mimetype = $file->getMimeType();
+									$tesw = $file->move($destinationPath, $filename);
+									$prescription_multiple_image = new prescription_multiple_image();
+									$prescription_multiple_image->prescription_id = $prescriptions->id;
+									$prescription_multiple_image->user_id = $prescriptions->user_id;
+									$prescription_multiple_image->name = $prescriptions->name;
+									$prescription_multiple_image->image = $filename;
+									$prescription_multiple_image->mimetype = $mimetype;
+									$prescription_multiple_image->prescription_date = ($prescriptions->prescription_date)?$prescriptions->prescription_date:date('Y-m-d');
+									$prescription_multiple_image->is_delete = '0';
+									$prescription_multiple_image->save();
 								}
-							} else {
-								$response['status'] = 404;
-								$response['message'] = 'Please upload prescription';
-								
-								$response = json_encode($response);
-								$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-								
-								return response($cipher, 200);
 							}
-						}
-					} else {
-						$pre = $pre->get();
-						$prescription = $prescription_id;
-						$prescriptions->image = $pre[0]->image;
-					} 
-				}
-				
-				
-				$audio_name = '';
-				$music_file = $request->file('audio'); 
-				if(isset($music_file)) { 
-					$filename= time().'-'.$music_file->getClientOriginalName();
-					Storage::disk('public')->put('uploads/audio/'.$filename, file_get_contents($music_file));
-					$audio_name = $filename; 
-				}
-				
-				$neworder->process_user_type ='';
-				$neworder->process_user_id = 0;
-				$neworder->pharmacy_id = $pharmacy_id;
-				$neworder->deliveryboy_id = 0;
-				$neworder->customer_id = $user_id;
-				$neworder->address_id = $address_id;
-				$neworder->logistic_user_id = $logistic_id;
-				$neworder->order_status = 'new';
-
-				/*$neworder->is_paid = (isset($content->logistic_id) && (Int)($content->logistic_id) > 0) ? 1 : 0;*/
-				$neworder->is_external_delivery = $is_external_delivery;
-				$neworder->is_intersection = $is_intersection;
-				if($neworder->is_external_delivery){
-					$neworder->external_delivery_initiatedby = 'customer';
-					$neworder->order_status = 'payment_pending';
-				}
-				$neworder->prescription_id = $prescription;
-				$neworder->order_type = $order_type;
-				$neworder->total_days = $total_days;
-				$neworder->reminder_days = $reminder_days;
-				$neworder->order_note = $order_note;
-				/*$neworder->rejectreason_id = 0;
-				$neworder->incompletereason_id = 0;
-				$neworder->cancelreason_id = 0;*/
-				$neworder->audio = $audio_name;
-				$neworder->leave_neighbour = $leaved_with_neighbor;
-				$neworder->delivery_charges_id = ($delivery_charges_id)?$delivery_charges_id:'1';
-				/*$neworder->receive_date = date('Y-m-d H:i:s');*/
-				$neworder->audio_info= date('Y-m-d H:i:s');
-				$neworder->create_datetime = date('Y-m-d H:i:s');
-				$neworder->created_at = date('Y-m-d H:i:s');
-				$neworder->updated_at = date('Y-m-d H:i:s');
-				if($neworder->save()){
-					$order_data = new_orders::where('id',$neworder->id)->first();
-					$pharmacy_name = new_pharmacies::where('id',$neworder->pharmacy_id)->first();
-
-					if($neworder->is_external_delivery == 0){
-						if($user_id > 0){
-							$ids = array();
-							$t_data = new_users::where('id',$neworder->customer_id)->first();
-							$sellerdetails = new_pharma_logistic_employee::where(['pharma_logistic_id'=>$order_data->pharmacy_id,'user_type'=>'seller'])->get();
+						} else {
+							$response['status'] = 404;
+							$response['message'] = 'Please upload prescription';
 							
-							$message = ' Order Create '. $order_data->order_number.' User Name : '. $t_data->name;
-							$seller_id = [];
-							foreach ($sellerdetails as $sellerdetail) {
-								if($sellerdetail->fcm_token!=''){
-									$ids[] = $sellerdetail->fcm_token;
-									$seller_id[] = $sellerdetail->id;
-								}
-								$msg = array
-								(
-									'body'   => ' Order Create '. $order_data->order_number.' User Name : '. $t_data->name ,
-									'title'     => 'Order Created'
-								);
-								
-								$notification = new notification_seller();
-								$notification->user_id=$sellerdetail->id;
-								$notification->order_id=$order_data->id;
-								$notification->order_status=$order_data->order_status;
-								$notification->subtitle=$msg['body'];
-								$notification->title=$msg['title'];
-								$notification->created_at=date('Y-m-d H:i:s');
-								$notification->save();
-							}
+							$response = json_encode($response);
+							//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 							
-							if (count($ids) > 0) {					
-								Helper::sendNotification($ids, $message, 'Order Created', $user->id, 'user', $seller_id, 'seller', $ids);
-
-							}
+							return response($response, 200);
 						}
 					}
-
-					if(!empty($order_data)){
-						$data = [
-							'name' => $pharmacy_name->name,
-							'orderno'=>$order_data->order_number
-						];
-						$email = $pharmacy_name->email;
-						Mail::send('email.createorder', $data, function ($message) use ($email) {
-								$message->to($email)->subject('Pharma - Order Create');
-						});
-					}
-
-					$update_payment_id = new_orders::where('id',$neworder->id)->first();
-					$update_payment_id->payment_order_id = time().$neworder->id;
-					$update_payment_id->save();
-					$pharmacy_name = new_pharmacies::where('id',$neworder->pharmacy_id)->first();
-					$response['data']['payment_order_id'] = $update_payment_id->payment_order_id;
-					$response['data']['order_id'] = $update_payment_id->id;
-					$response['data']['order_message'] ='Your order '.$update_payment_id->order_number.' has been placed successfully.\n'.$pharmacy_name->name.' will accept your order soon.';
-					
-					
-					$response['status'] = 200;
-					$response['message'] = 'Your order has been successfully placed';
-
 				} else {
-					$response['status'] = 404;
-					$response['message'] = 'Something went wrong';
-				}			
-			}else{
-				$response['status'] = 404;
-				$response['message'] = 'User not found';
+					$pre = $pre->get();
+					$prescription = $prescription_id;
+					$prescriptions->image = $pre[0]->image;
+				} 
+			
+			$audio_name = '';
+			$music_file = $request->file('audio'); 
+			if(isset($music_file)) { 
+				$filename= time().'-'.$music_file->getClientOriginalName();
+				Storage::disk('public')->put('uploads/audio/'.$filename, file_get_contents($music_file));
+				$audio_name = $filename; 
 			}
-
+			$neworder = new new_orders();
+			$neworder->process_user_type ='';
+			$neworder->process_user_id = 0;
+			$neworder->pharmacy_id = $pharmacy_id;
+			$neworder->deliveryboy_id = 0;
+			$neworder->customer_id = $user_id;
+			$neworder->address_id = $address_id;
+			$neworder->logistic_user_id = $logistic_id;
+			$neworder->order_status = 'new';
+			$neworder->deposit_returned = 0;
+			/*$neworder->is_paid = (isset($content->logistic_id) && (Int)($content->logistic_id) > 0) ? 1 : 0;*/
+			$neworder->is_external_delivery = $is_external_delivery;
+			$neworder->is_intersection = $is_intersection;
 			if($neworder->is_external_delivery){
-				$response['data']['payment_url'] = 'create_transaction/'.$neworder->id;
+				$neworder->external_delivery_initiatedby = 'customer';
+				$neworder->order_status = 'payment_pending';
 			}
+			$neworder->prescription_id = $prescription;
+			$neworder->order_type = $order_type;
+			$neworder->total_days = $total_days;
+			$neworder->reminder_days = $reminder_days;
+			$neworder->order_note = $order_note;
+			/*$neworder->rejectreason_id = 0;
+			$neworder->incompletereason_id = 0;
+			$neworder->cancelreason_id = 0;*/
+			$neworder->audio = $audio_name;
+			$neworder->leave_neighbour = $leaved_with_neighbor;
+			$neworder->delivery_charges_id = ($delivery_charges_id)?$delivery_charges_id:'1';
+			/*$neworder->receive_date = date('Y-m-d H:i:s');*/
+			$neworder->audio_info= date('Y-m-d H:i:s');
+			$neworder->create_datetime = date('Y-m-d H:i:s');
+			$neworder->created_at = date('Y-m-d H:i:s');
+			$neworder->updated_at = date('Y-m-d H:i:s');
+			if($neworder->save()){
+				$orderid = $neworder->id;
+				$order_number = $this->generate_unique_number($orderid);
+
+				$update_payment_id = new_orders::where('id',$neworder->id)->first();
+				$update_payment_id->payment_order_id = time().$neworder->id;
+				$update_payment_id->save();
+				if($neworder->is_external_delivery == 0){
+					if($user_id > 0){
+						$ids = array();
+						$order_data = new_orders::where('id',$neworder->id)->first();
+						$t_data = new_users::where('id',$neworder->customer_id)->first();
+						$sellerdetails = new_pharma_logistic_employee::where(['pharma_logistic_id'=>$order_data->pharmacy_id,'user_type'=>'seller'])->get();
+						
+						$message = ' Order Create '. $order_data->order_number.' User Name : '. $t_data->name;
+						$seller_id = [];
+						foreach ($sellerdetails as $sellerdetail) {
+							if($sellerdetail->fcm_token!=''){
+								$ids[] = $sellerdetail->fcm_token;
+								$seller_id[] = $sellerdetail->id;
+							}
+							$msg = array
+							(
+								'body'   => ' Order Create '. $order_data->order_number.' User Name : '. $t_data->name ,
+								'title'     => 'Order Created'
+							);
+							if(count($ids)>0){
+								$fields = array(
+									'to' => $sellerdetail->fcm_token,
+									'notification' => $msg
+								);
+								// $this->sendPushNotificationSeller($fields);
+							}
+							$notification = new notification_seller();
+							$notification->user_id=$sellerdetail->id;
+							$notification->order_id=$order_data->id;
+							$notification->order_status=$order_data->order_status;
+							$notification->subtitle=$msg['body'];
+							$notification->title=$msg['title'];
+							$notification->created_at=date('Y-m-d H:i:s');
+							$notification->save();
+						}
+						
+						/*if (count($ids) > 0) {					
+							Helper::sendNotification($ids, $message, 'Order Created', $user->id, 'user', $seller_id, 'seller', $ids);
+
+						}*/
+					}
+				}
+			}
+			/*$order_data = new_orders::where('id',$neworder->id)->first();
+			if(!empty($order_data)){
+				$email_data = new_pharmacies::where('id',$neworder->pharmacy_id)->first();
+				$name=$email_data->name;
+				$order_number=$order_data->order_number;
+				$to=$email_data->email;
+				$subject='Pharma - Order Create';
+	            Helper::sendMail($name,$order_number,$to,$subject);
+			}*/
+			$pharmacy_name = new_pharmacies::where('id',$neworder->pharmacy_id)->first();
+			$response['data']['payment_order_id'] = $update_payment_id->payment_order_id;
+			$response['data']['order_id'] = $update_payment_id->id;
+			$response['data']['order_message'] ='Your order '.$update_payment_id->order_number.' has been placed successfully.\n'.$pharmacy_name->name.' will accept your order soon.';
+			
+              
+			$response['status'] = 200;
+			$response['message'] = 'Your order has been successfully placed';
+		}else{
+			$response['status'] = 404;
+			$response['message'] = 'User not found';
+		}
+
+		if($neworder->is_external_delivery){
+			$response['data']['payment_url'] = 'create_transaction/'.$neworder->id;
+		}
 
 		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}*/
-		
+	   	}
+		*/
         $response = json_encode($response);
 		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
