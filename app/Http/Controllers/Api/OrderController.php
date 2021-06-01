@@ -1088,8 +1088,8 @@ class OrderController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$order_id = isset($content->order_id) ? $content->order_id : '';
@@ -1107,9 +1107,9 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
         }
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 		$orders_data1 = new_orders::with('prescriptions')->where(['customer_id'=>$user_id,'id'=> $order_id])->get();
 		$orders_data2 = new_order_history::with('prescriptions')->where(['customer_id'=>$user_id,'id'=> $order_id])->get();
 
@@ -1174,6 +1174,20 @@ class OrderController extends Controller
 	                                    ];
                 	}
                 }
+                 $manual_order = [];
+                 $manual_order_data = manual_order::where('order_id',$orders[0]->id)->get();
+                 if(count($manual_order_data)>0){
+                 	foreach ($manual_order_data as $manual) {
+                 		$manual_order[] = [
+                 			'id' => $manual->id,
+                 			'order_id' => $manual->order_id,
+                 			'category_id' => $manual->category_id,
+                 			'product' => $manual->product,
+                 			'qty' => $manual->qty,
+                 			'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                 		];
+                 	}
+                 }
 			if (!empty($orders[0]->audio)) {
 				$filename = storage_path('app/public/uploads/audio/' . $orders[0]->audio);
 				if (File::exists($filename)) {
@@ -1259,6 +1273,7 @@ class OrderController extends Controller
 			$orders_arr1[0]['destination_address'] = ($destination_address)?$destination_address:'';
 			
 			$orders_arr1[0]['order_detail_image'] = $images_array;
+			$orders_arr1[0]['manual_order'] = $manual_order;
 			$orders_arr1[0]['audio'] = $audio_url;
 			$orders_arr1[0]['audio_info'] = date('d-m-Y h:i A',strtotime($orders[0]->audio_info));
 			$orders_arr1[0]['order_type'] = ($orders[0]->order_type!='')?$orders[0]->order_type:'';
@@ -1308,14 +1323,14 @@ class OrderController extends Controller
 		}
 		$response['message'] = 'My cart detail';
 		$response['data'] = $orders_arr1;
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	
 	}
 
