@@ -34,7 +34,7 @@ class UserPharmacyController extends Controller
 		print_r($all_array);
 		echo '</pre>';
 	}
-	public function pharmacylist(Request $request)
+	public function pharmacylist_newversion(Request $request)
 	{
 		$response = array();
 		$encryption = new \MrShan0\CryptoLib\CryptoLib();
