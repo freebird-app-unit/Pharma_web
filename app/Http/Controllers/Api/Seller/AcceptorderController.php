@@ -24,6 +24,7 @@ use App\new_logistics;
 use App\new_sellers;
 use App\SellerModel\new_pharmacies;
 use App\new_delivery_charges;
+use App\manual_order;
 use Validator;
 use File;
 use Image;
@@ -180,6 +181,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                     $manual_order = [];
+                     $manual_order_data = manual_order::where('order_id',$value['id'])->get();
+                     if(count($manual_order_data)>0){
+                        foreach ($manual_order_data as $manual) {
+                            $manual_order[] = [
+                                'id' => $manual->id,
+                                'order_id' => $manual->order_id,
+                                'category_id' => $manual->category_id,
+                                'product' => $manual->product,
+                                'qty' => $manual->qty,
+                                'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                            ];
+                        }
+                     }
                     $user_data = new_users::where('id',$value['customer_id'])->first();
                     if(!empty($user_data)){
                         $name =$user_data->name;
@@ -208,6 +223,7 @@ class AcceptorderController extends Controller
                                  'total_days' => ($value['total_days'])?$value['total_days']:'',
                                  'customer_name' => $name,
                                  'prescription_image' => $images_array,
+                                 'manual_order' => $manual_order,
                                  'order_note' => ($value['order_note'])?$value['order_note']:'',
                                  'checking_by' => $checking_by,
                                  'checking_by_user_id' => ($value['checking_by'])?$value['checking_by']:'',
