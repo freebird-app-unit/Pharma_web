@@ -344,6 +344,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                                 $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value['id'])->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -362,6 +376,7 @@ class AcceptorderController extends Controller
                                     'order_id' => $value['id'],
                                     'order_number' => $value['order_number'],
                                     'prescription_image' => $images_array,
+                                    'manual_order' => $manual_order,
                                     'customer_name' => $name,
                                     'accepted_date' => $value['accept_datetime'],
                                     'delivery_type' => $delivery_type,
@@ -665,7 +680,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
-
+                                $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value['id'])->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -694,6 +722,7 @@ class AcceptorderController extends Controller
                                     'order_id' => $value['id'],
                                     'order_number' => $value['order_number'],
                                     'prescription_image' => $images_array,
+                                    'manual_order' => $manual_order,
                                     'customer_name' => $name,
                                     'mobile_number' => $mobile,
                                     'deliveryboy_id' => $value['deliveryboy_id'],
@@ -820,6 +849,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                                $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value['id'])->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -838,6 +881,7 @@ class AcceptorderController extends Controller
                                     'order_id' => $value['id'],
                                     'order_number' => $value['order_number'],
                                     'prescription_image' => $images_array,
+                                    'manual_order' => $manual_order,
                                     'customer_name' => $name,
                                     'reason' =>  ($value['reject_cancel_reason'])?$value['reject_cancel_reason']:'',
                                     'delivery_type' => $delivery_type,
@@ -958,6 +1002,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                                $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value['id'])->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -976,6 +1034,7 @@ class AcceptorderController extends Controller
                                     'order_id' => $value['order_id'],
                                     'order_number' => $value['order_number'],
                                     'prescription_image' => $images_array,
+                                    'manual_order' => $manual_order,
                                     'customer_name' => $name,
                                     'reason' =>($value['reject_cancel_reason'])?$value['reject_cancel_reason']:'',
                                     'delivery_type' => $delivery_type,
@@ -1164,6 +1223,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                                $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value['id'])->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -1193,6 +1266,7 @@ class AcceptorderController extends Controller
                                     'order_id' => $value['order_id'],
                                     'order_number' => $value['order_number'],
                                     'prescription_image' => $images_array,
+                                    'manual_order' => $manual_order,
                                     'customer_name' => $name,
                                     'customer_mobilenumber' =>$mobile,
                                     'deliveryboy_id' => $value['deliveryboy_id'],
@@ -2088,6 +2162,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                                $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value['id'])->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                 $user_data = new_users::where('id',$value['customer_id'])->first();
                                 if(!empty($user_data)){
                                     $name =$user_data->name;
@@ -2110,6 +2198,7 @@ class AcceptorderController extends Controller
                                         'order_number' => $value['order_number'],
                                         'delivery_type' => $delivery_type,
                                         'prescription_image' => $images_array,
+                                        'manual_order' => $manual_order,
                                         'customer_name' => $name,
                                         'reason' => $value['reject_cancel_reason'],
                                         'return_confirmtime' => ($value['return_confirmtime'])?$value['return_confirmtime']:'',
@@ -3392,6 +3481,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                                $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value->id)->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
                                 foreach ($invoice_data as $invoice) {
@@ -3499,6 +3602,7 @@ class AcceptorderController extends Controller
                                     'order_id' => $value->id,
                                     'order_number' => $value->order_number,
                                     'prescription_image' => $images_array,
+                                    'manual_order' => $manual_order,
                                     'invoice'=> $invoice_images,
                                     'order_note' => $value->order_note,
                                     'order_type' => $value->order_type,
@@ -3568,6 +3672,20 @@ class AcceptorderController extends Controller
                                         'image' => $pres_image
                                     ];
                                 }
+                                $manual_order = [];
+                                 $manual_order_data = manual_order::where('order_id',$value->id)->get();
+                                 if(count($manual_order_data)>0){
+                                    foreach ($manual_order_data as $manual) {
+                                        $manual_order[] = [
+                                            'id' => $manual->id,
+                                            'order_id' => $manual->order_id,
+                                            'category_id' => $manual->category_id,
+                                            'product' => $manual->product,
+                                            'qty' => $manual->qty,
+                                            'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                                        ];
+                                    }
+                                 }
                                 $invoice_images=[];
                                 $invoice_data = invoice::where('order_id',$order_id)->get();
                                 foreach ($invoice_data as $invoice) {
@@ -3675,6 +3793,7 @@ class AcceptorderController extends Controller
                                     'order_id' => $value->order_id,
                                     'order_number' => $value->order_number,
                                     'prescription_image' => $images_array,
+                                    'manual_order' => $manual_order,
                                     'invoice'=> $invoice_images,
                                     'order_note' => $value->order_note,
                                     'order_type' => $value->order_type,
