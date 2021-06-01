@@ -871,8 +871,8 @@ class OrderController extends Controller
 		$secretyKey = env('ENC_KEY');
 		
 		$data = $request->input('data');
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		
 		$user_id = isset($content->user_id) ? $content->user_id : '';
 		$is_completed = isset($content->is_completed) ? $content->is_completed : '';
@@ -891,9 +891,9 @@ class OrderController extends Controller
         if ($validator->fails()) {
             return $this->send_error($validator->errors()->first());  
 		}
-		$token =  $request->bearerToken();
+		/*$token =  $request->bearerToken();
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
-		if(count($user)>0){
+		if(count($user)>0){*/
 		$orders_arr_data1 = array();
 
 		if ($is_completed == 0) {
@@ -976,7 +976,7 @@ class OrderController extends Controller
 				}*/	
 				//new code
 				$images_array=[];
-                    $image_data = prescription_multiple_image::where('prescription_id',$orders[0]->prescription_id)->get();
+                    $image_data = prescription_multiple_image::where('prescription_id',$val->prescription_id)->get();
                     if(count($image_data)>0){
                     foreach ($image_data as $pres) {
                          $pres_image = '';
@@ -997,7 +997,7 @@ class OrderController extends Controller
                         ];
                     }
                 }else{
-                	$old_data= Prescription::where('id',$orders[0]->prescription_id)->first();
+                	$old_data= Prescription::where('id',$val->prescription_id)->first();
                 	if(!empty($old_data)){
                 		$pres_image = '';
                                         if (!empty($old_data->image)) {
@@ -1017,11 +1017,26 @@ class OrderController extends Controller
 	                                    ];
                 	}
                 }
+                $manual_order = [];
+                 $manual_order_data = manual_order::where('order_id',$val->ID)->get();
+                 if(count($manual_order_data)>0){
+                 	foreach ($manual_order_data as $manual) {
+                 		$manual_order[] = [
+                 			'id' => $manual->id,
+                 			'order_id' => $manual->order_id,
+                 			'category_id' => $manual->category_id,
+                 			'product' => $manual->product,
+                 			'qty' => $manual->qty,
+                 			'date' => date('d-m-Y h:i A',strtotime($manual->created_at))
+                 		];
+                 	}
+                 }
 				$orders_arr_data1[$key]['id'] = $val->ID;
 				$orders_arr_data1[$key]['pharmacy_id'] = $val->pharmacy_id;
 				$orders_arr_data1[$key]['prescription_name'] = !empty($val->prescriptions->name) ? $val->prescriptions->name : '';
 				$orders_arr_data1[$key]['order_number'] = ($val->order_number)?$val->order_number:'';
 				$orders_arr_data1[$key]['prescription'] = $images_array;
+				$orders_arr_data1[$key]['manual_order'] = $manual_order;
 				$orders_arr_data1[$key]['pharmacy'] = isset($val->pharmacy->name) ? $val->pharmacy->name : '';
 				$orders_arr_data1[$key]['pharmacy_address'] = isset($val->pharmacy->address) ? $val->pharmacy->address : '';
 				/*$orders_arr[$key]['logistic_id'] = 	$val->logistic_user_id;*/
@@ -1049,14 +1064,14 @@ class OrderController extends Controller
 			$response['status'] = 404;
 		}
 		$response['data']->content = $orders_arr_data1;
-		}else{
+		/*}else{
 	    		$response['status'] = 401;
 	            $response['message'] = 'Unauthenticated';
-	   	}
+	   	}*/
         $response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
 		
-        return response($cipher, 200);
+        return response($response, 200);
 	
 	}
 
