@@ -382,6 +382,7 @@ class OrderController extends Controller
 		$logistic_id = isset($content->logistic_id) ? $content->logistic_id : 0;
 		$is_external_delivery = isset($content->is_external_delivery) ? $content->is_external_delivery : '';
 		$is_intersection = isset($content->is_intersection) ? $content->is_intersection : '';
+		$manual_order_data = isset($content->manual_order_data) ? $content->manual_order_data : '';
 		$params = [
 			'user_id' => $user_id,
 			'pharmacy_id' => $pharmacy_id,
@@ -411,8 +412,19 @@ class OrderController extends Controller
 		$userdata = new_users::find($user_id);
 		
 		if($userdata){
-			
-			$pre = Prescription::where('id','=',$prescription_id);
+			if($order_type == "manual_order"){
+				$ids = [];
+				foreach ($manual_order_data as  $value) {
+					$manual_order = new manual_order();
+					$manual_order->category_id = $value->category_id;
+					$manual_order->product = $value->product;
+					$manual_order->qty = $value->qty;
+					$manual_order->save();
+					array_push($ids,$manual_order->id);
+				}
+				$prescription = 0;
+			}else{
+					$pre = Prescription::where('id','=',$prescription_id);
 				$prescriptions = new Prescription();
 				
 				if (($pre->count()) == 0) {
@@ -528,7 +540,7 @@ class OrderController extends Controller
 					$prescription = $prescription_id;
 					$prescriptions->image = $pre[0]->image;
 				} 
-			
+			}
 			$audio_name = '';
 			$music_file = $request->file('audio'); 
 			if(isset($music_file)) { 
@@ -572,7 +584,13 @@ class OrderController extends Controller
 			if($neworder->save()){
 				$orderid = $neworder->id;
 				$order_number = $this->generate_unique_number($orderid);
-
+				if(!empty($ids)){
+					foreach ($ids as $id) {
+						$manual_order_store = manual_order::where('id',$id)->first();
+						$manual_order_store->order_id = $neworder->id;
+						$manual_order_store->save();
+ 					}
+				}
 				$update_payment_id = new_orders::where('id',$neworder->id)->first();
 				$update_payment_id->payment_order_id = time().$neworder->id;
 				$update_payment_id->save();
