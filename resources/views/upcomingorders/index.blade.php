@@ -50,8 +50,8 @@
 								<!-- <th width="10%" data-priority="2">Order type</th> -->
 								<!-- <th width="10%" data-priority="3">Prescription Name</th> -->
 								<!-- <th width="10%" data-priority="4">Order note</th> -->
-								<th width="20%" data-priority="5">Customer name</th>
 								<th width="20%" data-priority="6">Order number</th>
+								<th width="20%" data-priority="5">Customer name</th>
 								<th width="20%" data-priority="6">Address</th>
 								<th width="10%" data-priority="9">Order date</th>
 								<th width="20%" data-priority="10">Action</th>
