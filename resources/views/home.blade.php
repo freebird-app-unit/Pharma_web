@@ -647,15 +647,8 @@ if($user->user_type=='pharmacy' || $user->user_type=='seller'){
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<input type="hidden" name="home" value="home">
 				<input type="hidden" id="reject_id" name="reject_id" value=""/>
-				<label>Select reject reason</label>
-				<select id="reject_reason" name="reject_reason" class="form-control" required>
-					<option value="">Select reason</option>
-					<?php 
-					foreach($reject_reason as $raw){
-						echo '<option value="'.$raw->reason.'">'.$raw->reason.'</option>';
-					}
-					?>
-				</select>
+				<label class="control-label col-md-2 col-sm-2 col-xs-12" for="reject_reason">Reason<span class="required">*</span></label>
+					<input type="text" placeholder="Reason" class="form-control" name="reject_reason" id="reject_reason">
 				<br>
 				<a href="javascript:;" class="btn btn-info" data-dismiss="modal" aria-hidden="true">Cancel</a>
 				<input type="submit" name="submit" value="Send" class="btn btn-success"/>
