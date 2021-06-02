@@ -57,7 +57,7 @@ class PharmacyrejectedController extends Controller
 		
 		
 		//get list
-		$order_detail = new_orders::select('new_orders.id','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_orders.rejectby_user','new_orders.reject_user_id')
+		$order_detail = new_orders::select('new_orders.id','new_orders.order_type','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_orders.rejectby_user','new_orders.reject_user_id')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->where('new_orders.order_status','reject');
@@ -100,9 +100,12 @@ class PharmacyrejectedController extends Controller
 					}
 					
 				}
-				$html.='<tr>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
-					<td>'.$order->customer_name.'</td>
+				if($order->order_type == "manual_order"){
+					$html.='<tr><td><a href="'.url('/orders/order_details_manual/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}else{
+					$html.='<tr><td><a href="'.url('/orders/order_details/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}
+				$html.='<td>'.$order->customer_name.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order->myaddress.'</td>
 					<td>'.$reject_by.'</td>
