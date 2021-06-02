@@ -19,6 +19,7 @@ use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
 use App\new_users;
+use App\new_sellers;
 use App\new_pharmacies;
 use App\new_delivery_charges;
 
@@ -224,7 +225,7 @@ class AcceptedordersController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_orders::select('new_orders.id','accept_datetime','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name')
+		$order_detail = new_orders::select('new_orders.id','accept_datetime','order_number','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name','new_orders.process_user_id','new_orders.process_user_type')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
@@ -259,12 +260,17 @@ class AcceptedordersController extends Controller
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
 				$accept_date = ($order->accept_datetime!='')?date('d-M-Y h:i a', strtotime($order->accept_datetime)):'';
-
 				$process_user_name = '';
 				if($order->process_user_type == 'pharmacy'){
-					$process_user_name = $order->process_user_name;
+					$pharmacy_name = new_pharmacies::where('id',$order->process_user_id)->first();
+					if(!empty($pharmacy_name)){
+						$process_user_name = $pharmacy_name->name;
+					}
 				} else {
-					$process_user_name = $order->process_employee_name;
+					$seller_name = new_sellers::where('id',$order->process_user_id)->first();
+					if(!empty($seller_name)){
+						$process_user_name = $seller_name->name;
+					}
 				}
 
 				$html.='<tr>
