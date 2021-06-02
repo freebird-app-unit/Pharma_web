@@ -54,7 +54,7 @@ class OutfordeliveryController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_orders::select('new_orders.id','assign_datetime','order_number','deliveryboy_id','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image', 'delivery_user.name as assign_to', 'logistic.name as logistic_name', 'logistic.code as logistic_code','new_orders.is_external_delivery as is_external_delivery','new_orders.logistic_user_id as logistic_user_id')
+		$order_detail = new_orders::select('new_orders.id','new_orders.order_type','assign_datetime','order_number','deliveryboy_id','new_users.name as customer_name','new_users.mobile_number as customer_number','new_users.id as customerid', 'prescription.name as prescription_name', 'prescription.image as prescription_image', 'delivery_user.name as assign_to', 'logistic.name as logistic_name', 'logistic.code as logistic_code','new_orders.is_external_delivery as is_external_delivery','new_orders.logistic_user_id as logistic_user_id')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('new_logistics AS logistic', 'logistic.id', '=', 'new_orders.logistic_user_id')
 		->leftJoin('new_pharma_logistic_employee AS delivery_user', 'delivery_user.id', '=', 'new_orders.deliveryboy_id')
@@ -101,9 +101,12 @@ class OutfordeliveryController extends Controller
 				}
 				
 				//$assign_to = $order->logistic_code;
-				$html.='<tr>
-					<td>'.ucwords(strtolower($order->customer_name)).'</td>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
+				if($order->order_type == "manual_order"){
+					$html.='<tr><td><a href="'.url('/orders/order_details_manual/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}else{
+					$html.='<tr><td><a href="'.url('/orders/order_details/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}
+				$html.='<td>'.ucwords(strtolower($order->customer_name)).'</td>
 					<td class="text-warning">'.$assign_to.'</td>
 					<td><span class="label label-warning">'.$created_at.'</span></td>';
 				$html.='</tr>';
