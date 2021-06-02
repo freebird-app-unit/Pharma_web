@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_orders;
+use App\new_sellers;
 use App\new_users;
 use App\new_pharmacies;
 use App\new_delivery_charges;
@@ -57,7 +58,7 @@ class AdmincceptedordersController extends Controller
 		$pharmacy_id=(isset($_POST['pharmacy_id']) && $_POST['pharmacy_id']!='')?$_POST['pharmacy_id']:'';
 		$logistic_id=(isset($_POST['logistic_id']) && $_POST['logistic_id']!='')?$_POST['logistic_id']:'';
 		
-		$order_detail = new_orders::select('new_orders.*','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name')
+		$order_detail = new_orders::select('new_orders.*','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name','new_orders.process_user_type','new_orders.process_user_id')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
@@ -90,7 +91,18 @@ class AdmincceptedordersController extends Controller
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
 				$created_at = ($order->created_at!='')?date('d-M-Y h:i a', strtotime($order->created_at)):'';
-				$process_user_name = $order->process_user_name.' '.$order->process_employee_name;
+				$process_user_name = '';
+				if($order->process_user_type == 'pharmacy'){
+					$pharmacy_name = new_pharmacies::where('id',$order->process_user_id)->first();
+					if(!empty($pharmacy_name)){
+						$process_user_name = $pharmacy_name->name;
+					}
+				} else {
+					$seller_name = new_sellers::where('id',$order->process_user_id)->first();
+					if(!empty($seller_name)){
+						$process_user_name = $seller_name->name;
+					}
+				}
 				if($order->is_external_delivery == 1){
 					$order_type = 'Paid';
 				}else{
