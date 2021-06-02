@@ -82,6 +82,7 @@
 								<th width="15%" data-priority="6">Customer contact number</th>
 								<th width="20%" data-priority="6">Address</th>
 								<th width="15%" data-priority="7">Cancel By</th>
+								<th width="15%" data-priority="7">Pharmacy</th>
 								<th width="15%" data-priority="7">Order Type</th>
 								<th width="10%" data-priority="8">Order date</th>
 							</tr>
