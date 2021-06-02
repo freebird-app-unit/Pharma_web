@@ -20,6 +20,7 @@ use App\new_logistics;
 use App\new_orders;
 use App\new_users;
 use App\new_pharmacies;
+use App\new_sellers;
 use App\new_delivery_charges;
 
 class AdminRejectedController extends Controller
@@ -57,7 +58,7 @@ class AdminRejectedController extends Controller
 		$pharmacy_id=(isset($_POST['pharmacy_id']) && $_POST['pharmacy_id']!='')?$_POST['pharmacy_id']:'';
 		$logistic_id=(isset($_POST['logistic_id']) && $_POST['logistic_id']!='')?$_POST['logistic_id']:'';
 		
-		$order_detail = new_orders::select('new_orders.*','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name')
+		$order_detail = new_orders::select('new_orders.*','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress','new_delivery_charges.delivery_type as delivery_type', 'process_user.name as process_user_name', 'process_employee.name as process_employee_name','new_orders.reject_user_id','new_orders.rejectby_user','new_orders.pharmacy_id')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
@@ -91,7 +92,33 @@ class AdminRejectedController extends Controller
 		if(count($order_detail)>0){
 			foreach($order_detail as $order){
 				$created_at = ($order->created_at!='')?date('d-M-Y h:i a', strtotime($order->created_at)):'';
-				$process_user_name = $order->process_user_name.' '.$order->process_employee_name;
+				$process_user_name = '';
+				if($order->rejectby_user == 'pharmacy'){
+					$pharmacy_name = new_pharmacies::where('id',$order->reject_user_id)->first();
+					if(!empty($pharmacy_name)){
+						$process_user_name = $pharmacy_name->name;
+					}
+				} elseif ($order->rejectby_user == 'seller') {
+					$seller_name = new_sellers::where('id',$order->reject_user_id)->first();
+					if(!empty($seller_name)){
+						$process_user_name = $seller_name->name;
+					}
+				} elseif ($order->rejectby_user == 'logistic') {
+					$logistic_name = new_logistics::where('id',$order->reject_user_id)->first();
+					if(!empty($logistic_name)){
+						$process_user_name = $logistic_name->name;
+					}
+				} else{
+					$deliveryboy_name = new_pharma_logistic_employee::where('id',$order->reject_user_id)->first();
+					if(!empty($deliveryboy_name)){
+						$process_user_name = $deliveryboy_name->name;
+					}
+				}
+				$name_phar = '';
+				$phar_name = new_pharmacies::where('id',$order->pharmacy_id)->first();
+				if(!empty($phar_name)){
+					$name_phar = $phar_name->name;
+				}
 				if($order->is_external_delivery == 1){
 					$order_type = 'Paid';
 				}else{
@@ -103,6 +130,7 @@ class AdminRejectedController extends Controller
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order->myaddress.'</td>
 					<td>'.$process_user_name.'</td>
+					<td>'.$name_phar.'</td>
 					<td>'.$order_type.'</td>
 					<td>'.$created_at.'</td></tr>';
 			}
