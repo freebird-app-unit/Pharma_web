@@ -18,7 +18,7 @@ use App\new_orders;
 use App\new_order_history;
 use App\new_users;
 use App\new_pharmacies;
-
+use App\category;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
@@ -74,7 +74,7 @@ class OrdersController extends Controller
 		$filter_end_date=(isset($_POST['filter_end_date']) && $_POST['filter_end_date']!='')?$_POST['filter_end_date']:'';
 		$filter_start_date=(isset($_POST['filter_start_date']) && $_POST['filter_start_date']!='')?$_POST['filter_start_date']:'';
 
-		$order_detail = new_orders::select('new_orders.id','order_status','new_orders.created_at','order_number','is_external_delivery','deliveryboy_id','process_user_id','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as address', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
+		$order_detail = new_orders::select('new_orders.id','new_orders.order_type','order_status','new_orders.created_at','order_number','is_external_delivery','deliveryboy_id','process_user_id','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as address', 'prescription.name as prescription_name', 'prescription.image as prescription_image')
 		->leftJoin('new_users', 'new_users.id', '=', 'new_orders.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id');
@@ -139,7 +139,11 @@ class OrdersController extends Controller
 						$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
 					}
 				}
-				$html.='<tr><td><a href="'.url('/orders/order_details/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				if($order->order_type == "manual_order"){
+					$html.='<tr><td><a href="'.url('/orders/order_details_manual/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}else{
+					$html.='<tr><td><a href="'.url('/orders/order_details/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}
 				if($order->is_external_delivery > 0){
 					$html.=' <i class="ti-truck" style="color: orange;"></i>';
 				}
@@ -440,5 +444,64 @@ class OrdersController extends Controller
 		$data['site_title'] = 'Prescription | ' . $this->data['site_title'];
 		$data['reject_reason'] = Rejectreason::where('type', 'pharmacy')->get();
         return view('orders.order_details', $data);
+	}
+	public function order_details_manual($id)
+    {
+		$user_id = Auth::user()->user_id;
+
+		if(new_order_history::find($id)){
+			$order = new_order_history::select('new_order_history.*', 'prescription.name as prescription_name', 'prescription.image as prescription_image')->leftJoin('prescription', 'prescription.id', '=', 'new_order_history.prescription_id')->where('new_order_history.id', $id)->first();
+			$order_detail = new_order_history::select('new_order_history.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','ua.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname','manual_order.product','manual_order.category_id','manual_order.order_id','manual_order.qty')
+			->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_order_history.deliveryboy_id')
+			->leftJoin('new_pharmacies as ua', 'ua.id', '=', 'new_order_history.pharmacy_id')
+			->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
+			->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
+			->leftJoin('manual_order', 'manual_order.order_id', '=', 'new_order_history.order_id')
+			->where('new_order_history.id',$id)->first();
+			$category = category::where('id',$order_detail->category_id)->first();
+		} else {
+			$order = new_orders::select('new_orders.*', 'prescription.name as prescription_name', 'prescription.image as prescription_image')->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')->where('new_orders.id', $id)->first();
+			$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','ua.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname','manual_order.product','manual_order.category_id','manual_order.order_id','manual_order.qty')
+			->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_orders.deliveryboy_id')
+			->leftJoin('new_pharmacies as ua', 'ua.id', '=', 'new_orders.pharmacy_id')
+			->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
+			->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
+			->leftJoin('manual_order', 'manual_order.order_id', '=', 'new_orders.id')
+			->where('new_orders.id',$id)->first();
+			$category = category::where('id',$order_detail->category_id)->first();
+		}
+		
+		$customer = new_users::where('id',$order->customer_id)->first();
+		$address = '';
+		if(get_name('address','address',$order->address_id)!=''){
+			$address.= get_name('address','address',$order->address_id).', ';
+		}
+		if(get_name('address','address2',$order->address_id)!=''){
+			$address.= get_name('address','address2',$order->address_id).', ';
+		}
+		if(get_name('address','city',$order->address_id)!=''){
+			$address.= get_name('address','city',$order->address_id).', ';
+		}
+		if(get_name('address','state',$order->address_id)!=''){
+			$address.= get_name('address','state',$order->address_id).', ';
+		}
+		if(get_name('address','country',$order->address_id)!=''){
+			$address.= get_name('address','country',$order->address_id).', ';
+		}
+		if(get_name('address','pincode',$order->address_id)!=''){
+			$address.= get_name('address','pincode',$order->address_id).', ';
+		}
+		$address = rtrim($address,', ');
+		$data = array();
+		$data['order'] = $order;
+		$data['order_detail'] = $order_detail;
+		$data['category'] = $category;
+		$data['customer'] = new_users::where('id', $order->customer_id)->first();
+		$data['address'] = $address;
+		$data['page_title'] = 'Prescription';
+		$data['page_condition'] = 'page_prescription';
+		$data['site_title'] = 'Prescription | ' . $this->data['site_title'];
+		$data['reject_reason'] = Rejectreason::where('type', 'pharmacy')->get();
+        return view('orders.order_details_manual', $data);
 	}
 }

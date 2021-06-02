@@ -174,6 +174,7 @@ Route::post('/getorderslist', array('as' => 'orders.getlist', 'uses' => 'OrdersC
 Route::post('/orders/accept', array('as' => 'orders.accept', 'uses' => 'OrdersController@accept'));
 Route::post('/orders/reject', array('as' => 'orders.reject', 'uses' => 'OrdersController@reject'));
 Route::get('/orders/order_details/{id}', array('as' => 'orders.order_details', 'uses' => 'OrdersController@order_details'));
+Route::get('/orders/order_details_manual/{id}', array('as' => 'orders.order_details_manual', 'uses' => 'OrdersController@order_details_manual'));
 Route::get('/orders/prescription/{id}', array('as' => 'orders.prescription', 'uses' => 'OrdersController@prescription'));
 
 // Admin Rejected
