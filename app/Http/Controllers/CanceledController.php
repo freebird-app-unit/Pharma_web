@@ -54,7 +54,7 @@ class CanceledController extends Controller
 		$per_page=(isset($_POST['perpage']) && $_POST['perpage']!='')?$_POST['perpage']:10;
 		$searchtxt=(isset($_POST['searchtxt']) && $_POST['searchtxt']!='')?$_POST['searchtxt']:'';
 		
-		$order_detail = new_order_history::select('new_order_history.id','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress', 'prescription.name as prescription_name', 'prescription.image as prescription_image','new_order_history.rejectby_user','new_order_history.reject_user_id')//'cancelreason_id',
+		$order_detail = new_order_history::select('new_order_history.id','new_order_history.order_type','order_number','reject_cancel_reason','new_users.name as customer_name','new_users.mobile_number as customer_number','address_new.address as myaddress', 'prescription.name as prescription_name', 'prescription.image as prescription_image','new_order_history.rejectby_user','new_order_history.reject_user_id')//'cancelreason_id',
 		->leftJoin('new_users', 'new_users.id', '=', 'new_order_history.customer_id')
 		->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
 		->leftJoin('prescription', 'prescription.id', '=', 'new_order_history.prescription_id')
@@ -104,9 +104,12 @@ class CanceledController extends Controller
 				
 				/*<a href="'.url('/orders/order_details/'.$order->id).'"><img src="'.$image_url.'" width="50"/><span>'.$order->order_number.'</span></a><td>'.$order->prescription_name.'</td>
 					<td>'.$order->order_note.'</td>*/
-				$html.='<tr>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
-					<td>'.$order->customer_name.'</td>
+				if($order->order_type == "manual_order"){
+					$html.='<tr><td><a href="'.url('/orders/order_details_manual/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}else{
+					$html.='<tr><td><a href="'.url('/orders/order_details/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}
+				$html.='<td>'.$order->customer_name.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order->myaddress.'</td>
 					<td class="text-danger">'.$order->reject_cancel_reason.'</td>
