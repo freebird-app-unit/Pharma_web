@@ -58,6 +58,16 @@ Route::post('/passwordreset', array('as' => 'passwordreset', 'uses' => 'Password
 Route::get('/registration_pending', array('as' => 'registration_pending.index', 'uses' => 'RegistrationPending@index'));
 Route::post('/getregistrationpendinglist', array('as' => 'registration_pending.getlist', 'uses' => 'RegistrationPending@getlist'));
 
+//category
+
+Route::get('/category', array('as' => 'category.index', 'uses' => 'CategoryController@index'));
+Route::post('/getcategorylist', array('as' => 'category.getlist', 'uses' => 'CategoryController@getlist'));
+Route::get('/category/create', array('as' => 'category.create', 'uses' => 'CategoryController@create'));
+Route::post('/category/create', array('as' => 'category.create', 'uses' => 'CategoryController@store'));
+Route::get('/category/edit/{id}/', array('as' => 'category.edit', 'uses' => 'CategoryController@edit'));
+Route::post('/category/edit/{id}', array('as' => 'category.edit', 'uses' => 'CategoryController@update'));
+Route::get('/category/delete/{id}', array('as' => 'category.delete', 'uses' => 'CategoryController@delete'));
+
 //referralcodeuseduser
 
 Route::get('/referral_code_used_users', array('as' => 'referral_code_used_users.index', 'uses' => 'ReferralCodeUsedUsersController@index'));

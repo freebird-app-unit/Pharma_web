@@ -331,6 +331,9 @@
 									<a href="{{ route('admincomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_admincomplete')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
 								</li>
 							<li>
+									<a href="{{ route('category.index') }}" class="waves-effect <?php echo ($page_condition=='page_category')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Category') }}</span></a>
+							</li>
+							<li>
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
 							</li>
 							<li>
@@ -489,6 +492,9 @@
 							<li>
 									<a href="{{ route('admincomplete.index') }}" class="waves-effect <?php echo ($page_condition=='page_admincomplete')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Completed Orders') }}</span></a>
 								</li>
+							<li>
+									<a href="{{ route('category.index') }}" class="waves-effect <?php echo ($page_condition=='page_category')?'active':''; ?>"><img src="{{ asset('public/images/complete_order.png') }}"/><span>{{ __('Category') }}</span></a>
+							</li>
 							<li>
                                 <a href="{{ route('user.index') }}" class="waves-effect <?php echo ($page_condition=='page_users')?'active':''; ?>"><img src="{{ asset('public/images/user.png') }}"/><span>{{ __('Users') }}</span></a>
 							</li>
@@ -1247,6 +1253,9 @@
 	@endif
 	@if($page_condition=='page_canceled_logistic')
 		<script src="{{ asset('public/admin/js/logistic/logisticcancel.js') }}"></script>
+	@endif
+	@if($page_condition=='page_category')
+		<script src="{{ asset('public/admin/js/category.js') }}"></script>
 	@endif
 	@if($page_condition=='page_adminpickup')
 		<script src="{{ asset('public/admin/js/adminpickup.js') }}"></script>
