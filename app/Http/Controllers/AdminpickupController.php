@@ -103,9 +103,12 @@ class AdminpickupController extends Controller
 				if(!empty($phar_name)){
 					$name_phar = $phar_name->name;
 				}
-				$html.='<tr>
-					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
-					<td>'.$order->customer_name.'</td>
+				if($order->order_type == "manual_order"){
+					$html.='<tr><td><a href="'.url('/orders/order_details_manual/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}else{
+					$html.='<tr><td><a href="'.url('/orders/order_details/'.$order->id).'"</a><span>'.$order->order_number.'</span>';
+				}
+				$html.='<td>'.$order->customer_name.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order_type.'</td>
 					<td class="text-warning">'.$assign_to.'</td>
