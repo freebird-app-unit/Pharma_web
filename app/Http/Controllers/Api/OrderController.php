@@ -638,7 +638,7 @@ class OrderController extends Controller
 				}
 			}
 			$phar = new_pharmacies::where('id',$neworder->pharmacy_id)->first();
-			$mobile_number = ['9265837483'];
+			$mobile_number = ['1234567890'];
 			foreach ($mobile_number as $mob) {
 				$message = "New order has been placed to " .$phar->name. " And order number is " .$neworder->order_number. ".";
 				$api = "http://message.smartwave.co.in/rest/services/sendSMS/sendGroupSms?AUTH_KEY=6d1bdc8e4530149c49564516e213f7&routeId=8&senderId=HLTCHT&mobileNos='".$mob."'&message=" . urlencode($message);
