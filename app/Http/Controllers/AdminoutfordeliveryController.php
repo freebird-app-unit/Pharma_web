@@ -99,6 +99,11 @@ class AdminoutfordeliveryController extends Controller
 				}else{
 					$order_type = 'Free';
 				}
+				$name_phar = '';
+				$phar_name = new_pharmacies::where('id',$order->pharmacy_id)->first();
+				if(!empty($phar_name)){
+					$name_phar = $phar_name->name;
+				}
 				$html.='<tr>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->customer_name.'</td>
