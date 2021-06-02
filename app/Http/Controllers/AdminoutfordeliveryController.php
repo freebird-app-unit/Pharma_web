@@ -110,6 +110,7 @@ class AdminoutfordeliveryController extends Controller
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order_type.'</td>
 					<td class="text-warning">'.$assign_to.'</td>
+					<td>'.$name_phar.'</td>
 					<td><span class="label label-warning">'.$created_at.'</span></td>';
 				$html.='</tr>';
 			}
