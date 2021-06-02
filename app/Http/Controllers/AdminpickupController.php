@@ -98,12 +98,18 @@ class AdminpickupController extends Controller
 				}else{
 					$order_type = 'Free';
 				}
+				$name_phar = '';
+				$phar_name = new_pharmacies::where('id',$order->pharmacy_id)->first();
+				if(!empty($phar_name)){
+					$name_phar = $phar_name->name;
+				}
 				$html.='<tr>
 					<td><a href="'.url('/orders/order_details/'.$order->id).'"><span>'.$order->order_number.'</span></a></td>
 					<td>'.$order->customer_name.'</td>
 					<td>'.$order->customer_number.'</td>
 					<td>'.$order_type.'</td>
-					<td class="text-warning">'.$assign_to.'</td>';
+					<td class="text-warning">'.$assign_to.'</td>
+					<td>'.$name_phar.'</td>';
 				$html.='</tr>';
 			}
 			$prev_disabled_style = "";
