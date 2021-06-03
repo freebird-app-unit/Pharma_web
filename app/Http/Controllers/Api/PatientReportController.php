@@ -251,7 +251,7 @@ class PatientReportController extends Controller
 		$user = new_users::where(['id'=>$user_id,'api_token'=>$token])->get();
 		if(count($user)>0){
 		if (!empty($searchtext)) {
-			$report = patient_report::select('id', 'name','image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+			$report = patient_report::select('id', 'name','remarks','image', 'created_at')->where('name', 'like', '%'.$searchtext.'%')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
 			$total = $report->count();
             $page = $page;
@@ -267,7 +267,7 @@ class PatientReportController extends Controller
             $data_array = $orders->toArray();
             $data_array = $data_array['data']; 
 		} else {
-			$report = patient_report::select('id', 'name','image', 'created_at')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
+			$report = patient_report::select('id', 'name','remarks','image', 'created_at')->where(['user_id'=>$user_id,"is_delete"=>"0"])->orderBy('id', 'DESC');
 
 			$total = $report->count();
             $page = $page;
@@ -317,6 +317,7 @@ class PatientReportController extends Controller
 				$report_arr[$key]['name'] = $val['name'];
 				$report_arr[$key]['date'] = date('d-m-Y', strtotime($val['created_at']));
 				$report_arr[$key]['image'] = $images_array;
+				$report_arr[$key]['remarks'] = $val['remarks'];
 			}
 			$response['status'] = 200;
 		} else {
