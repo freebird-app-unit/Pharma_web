@@ -22,7 +22,7 @@ use App\category;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Hash;
-
+use App\manual_order;
 use App\Events\AssignOrderLogistic;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
@@ -468,7 +468,34 @@ class OrdersController extends Controller
 			->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 			->leftJoin('manual_order', 'manual_order.order_id', '=', 'new_orders.id')
 			->where('new_orders.id',$id)->first();
-			$category = category::where('id',$order_detail->category_id)->first();
+			$product = manual_order::where('order_id',$order_detail->id)->get();
+			$ids = [];
+			$products = [];
+			$qtys = [];
+			$final_arr = [];
+			foreach ($product as  $value) {
+				array_push($ids, $value->category_id);
+				array_push($products, $value->product);
+				array_push($qtys, $value->qty);
+			}
+			$category_name = [];
+			foreach ($ids as $id) {
+				$category = category::where('id',$id)->first();
+				array_push($category_name, $category->name);
+			}
+			$product_name = [];
+			foreach ($products as $product) {
+				$pro = manual_order::where('product',$product)->first();
+				array_push($product_name, $pro->product);
+			}
+			$qty_data = [];
+			foreach ($qtys as $qty) {
+				$quan = manual_order::where('qty',$qty)->first();
+				array_push($qty_data, $quan->qty);
+			}
+			foreach ($category_name as $key => $val) {
+    			$final_arr[] = ['category'=>$val, 'product'=>$product_name[$key],'qty'=> $qty_data[$key]];
+			}
 		}
 		
 		$customer = new_users::where('id',$order->customer_id)->first();
@@ -495,7 +522,7 @@ class OrdersController extends Controller
 		$data = array();
 		$data['order'] = $order;
 		$data['order_detail'] = $order_detail;
-		$data['category'] = $category;
+		$data['category'] = $final_arr;
 		$data['customer'] = new_users::where('id', $order->customer_id)->first();
 		$data['address'] = $address;
 		$data['page_title'] = 'Prescription';

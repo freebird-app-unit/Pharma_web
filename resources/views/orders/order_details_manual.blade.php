@@ -16,15 +16,31 @@
 		<div class="card-box">
 			<div class="row">
 				<div class="col-sm-6">
+						<table id="admin_order_list" class="table  table-striped">
+							<thead>
+							<tr>
+								<th>Category Name</th>
+								<th>Product</th>
+								<th>Quantity</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ($category as $value) { ?>
+								<td>{{ $value['category'] }}</td>
+								<td>{{ $value['product'] }}</td>
+								<td>{{ $value['qty'] }}</td>
+						</tbody>
+							<?php }?>
+					</table>  
+				</div>
+				<div class="col-sm-6">
 					<div>
+						<br>
 						<strong>Order detail</strong><br><br>
 						Order Number:&nbsp;&nbsp;<?php echo $order->order_number; ?><br><br>
 						Delivery Type:&nbsp;&nbsp;<?php if($order_detail->delivery_type==''){echo 'free';}else{ echo $order_detail->delivery_type;} ?><br><br>
 						Leaved With Neighbour:&nbsp;&nbsp;<?php if($order->leaved_with_neighbor==1){echo 'true';} else {echo 'false';} ?><br><br>
 						Order Type:&nbsp;&nbsp;<?php echo $order->order_type; ?><br><br>
-						Category Name:&nbsp;&nbsp;<?php echo $category->name; ?><br><br>
-						Product Name:&nbsp;&nbsp;<?php echo $order_detail->product; ?><br><br>
-						Qunatity:&nbsp;&nbsp;<?php echo $order_detail->qty; ?>
 					</div>
 					<br><br>
 					<div>
