@@ -27,6 +27,7 @@ use App\Events\AssignOrderLogistic;
 use App\new_pharma_logistic_employee;
 use App\new_logistics;
 use App\new_delivery_charges;
+use App\prescription_multiple_image;
 use Helper;
 
 
@@ -397,20 +398,26 @@ class OrdersController extends Controller
 
 		if(new_order_history::find($id)){
 			$order = new_order_history::select('new_order_history.*', 'prescription.name as prescription_name', 'prescription.image as prescription_image')->leftJoin('prescription', 'prescription.id', '=', 'new_order_history.prescription_id')->where('new_order_history.id', $id)->first();
-			$order_detail = new_order_history::select('new_order_history.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','ua.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname')
-			->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_order_history.deliveryboy_id')
+			$order_detail = new_order_history::select('new_order_history.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','ua.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname','prescription.name as prescription_name', 'prescription.image as prescription_image','prescription.id as pres_id')
+			->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_order_history.deliveryboy_id','prescription.name as prescription_name', 'prescription.image as prescription_image')
 			->leftJoin('new_pharmacies as ua', 'ua.id', '=', 'new_order_history.pharmacy_id')
+			->leftJoin('prescription', 'prescription.id', '=', 'new_order_history.prescription_id')
 			->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_order_history.delivery_charges_id')
 			->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
 			->where('new_order_history.id',$id)->first();
+			
+			$pre_image = prescription_multiple_image::where('prescription_id',$order_detail->pres_id)->get();
 		} else {
 			$order = new_orders::select('new_orders.*', 'prescription.name as prescription_name', 'prescription.image as prescription_image')->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')->where('new_orders.id', $id)->first();
-			$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','ua.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname')
+			$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','ua.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname','prescription.name as prescription_name', 'prescription.image as prescription_image','prescription.id as pres_id')
 			->leftJoin('new_pharma_logistic_employee', 'new_pharma_logistic_employee.id', '=', 'new_orders.deliveryboy_id')
+			->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')
 			->leftJoin('new_pharmacies as ua', 'ua.id', '=', 'new_orders.pharmacy_id')
 			->leftJoin('new_delivery_charges', 'new_delivery_charges.id', '=', 'new_orders.delivery_charges_id')
 			->leftJoin('address_new', 'address_new.id', '=', 'new_orders.address_id')
 			->where('new_orders.id',$id)->first();
+
+			$pre_image = prescription_multiple_image::where('prescription_id',$order_detail->pres_id)->get();
 		}
 		
 		$customer = new_users::where('id',$order->customer_id)->first();
@@ -437,6 +444,7 @@ class OrdersController extends Controller
 		$data = array();
 		$data['order'] = $order;
 		$data['order_detail'] = $order_detail;
+		$data['pre_image'] = $pre_image;
 		$data['customer'] = new_users::where('id', $order->customer_id)->first();
 		$data['address'] = $address;
 		$data['page_title'] = 'Prescription';
@@ -458,7 +466,34 @@ class OrdersController extends Controller
 			->leftJoin('address_new', 'address_new.id', '=', 'new_order_history.address_id')
 			->leftJoin('manual_order', 'manual_order.order_id', '=', 'new_order_history.order_id')
 			->where('new_order_history.id',$id)->first();
-			$category = category::where('id',$order_detail->category_id)->first();
+			$product = manual_order::where('order_id',$order_detail->order_id)->get();
+			$ids = [];
+			$products = [];
+			$qtys = [];
+			$final_arr = [];
+			foreach ($product as  $value) {
+				array_push($ids, $value->category_id);
+				array_push($products, $value->product);
+				array_push($qtys, $value->qty);
+			}
+			$category_name = [];
+			foreach ($ids as $id) {
+				$category = category::where('id',$id)->first();
+				array_push($category_name, $category->name);
+			}
+			$product_name = [];
+			foreach ($products as $product) {
+				$pro = manual_order::where('product',$product)->first();
+				array_push($product_name, $pro->product);
+			}
+			$qty_data = [];
+			foreach ($qtys as $qty) {
+				$quan = manual_order::where('qty',$qty)->first();
+				array_push($qty_data, $quan->qty);
+			}
+			foreach ($category_name as $key => $val) {
+    			$final_arr[] = ['category'=>$val, 'product'=>$product_name[$key],'qty'=> $qty_data[$key]];
+			}
 		} else {
 			$order = new_orders::select('new_orders.*', 'prescription.name as prescription_name', 'prescription.image as prescription_image')->leftJoin('prescription', 'prescription.id', '=', 'new_orders.prescription_id')->where('new_orders.id', $id)->first();
 			$order_detail = new_orders::select('new_orders.*','new_delivery_charges.delivery_type as delivery_type','new_delivery_charges.delivery_price as delivery_price', 'address_new.address as address','ua.address as pharmacyaddress','new_pharma_logistic_employee.name as deliveryboyname','manual_order.product','manual_order.category_id','manual_order.order_id','manual_order.qty')
@@ -525,9 +560,9 @@ class OrdersController extends Controller
 		$data['category'] = $final_arr;
 		$data['customer'] = new_users::where('id', $order->customer_id)->first();
 		$data['address'] = $address;
-		$data['page_title'] = 'Prescription';
+		$data['page_title'] = 'Manual Order Detail';
 		$data['page_condition'] = 'page_prescription';
-		$data['site_title'] = 'Prescription | ' . $this->data['site_title'];
+		$data['site_title'] = 'Manual Order Detail| ' . $this->data['site_title'];
 		$data['reject_reason'] = Rejectreason::where('type', 'pharmacy')->get();
         return view('orders.order_details_manual', $data);
 	}

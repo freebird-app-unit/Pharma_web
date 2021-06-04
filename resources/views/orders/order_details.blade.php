@@ -13,21 +13,33 @@
 
 <div class="row">
 	<div class="col-sm-12">
-	<?php 
-	$image_url = url('/').'/uploads/placeholder.png';
-	if (!empty($order->prescription_image)) {
-		if (file_exists(storage_path('app/public/uploads/prescription/'.$order->prescription_image))){
-			$image_url = asset('storage/app/public/uploads/prescription/' . $order->prescription_image);
-		}
-	}
-	?>
 		<div class="card-box">
 			<div class="row">
 				<div class="col-sm-6">
-					<div class="gallery"> 
-						<a href="{{ $image_url }}" class="big"><img src="{{ $image_url }}" style="width:150px;"></a>
-						<div class="clear"></div>
-					</div>
+					<?php 
+						$image_url = url('/').'/uploads/placeholder.png';
+						foreach ($pre_image as $pres) {
+							if (!empty($pres->image)){
+
+								$image_url = url('/').'/storage/app/public/uploads/prescription/'.$pres->image;
+
+								?>
+								<div class="gallery"> 
+									<a href="{{ $image_url }}" class="big"><br><img src="{{ $image_url }}" style="width:150px;"></a>
+									<div class="clear"></div>
+								</div>
+						<?php } }?>
+						<?php
+							if (!empty($order_detail->prescription_image)) {
+									$image_url = url('/').'/storage/app/public/uploads/prescription/'.$order_detail->prescription_image;
+									?>
+						<div class="gallery"> 
+							<a href="{{ $image_url }}" class="big"><img src="{{ $image_url }}" style="width:150px;"></a>
+							<div class="clear"></div>
+						</div>
+						<?php }  
+						?>
+					
 					<br><br>
 					<div class="order_description order_note" style="padding: 10px 20px;background:#333333;opacity:0.9;text-align:center;color: white">
 						<strong>Prescription Name</strong><br>
