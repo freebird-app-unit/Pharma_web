@@ -81,7 +81,7 @@ class SellersController extends Controller
 		//get list
 		if(count($user_detail)>0){
 			foreach($user_detail as $user){
-				$created_at = ($user->created_at!='')?date('d-M-Y',strtotime($user->created_at)):'';
+				$created_at = ($user->created_at!='')?date('d-M-Y h:i A',strtotime($user->created_at)):'';
 				$updated_at = ($user->updated_at!='')?date('d-M-Y',strtotime($user->updated_at)):'';
 				$image_url = '';
 				if($user->profile_image!=''){
@@ -111,7 +111,8 @@ class SellersController extends Controller
 					<td>'.$user->mobile_number.'</td>
 					<td>'.$user->address.'</td>
 					<td>'.$pharmacy_name.'</td>
-					<td>'.$total_pending_order.'</td>';
+					<td>'.$total_pending_order.'</td>
+					<td>'.$created_at.'</td>';
 						
 					$html.='<td><a class="btn btn-success waves-effect waves-light" href="'.url('/seller/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a><a class="btn btn-info waves-effect waves-light" href="'.url('/seller/edit/'.$user->id).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a>';
 					if($user->is_active == 1){
