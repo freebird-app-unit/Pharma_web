@@ -59,6 +59,7 @@
 								<th width="10%" data-priority="6">Pharmacy Name</th>
 								<th width="10%" data-priority="6">No. of orders<br> Pending</th>
 								<th width="10%" data-priority="6">Created</th>
+								<th width="10%" data-priority="6">Action</th>
 							</tr>
 						</thead>
 						<tbody>
