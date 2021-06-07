@@ -81,13 +81,14 @@ class MyteamController extends Controller
 		//get list
 		if(count($user_detail)>0){
 			foreach($user_detail as $user){
-			
+				$created_at = ($user->created_at!='')?date('d-M-Y h:i A',strtotime($user->created_at)):'';
 				$html.='<tr>
 					<td>'.$user->name.'</td>
 					<td>'.$user->user_type.'</td>
 					<td>'.$user->email.'</td>
 					<td>'.$user->mobile_number.'</td>
-					<td>'.$user->address.'</td>';
+					<td>'.$user->address.'</td>
+					<td>'.$created_at.'</td>';
 					$html.='</td>';
 				$html.='</tr>';
 			}

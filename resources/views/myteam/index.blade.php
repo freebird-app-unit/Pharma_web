@@ -38,6 +38,7 @@
 								<th width="10%" data-priority="3">Email</th>
 								<th width="10%" data-priority="4">Mobile_number</th>
 								<th width="10%" data-priority="5">Address</th>
+								<th width="10%" data-priority="5">Created</th>
 							</tr>
 						</thead>
 						<tbody>
