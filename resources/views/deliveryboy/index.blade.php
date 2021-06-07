@@ -57,6 +57,7 @@
 								<th width="5%" data-priority="5">No. Order assign</th>
 								<th width="10%" data-priority="6">Pharmacy/logistic<br>Name</th>
 								<th width="10%" data-priority="6">no. of completed order</th>
+								<th width="10%" data-priority="6">Created</th>
 								<th width="20%" data-priority="7">Action</th>
 							</tr>
 						</thead>

@@ -124,7 +124,7 @@ class DeliveryboyController extends Controller
 		//get list
 		if(count($user_detail)>0){
 			foreach($user_detail as $user){
-				$created_at = ($user->created_at!='')?date('d-M-Y',strtotime($user->created_at)):'';
+				$created_at = ($user->created_at!='')?date('d-M-Y h:i A',strtotime($user->created_at)):'';
 				$updated_at = ($user->updated_at!='')?date('d-M-Y',strtotime($user->updated_at)):'';
 				$image_url = '';
 				if($user->profile_image!=''){
@@ -155,7 +155,8 @@ class DeliveryboyController extends Controller
 					<td>'.$user->address.'</td>
 					<td>'.$order_assign.'</td>
 					<td>'.$parent_type_name.'</td>
-					<td>'.$total_complete_order.'</td>';
+					<td>'.$total_complete_order.'</td>
+					<td>'.$created_at.'</td>';
 					$html.='<td><a class="btn btn-success waves-effect waves-light" href="'.url('/deliveryboy/detail/'.$user->id).'" title="Detail"><i class="fa fa-eye"></i></a><a class="btn btn-info waves-effect waves-light" href="'.url('/deliveryboy/edit/'.$user->id).'" title="Edit user"><i class="fa fa-pencil"></i></a><a data-toggle="modal" href="#delete_modal" data-id="'.$user->id.'" class="btn btn-danger waves-effect waves-light deleteUser" href="javascript:;" title="Delete user"><i class="fa fa-trash"></i></a>';
 					if($user->is_active == 1){
                         $html.='<a href="'.url('/deliveryboy/'.$user->id.'/inactive/').'" onClick="return confirm(\'Are you sure you want to inactive this?\');" rel="tooltip" title="InActive" class="btn btn-default btn-xs"><i class="fa fa-circle text-success"></i></a>';  
