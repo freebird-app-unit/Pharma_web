@@ -41,8 +41,8 @@ class PharmacyController extends Controller
 		$encryption = new \MrShan0\CryptoLib\CryptoLib();
 		$secretyKey = env('ENC_KEY');
 		$data = $request->input('data');
-		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($plainText);
+		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($data);
 		$user_id  = isset($content->user_id) ? trim($content->user_id) : '';
 		$address_id  = isset($content->address_id) ? trim($content->address_id) : '';
 		$searchtext  = isset($content->searchtext) ? trim($content->searchtext) : '';
@@ -101,8 +101,8 @@ class PharmacyController extends Controller
 			$response['status'] = 401;
 			$response['message'] = 'User Not Found';
 			$response = json_encode($response);
-			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-			return response($cipher, 200);
+			//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+			return response($response, 200);
 		}
 		$current_time = date('H:i:s');
 		$area_cover_by_city_list = $this->CityGeofenceCheck($content);
@@ -191,8 +191,8 @@ class PharmacyController extends Controller
 			$response['message'] = 'Pharmacy';
 			$response['data']['content'] = $pharmacy_arr;
 			$response = json_encode($response);
-			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-			return response($cipher, 200);
+			//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+			return response($response, 200);
 		}
 	}
 	public function GetNextDayLogic(){
@@ -234,8 +234,8 @@ class PharmacyController extends Controller
 			$response['message'] = 'Pharmacy';
 			$response['data']['content'] = $pharmacy_arr;
 			$response = json_encode($response);
-			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-			return response($cipher, 200);
+			//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+			return response($response, 200);
 		}
 		if($searchtext!=''){
 			$pharmacyFree = $pharmacyFree->where(function ($query) use($searchtext) {
@@ -496,13 +496,14 @@ class PharmacyController extends Controller
 		if($sortings == 'ratings'){
 			usort($pharmacy_arr, "sort_pharmacy_array_ratings");
 		}
-		$final_arr_data = array_merge($referral_code,$free_open, $free_close, $paid_open, $paid_close);
-		$final_arr = array_unique($final_arr_data,SORT_REGULAR);
+		$final_array_merge = array_merge($referral_code,$free_open, $free_close, $paid_open, $paid_close);
+		$final_array_unique = array_unique($final_array_merge,SORT_REGULAR);
+		$final_arr =  array_values($final_array_unique);
 		$response['data']['content'] = $final_arr;
 		
 		$response = json_encode($response);
-		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-        return response($cipher, 200);
+		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+        return response($response, 200);
 	}
 	public function paginate($items, $perPage = null, $page = null, $options = [])
     {
