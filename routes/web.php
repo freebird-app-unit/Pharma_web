@@ -501,6 +501,10 @@ Route::get('/packages/payment/{package_id}', 'PackagesController@payment');
 Route::get('/packages/success', 'PackagesController@success');
 Route::get('/packages/fail', 'PackagesController@fail');
 
+// Onboarding Pending
+Route::get('/onboardingpending', array('as' => 'onboardingpending.index', 'uses' => 'OnBoardingPendingController@index'));
+Route::post('/getonboardingpendinglist', array('as' => 'myteam.getlist', 'uses' => 'OnBoardingPendingController@getlist'));
+
 // Deposit
 Route::get('/deposit', 'DepositController@index');
 Route::get('deposit_list', 'DepositController@list');
