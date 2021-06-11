@@ -607,7 +607,8 @@ class LoginController extends Controller
 		{	
 			if(!empty($referral_code)){
 				$pharmacy_code =  new_pharmacies::where('referral_code',$referral_code)->first();
-			    if(empty($pharmacy_code)){
+				$user_code = new_users::where('employee_referral_code',$referral_code)->first();
+			    if(empty($pharmacy_code) && empty($user_code)){
 					$response['status'] = 404;
 					$response['message'] = 'Referral Code is not available';
 				}else{
@@ -617,7 +618,6 @@ class LoginController extends Controller
 					$days    = floor($diff / 86400);
 					$hours   = floor(($diff - ($days * 86400)) / 3600);
 					$minutes = floor(($diff - ($days * 86400) - ($hours * 3600)) / 60);
-					
 					if (($diff > 0) && ($minutes <= 10)) {
 					
 					$profile_image = '';
@@ -631,7 +631,7 @@ class LoginController extends Controller
 
 						Storage::disk('public')->put('uploads/new_user/'.$profile_image, $img, 'public');
 					}
-
+		
 					$user = new_users::find($login->id);
 					$user->name = $name;
 					$user->email = $email;
@@ -639,14 +639,22 @@ class LoginController extends Controller
 					$user->mobile_number = $mobile_number;
 					$user->dob = $dob;
 					$user->profile_image = $profile_image; 
-					$user->referral_code = $referral_code; 
+					$phar_referral_code = new_pharmacies::where('referral_code',$referral_code)->first();
+					if(!empty($phar_referral_code)){
+						$user->referral_code = $referral_code; 	
+					}
+					$user_referral_code = new_users::where('employee_referral_code',$referral_code)->first();
+					if(!empty($user_referral_code)){
+						$user->employee_referral_code = $referral_code; 		
+					}
 					$user->password = Hash::make($password);
 					$user->save();
 					
 					$check_referral_onoff = referralcode::where('id','1')->first();
 					$pharmacy_code = new_pharmacies::where('referral_code',$referral_code)->first();
-					if($check_referral_onoff->toggle == 'false'){
-						$remain_delivery_increase = new_pharmacies::where('id',$pharmacy_code->id)->first();
+					if(!empty($pharmacy_code)){
+							if($check_referral_onoff->toggle == 'false'){
+							$remain_delivery_increase = new_pharmacies::where('id',$pharmacy_code->id)->first();
 							$entry_code = new referralcode_delivery();
 							$entry_code->pharmacy_id = $pharmacy_code->id;
 							$entry_code->pharmacy_name = $pharmacy_code->name;
@@ -657,22 +665,24 @@ class LoginController extends Controller
 							$entry_code->created_at = date('Y-m-d H:i:s');
 							$entry_code->updated_at = date('Y-m-d H:i:s');
 							$entry_code->save();
-					}else{
-						$remain_delivery_increase = new_pharmacies::where('id',$pharmacy_code->id)->first();
-						$remain_delivery_increase->remining_standard_paid_deliveries = $remain_delivery_increase->remining_standard_paid_deliveries +1;
-						$remain_delivery_increase->save();
+						}else{
+							$remain_delivery_increase = new_pharmacies::where('id',$pharmacy_code->id)->first();
+							$remain_delivery_increase->remining_standard_paid_deliveries = $remain_delivery_increase->remining_standard_paid_deliveries +1;
+							$remain_delivery_increase->save();
 
-						$entry_code = new referralcode_delivery();
-						$entry_code->pharmacy_id = $pharmacy_code->id;
-						$entry_code->pharmacy_name = $pharmacy_code->name;
-						$entry_code->pharmacy_referralcode = $pharmacy_code->referral_code;
-						$entry_code->user_id = $user->id;
-						$entry_code->by_referral_freedelivery = 1;
-						$entry_code->remining_standard_paid_deliveries = $remain_delivery_increase->remining_standard_paid_deliveries;
-						$entry_code->created_at = date('Y-m-d H:i:s');
-						$entry_code->updated_at = date('Y-m-d H:i:s');
-						$entry_code->save();
+							$entry_code = new referralcode_delivery();
+							$entry_code->pharmacy_id = $pharmacy_code->id;
+							$entry_code->pharmacy_name = $pharmacy_code->name;
+							$entry_code->pharmacy_referralcode = $pharmacy_code->referral_code;
+							$entry_code->user_id = $user->id;
+							$entry_code->by_referral_freedelivery = 1;
+							$entry_code->remining_standard_paid_deliveries = $remain_delivery_increase->remining_standard_paid_deliveries;
+							$entry_code->created_at = date('Y-m-d H:i:s');
+							$entry_code->updated_at = date('Y-m-d H:i:s');
+							$entry_code->save();
+						}
 					}
+				
 					$family_member = new FamilyMember();
 					$family_member->user_id = $login->id;
 					$family_member->family_member_id = $login->id;
@@ -694,7 +704,8 @@ class LoginController extends Controller
 					$response['data']->email=$user->email;
 					$response['data']->mobile_number=$user->mobile_number;
 					$response['data']->profile_image=$profile_image;
-					$response['data']->referral_code=$user->referral_code;
+					$response['data']->referral_code=($user->referral_code)?$user->referral_code:'';
+					$response['data']->employee_referral_code=($user->employee_referral_code)?$user->employee_referral_code:'';
 					$response['data']->dob=($user->dob)?$user->dob:'';
 					$data = new_users::find($login->id);
 					$data->api_token = $login->createToken('MyApp')-> accessToken;
@@ -740,7 +751,14 @@ class LoginController extends Controller
 					$user->mobile_number = $mobile_number;
 					$user->dob = $dob;
 					$user->profile_image = $profile_image; 
-					$user->referral_code = $referral_code; 
+					$phar_referral_code = new_pharmacies::where('referral_code',$referral_code)->first();
+					if(!empty($phar_referral_code)){
+						$user->referral_code = $referral_code; 	
+					}
+					$user_referral_code = new_users::where('employee_referral_code',$referral_code)->first();
+					if(!empty($user_referral_code)){
+						$user->employee_referral_code = $referral_code; 		
+					}
 					$user->password = Hash::make($password);
 					$user->save();
 					
@@ -766,6 +784,7 @@ class LoginController extends Controller
 					$response['data']->mobile_number=$user->mobile_number;
 					$response['data']->profile_image=$profile_image;
 					$response['data']->referral_code=($user->referral_code)?$user->referral_code:'';
+					$response['data']->employee_referral_code=($user->employee_referral_code)?$user->employee_referral_code:'';
 					$response['data']->dob=($user->dob)?$user->dob:'';
 					$data = new_users::find($login->id);
 					$data->api_token = $login->createToken('MyApp')-> accessToken;
@@ -917,10 +936,9 @@ class LoginController extends Controller
 		$users = new_users::all();
 		foreach ($users as $value) {
 			$update = new_users::where('id',$value->id)->first();
-			dd($update);
 			$name = $value->name;
 			$email = $value->email;
-			$update->employee_referral_code = ucfirst($name[0]).ucfirst($email[0]).rand(1000,9999);
+			$update->employee_referral_code = ucfirst($name[0]).ucfirst($email[0]).rand(1000,9999).date('d', strtotime($value->created_at));
 			$update->save();
 		}
 	}

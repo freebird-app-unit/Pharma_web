@@ -120,16 +120,16 @@ class ProfileController extends Controller
 					'mobile_number' => $mobile_number
 				];
 				
-				$validator = Validator::make($params, [
+				/*$validator = Validator::make($params, [
 		            'mobile_number' =>  [
 					    'required',
 					    Rule::unique('new_pharma_logistic_employee','mobile_number')->ignore($user_id),Rule::unique('new_users','mobile_number')->ignore($user_id),Rule::unique('new_pharmacies','mobile_number')->ignore($user_id),Rule::unique('new_logistics','mobile_number')->ignore($user_id)
 					],
-		        ]);
-
+		        ]);*/
+/*
 		        if ($validator->fails()) {
             		return $this->send_error($validator->errors()->first());  
-        		}
+        		}*/
  		}
  		if(!empty($email)){
  				$params = [

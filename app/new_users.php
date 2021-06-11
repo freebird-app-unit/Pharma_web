@@ -18,7 +18,7 @@ class new_users extends Authenticatable
      * @var array
      */
     protected $fillable = [
-       'id', 'name', 'email', 'password', 'number','employee_referral_code',
+       'id', 'name', 'email', 'password', 'number'
     ];
 
     /**
