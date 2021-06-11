@@ -913,5 +913,15 @@ class LoginController extends Controller
 		
         return response($cipher, 200);
     } 
-	
+	public function random_user(Request $request){
+		$users = new_users::all();
+		foreach ($users as $value) {
+			$update = new_users::where('id',$value->id)->first();
+			dd($update);
+			$name = $value->name;
+			$email = $value->email;
+			$update->employee_referral_code = ucfirst($name[0]).ucfirst($email[0]).rand(1000,9999);
+			$update->save();
+		}
+	}
 }

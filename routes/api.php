@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::group(['namespace' => 'Api'], function () {
+	Route::post('/random_user', 'LoginController@random_user');
 	Route::get('/get_test', 'bookcontroller@get_test');
 	Route::post('/add_test', 'bookcontroller@add_test');
 	Route::get('/event', 'EventController@event');
