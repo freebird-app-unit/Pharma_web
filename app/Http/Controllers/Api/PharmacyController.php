@@ -17,7 +17,7 @@ use App\new_users;
 use App\new_logistics;
 use App\new_pharmacies;
 use App\new_orders;
-
+use App\DeliveryboyModel\new_order_history;
 use App\new_pharma_logistic_employee;
 use Illuminate\Validation\Rule;
 use App\new_countries;
@@ -34,14 +34,14 @@ class PharmacyController extends Controller
 		print_r($all_array);
 		echo '</pre>';
 	}
-	public function pharmacylist(Request $request)
+	public function pharmacylist_newversion(Request $request)
 	{
 		$response = array();
 		$encryption = new \MrShan0\CryptoLib\CryptoLib();
 		$secretyKey = env('ENC_KEY');
 		$data = $request->input('data');
-		//$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
-		$content = json_decode($data);
+		$plainText = $encryption->decryptCipherTextWithRandomIV($data, $secretyKey);
+		$content = json_decode($plainText);
 		$user_id  = isset($content->user_id) ? trim($content->user_id) : '';
 		$address_id  = isset($content->address_id) ? trim($content->address_id) : '';
 		$searchtext  = isset($content->searchtext) ? trim($content->searchtext) : '';
@@ -100,8 +100,8 @@ class PharmacyController extends Controller
 			$response['status'] = 401;
 			$response['message'] = 'User Not Found';
 			$response = json_encode($response);
-			//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-			return response($response, 200);
+			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+			return response($cipher, 200);
 		}
 		$current_time = date('H:i:s');
 		$area_cover_by_city_list = $this->CityGeofenceCheck($content);
@@ -191,8 +191,8 @@ class PharmacyController extends Controller
 			$response['message'] = 'Pharmacy';
 			$response['data']['content'] = $pharmacy_arr;
 			$response = json_encode($response);
-			//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-			return response($response, 200);
+			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+			return response($cipher, 200);
 		}
 	}
 	public function GetNextDayLogic(){
@@ -209,6 +209,8 @@ class PharmacyController extends Controller
 		$next_logistic_working_day = isset($search_array['next_logistic_working_day']) ? $search_array['next_logistic_working_day'] : 0;
 		$searchtext = isset($search_array['searchtext']) ? $search_array['searchtext'] : '';
 		$filter_ratings = isset($search_array['filter_ratings']) ? $search_array['filter_ratings'] : '';
+		$filter_discount = isset($search_array['filter_discount']) ? $search_array['filter_discount'] : '';
+		$filter_distance = isset($search_array['filter_distance']) ? $search_array['filter_distance'] : '';
 		$sortings = isset($search_array['sortings']) ? $search_array['sortings'] : '';
 		$current_latitude = isset($search_array['current_latitude']) ? $search_array['current_latitude'] : '';
 		$current_longitude = isset($search_array['current_longitude']) ? $search_array['current_longitude'] : '';
@@ -221,10 +223,10 @@ class PharmacyController extends Controller
 				array_push($pharmacyIds, $val->pharmacyValue->id);
 			}
 			$isLogistics = 'true';
-			$pharmacyFree = new_pharmacies::select('new_pharmacies.*',DB::raw("'false' as is_paid"), DB::raw('AVG(pharmacy_rating.rating) AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->leftJoin('pharmacy_rating', 'pharmacy_rating.pharmacy_id', '=', 'new_pharmacies.id')->groupBy('new_pharmacies.id')->havingRaw('distance <= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1);
+			$pharmacyFree = new_pharmacies::select('new_pharmacies.*',DB::raw("'false' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance <= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1);
 			$queries = DB::getQueryLog();
 			DB::connection()->enableQueryLog();
-			$pharmacyPaid = new_pharmacies::select('new_pharmacies.*', DB::raw("'true' as is_paid"), DB::raw('AVG(pharmacy_rating.rating) AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->leftJoin('pharmacy_rating', 'pharmacy_rating.pharmacy_id', '=', 'new_pharmacies.id')->groupBy('new_pharmacies.id')->havingRaw('distance >= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1);
+			$pharmacyPaid = new_pharmacies::select('new_pharmacies.*', DB::raw("'true' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance >= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1);
 			$queries = DB::getQueryLog();
 		}
 		$pharmacy_arr = array();
@@ -233,9 +235,10 @@ class PharmacyController extends Controller
 			$response['message'] = 'Pharmacy';
 			$response['data']['content'] = $pharmacy_arr;
 			$response = json_encode($response);
-			//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-			return response($response, 200);
+			$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+			return response($cipher, 200);
 		}
+
 		if($searchtext!=''){
 			$pharmacyFree = $pharmacyFree->where(function ($query) use($searchtext) {
 				$query->where('new_pharmacies.name', 'like', '%'.$searchtext.'%');
@@ -251,11 +254,59 @@ class PharmacyController extends Controller
 			}
 		}
 		if($filter_ratings!=''){
-			$pharmacyFree= $pharmacyFree->where('rating', '=', $filter_ratings);
-			if($isLogistics=='true'){
-				$pharmacyPaid= $pharmacyPaid->where('rating', '=', $filter_ratings);
+			$pharmacyFree = $pharmacyFree->where(function ($query) use($filter_ratings) {
+				$query->where('new_pharmacies.average_star', 'like', '%'.$filter_ratings.'%');
+			});
+			if($isLogistics == 'true'){
+				$pharmacyPaid = $pharmacyPaid->where(function ($query) use($filter_ratings) {
+					$query->where('new_pharmacies.average_star', 'like', '%'.$filter_ratings.'%');
+				});
 			}
-		} else if ($sortings == 'rating'){
+		}else if ($filter_discount!=''){
+			$pharmacyFree = $pharmacyFree->where(function ($query) use($filter_discount) {
+				$query->where('new_pharmacies.discount', '=',$filter_discount);
+			});
+			if($isLogistics == 'true'){
+				$pharmacyPaid = $pharmacyPaid->where(function ($query) use($filter_discount) {
+					$query->where('new_pharmacies.discount', '=', $filter_discount);
+				});
+			}
+		}else if ($filter_distance!=''){
+			$isLogistics = 'true';
+			$pharmacyFree = new_pharmacies::select('new_pharmacies.*',DB::raw("'false' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance <= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+			DB::connection()->enableQueryLog();
+			$pharmacyPaid = new_pharmacies::select('new_pharmacies.*', DB::raw("'true' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance >= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+		}else if ($filter_ratings!='' && $filter_distance!=''){
+			$isLogistics = 'true';
+			$pharmacyFree = new_pharmacies::select('new_pharmacies.*',DB::raw("'false' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance <= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.average_star','=',$filter_ratings)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+			DB::connection()->enableQueryLog();
+			$pharmacyPaid = new_pharmacies::select('new_pharmacies.*', DB::raw("'true' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance >= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.average_star','=',$filter_ratings)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+		}else if ($filter_ratings!='' && $filter_discount!=''){
+			$isLogistics = 'true';
+			$pharmacyFree = new_pharmacies::select('new_pharmacies.*',DB::raw("'false' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance <= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.average_star','=',$filter_ratings)->where('new_pharmacies.discount','=',$filter_discount);
+			$queries = DB::getQueryLog();
+			DB::connection()->enableQueryLog();
+			$pharmacyPaid = new_pharmacies::select('new_pharmacies.*', DB::raw("'true' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance >= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.average_star','=',$filter_ratings)->where('new_pharmacies.discount','=',$filter_discount);
+			$queries = DB::getQueryLog();
+		}else if ($filter_discount!='' && $filter_distance!=''){
+			$isLogistics = 'true';
+			$pharmacyFree = new_pharmacies::select('new_pharmacies.*',DB::raw("'false' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance <= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.discount','=',$filter_discount)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+			DB::connection()->enableQueryLog();
+			$pharmacyPaid = new_pharmacies::select('new_pharmacies.*', DB::raw("'true' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance >= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.discount','=',$filter_discount)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+		}else if ($filter_ratings!='' && $filter_discount!='' && $filter_distance!=''){
+			$isLogistics = 'true';
+			$pharmacyFree = new_pharmacies::select('new_pharmacies.*',DB::raw("'false' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance <= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.average_star','=',$filter_ratings)->where('new_pharmacies.discount','=',$filter_discount)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+			DB::connection()->enableQueryLog();
+			$pharmacyPaid = new_pharmacies::select('new_pharmacies.*', DB::raw("'true' as is_paid"), DB::raw('average_star AS rating'), DB::raw("6371 * acos(cos(radians(" . $current_latitude . ")) * cos(radians(new_pharmacies.lat)) * cos(radians(new_pharmacies.lon) - radians(" . $current_longitude . ")) + sin(radians(" . $current_latitude . ")) * sin(radians(new_pharmacies.lat))) AS distance"))->groupBy('new_pharmacies.id')->havingRaw('distance >= radius')->whereIn('new_pharmacies.id', $pharmacyIds)->where('new_pharmacies.is_active', 1)->where('new_pharmacies.average_star','=',$filter_ratings)->where('new_pharmacies.discount','=',$filter_discount)->havingRaw('distance <='.$filter_distance.'');
+			$queries = DB::getQueryLog();
+		}else if ($sortings == 'rating'){
 			$pharmacyFree= $pharmacyFree->orderBy('rating', 'DESC');
 			if($isLogistics=='true'){
 				$pharmacyPaid= $pharmacyPaid->orderBy('rating', 'DESC');
@@ -316,6 +367,8 @@ class PharmacyController extends Controller
 		$paid_open = [];
 		$paid_close = [];
 		$referral_code = [];
+		$rating_sorting = [];
+		$new_arrival_sorting = [];
 
 		if(count($data_array)>0){
 			$cnt = 0;
@@ -333,7 +386,7 @@ class PharmacyController extends Controller
 				$discount = ($val->discount!='' && $val->discount>0)?$val->discount.'% off ':'0 % off';
 				$delivery_hour = (isset($val->delivery_hour) && $val->delivery_hour!='' && $val->delivery_hour>0)?$val->delivery_hour.' Hour delivery':'';
 				$close_time = ($val->close_time!='')?$val->close_time:'';
-				
+				$total_order = new_order_history::where(['pharmacy_id'=>$val->id,'order_status'=>'complete'])->get()->count();
 				$profile_image = '';
 				if (!empty($val->profile_image)) {
 					$filename = storage_path('app/public/uploads/new_pharmacy/' . $val->profile_image);
@@ -348,6 +401,61 @@ class PharmacyController extends Controller
 				}else{
 					$pharmacy_current_status = false;
 					$next_pharmacy_working_day = $this->GetNextDayLogic();
+				}
+				
+
+				if($sortings == 'ratings'){
+					$rating_sorting[] = [
+							'logistic_id' => $logistic_id,
+							'is_paid' => $val->is_paid,
+							'pharmacy_distance' => number_format($val->distance, 2),
+							'pharmacy_radius' => $radius,
+							'pharmacy_id' => $pharmacy_id,
+							'distance_unit' => 'Km',
+							'id'          => $val->id,
+							'name'          => $val->name,
+							'address' => $address,
+							'profile_image' => $profile_image,
+							'email' => $val->email,
+							'mobile_number' => $mobile_number,
+							'rating' => ($average_star2)?$average_star2:'0.0',
+							'discount' => $discount,
+							'delivery_hour' => $delivery_hour,
+							'total_order' => $total_order,
+							'logistic_current_status' => $logistic_current_status,
+							'is_intersection' => $is_intersection,
+							'next_logistic_working_day' => $next_logistic_working_day,
+							'close_time' => $close_time,
+							'pharmacy_current_status' => $pharmacy_current_status,
+							'next_pharmacy_working_day' => $next_pharmacy_working_day
+					];
+				}
+
+				if($sortings == 'new_arrival'){
+					$new_arrival_sorting[] = [
+							'logistic_id' => $logistic_id,
+							'is_paid' => $val->is_paid,
+							'pharmacy_distance' => number_format($val->distance, 2),
+							'pharmacy_radius' => $radius,
+							'pharmacy_id' => $pharmacy_id,
+							'distance_unit' => 'Km',
+							'id'          => $val->id,
+							'name'          => $val->name,
+							'address' => $address,
+							'profile_image' => $profile_image,
+							'email' => $val->email,
+							'mobile_number' => $mobile_number,
+							'rating' => ($average_star2)?$average_star2:'0.0',
+							'discount' => $discount,
+							'delivery_hour' => $delivery_hour,
+							'total_order' => $total_order,
+							'logistic_current_status' => $logistic_current_status,
+							'is_intersection' => $is_intersection,
+							'next_logistic_working_day' => $next_logistic_working_day,
+							'close_time' => $close_time,
+							'pharmacy_current_status' => $pharmacy_current_status,
+							'next_pharmacy_working_day' => $next_pharmacy_working_day
+					];
 				}
 				$user_data = new_users::where('id',$user_id)->first();
 				if($user_data->referral_code != NULL){
@@ -368,7 +476,7 @@ class PharmacyController extends Controller
 							'rating' => ($average_star2)?$average_star2:'0.0',
 							'discount' => $discount,
 							'delivery_hour' => $delivery_hour,
-							'total_order' => 0,
+							'total_order' => $total_order,
 							'logistic_current_status' => $logistic_current_status,
 							'is_intersection' => $is_intersection,
 							'next_logistic_working_day' => $next_logistic_working_day,
@@ -395,7 +503,7 @@ class PharmacyController extends Controller
 						'rating' => ($average_star2)?$average_star2:'0.0',
 						'discount' => $discount,
 						'delivery_hour' => $delivery_hour,
-						'total_order' => 0,
+						'total_order' => $total_order,
 						'logistic_current_status' => $logistic_current_status,
 						'is_intersection' => $is_intersection,
 						'next_logistic_working_day' => $next_logistic_working_day,
@@ -421,7 +529,7 @@ class PharmacyController extends Controller
 						'rating' => ($average_star2)?$average_star2:'0.0',
 						'discount' => $discount,
 						'delivery_hour' => $delivery_hour,
-						'total_order' => 0,
+						'total_order' => $total_order,
 						'logistic_current_status' => $logistic_current_status,
 						'is_intersection' => $is_intersection,
 						'next_logistic_working_day' => $next_logistic_working_day,
@@ -448,7 +556,7 @@ class PharmacyController extends Controller
 						'rating' => ($average_star2)?$average_star2:'0.0',
 						'discount' => $discount,
 						'delivery_hour' => $delivery_hour,
-						'total_order' => 0,
+						'total_order' => $total_order,
 						'logistic_current_status' => $logistic_current_status,
 						'is_intersection' => $is_intersection,
 						'next_logistic_working_day' => $next_logistic_working_day,
@@ -474,7 +582,7 @@ class PharmacyController extends Controller
 						'rating' => ($average_star2)?$average_star2:'0.0',
 						'discount' => $discount,
 						'delivery_hour' => $delivery_hour,
-						'total_order' => 0,
+						'total_order' => $total_order,
 						'logistic_current_status' => $logistic_current_status,
 						'is_intersection' => $is_intersection,
 						'next_logistic_working_day' => $next_logistic_working_day,
@@ -489,21 +597,25 @@ class PharmacyController extends Controller
 			$response['status'] = 404;
 			$response['message'] = 'Pharmacy';
 		}
-		if($sortings == 'most_popular'){
-			usort($pharmacy_arr, "sort_pharmacy_array_most_popular");
-		}
+		
 		if($sortings == 'ratings'){
 			usort($pharmacy_arr, "sort_pharmacy_array_ratings");
 		}
-		$final_array_merge = array_merge($referral_code,$free_open, $free_close, $paid_open, $paid_close);
+		
+
+		$final_array_merge = array_merge($new_arrival_sorting,$rating_sorting,$referral_code,$free_open, $free_close, $paid_open, $paid_close);
 
 		$final_array_unique = array_unique($final_array_merge,SORT_REGULAR);
 		$final_arr = array_values($final_array_unique);
+		if($sortings == 'most_popular'){
+			usort($final_arr, "sort_pharmacy_array_most_popular");
+		}
+		
 		$response['data']['content'] = $final_arr;
 		
 		$response = json_encode($response);
-		//$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
-        return response($response, 200);
+		$cipher  = $encryption->encryptPlainTextWithRandomIV($response, $secretyKey);
+        return response($cipher, 200);
 	}
 	public function paginate($items, $perPage = null, $page = null, $options = [])
     {
