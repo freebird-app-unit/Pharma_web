@@ -373,10 +373,19 @@ if(!function_exists('get_pharmacy_rating')) {
     }
 }
 
-if(!function_exists('sort_pharmacy_array_most_popular')) {
+/*if(!function_exists('sort_pharmacy_array_most_popular')) {
  
     function sort_pharmacy_array_most_popular($a,$b) {
         return $b["total_order"] - $a["total_order"];
+    }
+}*/
+
+if(!function_exists('sort_pharmacy_array_most_popular')) {
+ 
+    function sort_pharmacy_array_most_popular($a,$b) {
+        //return $b["total_order"] - $a["total_order"];
+         if($a['total_order'] == $b['total_order']) return 0;
+  			return $a['total_order'] > $b['total_order'] ? -1 : 1;
     }
 }
 
