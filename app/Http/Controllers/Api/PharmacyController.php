@@ -27,7 +27,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class PharmacyController extends Controller
+class UserPharmacyController extends Controller
 {
     public function _pre($all_array){
 		echo '<pre>';
