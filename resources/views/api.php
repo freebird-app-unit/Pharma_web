@@ -46,12 +46,17 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/reorder', 'OrderController@reorder');
 	Route::post('/cancelorderlist', 'OrderController@cancelorderlist');
 	Route::post('/pharmacylist', 'PharmacyController@pharmacylist');
+	Route::post('/pharmacylist_newversion', 'UserPharmacyController@pharmacylist_newversion');
+	Route::post('/pharmacylist_newversion_1_1', 'UserPharmacyController_1_1@pharmacylist_newversion_1_1');
 	Route::post('/addrecord', 'OrderController@addrecord');
 	Route::post('/createorder', 'OrderController@createorder');
+	Route::post('/createorder_imagedata', 'OrderController@createorder_imagedata');
 	Route::post('/cancelorder', 'OrderController@cancelorder');
 	Route::post('/savedarticleslist', 'ArticlesController@savedarticleslist');
 	Route::post('/mycartlist', 'OrderController@mycartlist');
+	Route::post('/mycartlist_imagedata', 'OrderController@mycartlist_imagedata');
 	Route::post('/mycartdetail', 'OrderController@mycartdetail');
+	Route::post('/mycartdetail_imagedata', 'OrderController@mycartdetail_imagedata');
 	Route::post('/notification_user', 'OrderController@notification_user');
 	Route::post('/create_pillreminder', 'PillreminderController@create_pillreminder');
 	Route::post('/edit_pillreminder', 'PillreminderController@edit_pillreminder');
@@ -73,8 +78,11 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/get_family_members', 'HelthsummarytimelineController@get_family_members');
 	Route::get('/get_disease', 'HelthsummarytimelineController@get_disease');
 	Route::post('/prescription_list', 'PrescriptionController@prescription_list');
+	Route::post('/prescription_list_imagedata', 'PrescriptionController@prescription_list_imagedata');
 	Route::post('/save_prescription', 'PrescriptionController@save_prescription');
+	Route::post('/save_prescription_imagedata', 'PrescriptionController@save_prescription_imagedata');
 	Route::post('/delete_prescription', 'PrescriptionController@delete_prescription');
+	Route::post('/delete_prescription_imagedata', 'PrescriptionController@delete_prescription_imagedata');
 	Route::post('/delete_disease_report', 'HelthsummarytimelineController@delete_disease_report');
 	Route::post('/delete_presscription_report', 'HelthsummarytimelineController@delete_presscription_report');
 	Route::post('/check_valid_user_code', 'HelthsummarytimelineController@check_valid_user_code');
@@ -98,15 +106,36 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::post('/logout', 'LoginController@logout');
 
 	Route::get('/create_transaction/{order_id}', 'PaykunController@create_transaction');
-	Route::get('/payment_succes', 'PaykunController@payment_success');
+	Route::get('/payment_success', 'PaykunController@payment_success');
 	Route::get('/payment_fail', 'PaykunController@payment_fail');
 	Route::post('/elt/callback', 'CallbackController@callback');
 	Route::get('/callback_get/{pass_data?}', 'CallbackController@callback_get');
 	Route::post('/update_response_data', 'UpdateResponseController@update_response_data');
 	Route::post('/update_transaction', 'OrderController@update_transaction');
-	Route::post('/webhook/receive_order', 'PaykunController@receive_order');
+	Route::post('/get_order_status', 'OrderController@get_order_status');
+	
 	
 	Route::get('/webhook/notify', 'WebhooknotifyController@webhooknotify');
+	Route::post('/checkversion', 'CheckversionController@index');
+	Route::post('/terms_condition_privacy_policy', 'CheckversionController@terms_condition_privacy_policy');
+	Route::post('/add_records', 'OrderController@add_records');
+
+	Route::post('/prescription_list_multiple', 'PrescriptionController@prescription_list_multiple');
+	Route::post('/save_prescription_multiple', 'PrescriptionController@save_prescription_multiple');
+	Route::post('/delete_prescription_multiple', 'PrescriptionController@delete_prescription_multiple');
+	Route::post('/edit_prescription_name', 'PrescriptionController@edit_prescription_name');
+	Route::post('/createorder_multiple', 'OrderController@createorder_multiple');
+	Route::post('/mycartlist_multiple', 'OrderController@mycartlist_multiple');
+	Route::post('/mycartdetail_multiple', 'OrderController@mycartdetail_multiple');
+
+	Route::post('/createorder_multiple_manual', 'OrderController@createorder_multiple_manual');
+	Route::post('/mycartlist_multiple_manual', 'OrderController@mycartlist_multiple_manual');
+	Route::post('/mycartdetail_multiple_manual', 'OrderController@mycartdetail_multiple_manual');
+	Route::post('/category_list', 'OrderController@category_list');	
+	Route::post('/patient_report_add', 'PatientReportController@patient_report_add');	
+	Route::post('/patient_report_delete', 'PatientReportController@patient_report_delete');	
+	Route::post('/patient_report_display', 'PatientReportController@patient_report_display');
+	Route::post('/patient_report_edit_name', 'PatientReportController@patient_report_edit_name');
 });
 
 
@@ -118,6 +147,7 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 	Route::post('/sellerchange_password', 'LoginController@change_password');
 	Route::post('/sellerprofile', 'ProfileController@index');
 	Route::post('/sellereditprofile', 'ProfileController@editprofile');
+	Route::post('/sellerlogout', 'LoginController@logout');
 
 	Route::post('/checking_by', 'AcceptorderController@checking_by');
 	Route::post('/order_list', 'AcceptorderController@order_list');
@@ -141,6 +171,7 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 	Route::post('/add_time', 'AcceptorderController@add_time');
 	Route::post('/return_order_list', 'AcceptorderController@return_order_list');
 	Route::post('/delivery_charges_list', 'AcceptorderController@delivery_charges_list');
+	Route::post('/delivery_charges_list_newversion', 'AcceptorderController@delivery_charges_list_newversion');
 	Route::post('/set_delivery_charges', 'AcceptorderController@set_delivery_charges');
 	Route::post('/external_deliveryboy_list', 'AcceptorderController@external_deliveryboy_list');
 	Route::post('/logistic_list', 'AcceptorderController@logistic_list');
@@ -148,6 +179,24 @@ Route::group(['namespace' => 'Api\Seller'], function () {
 	Route::post('/return_confirm', 'AcceptorderController@return_confirm');
 	Route::post('/notification_seller', 'AcceptorderController@notification_seller');
 	Route::post('/clearallnotification_seller', 'AcceptorderController@clearallnotification');
+
+	Route::post('/order_list_multiple', 'AcceptorderController_imagedata@order_list_multiple');
+	Route::post('/accept_order_list_multiple', 'AcceptorderController_imagedata@accept_order_list_multiple');
+	Route::post('/outof_order_list_multiple', 'AcceptorderController_imagedata@outof_order_list_multiple');
+	Route::post('/reject_order_list_multiple', 'AcceptorderController_imagedata@reject_order_list_multiple');
+	Route::post('/cancel_order_list_seller_multiple', 'AcceptorderController_imagedata@cancel_order_list_seller_multiple');
+	Route::post('/complete_order_list_multiple', 'AcceptorderController_imagedata@complete_order_list_multiple');
+	Route::post('/order_detail_multiple', 'AcceptorderController_imagedata@order_detail_multiple');
+	Route::post('/return_order_list_multiple', 'AcceptorderController_imagedata@return_order_list_multiple');
+
+	Route::post('/order_list_multiple_manual', 'AcceptorderController_imagedata@order_list_multiple_manual');
+	Route::post('/accept_order_list_multiple_manual', 'AcceptorderController_imagedata@accept_order_list_multiple');
+	Route::post('/outof_order_list_multiple_manual', 'AcceptorderController_imagedata@outof_order_list_multiple_manual');
+	Route::post('/reject_order_list_multiple_manual', 'AcceptorderController_imagedata@reject_order_list_multiple_manual');
+	Route::post('/cancel_order_list_seller_multiple_manual', 'AcceptorderController_imagedata@cancel_order_list_seller_multiple_manual');
+	Route::post('/complete_order_list_multiple_manual', 'AcceptorderController_imagedata@complete_order_list_multiple_manual');
+	Route::post('/order_detail_multiple_manual', 'AcceptorderController_imagedata@order_detail_multiple_manual');
+	Route::post('/return_order_list_multiple_manual', 'AcceptorderController_imagedata@return_order_list_multiple_manual');
 });
 
 
